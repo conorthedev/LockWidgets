@@ -9,5 +9,6 @@ TWEAK_NAME = LockWidgets
 
 LockWidgets_FILES = Tweak.x
 LockWidgets_CFLAGS = -fobjc-arc
+LockWidgets_FRAMEWORKS += UIKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk

@@ -47,7 +47,7 @@
 	widget.view.frame = view.frame;
 	widget.view.translatesAutoresizingMaskIntoConstraints = NO;
 	[widget didMoveToParentViewController:self];
-	[stackView addArangedSubview:view];
+	[stackView addArrangedSubview:view];
 
 	/*self.widgetView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
 	self.widgetView.backgroundColor = [UIColor redColor];
