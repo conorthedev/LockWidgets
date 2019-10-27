@@ -1,41 +1,45 @@
-/* How to Hook with Logos
-Hooks are written with syntax similar to that of an Objective-C @implementation.
-You don't need to #include <substrate.h>, it will be done automatically, as will
-the generation of a class list and an automatic constructor.
+#import "Tweak.h"
 
-%hook ClassName
+%hook SBDashBoardNotificationAdjunctListViewController
+%property (nonatomic, retain) UIView *widgetView;
 
-// Hooking a class method
-+ (id)sharedInstance {
-	return %orig;
+-(BOOL)hasContent {
+    return YES;
 }
 
-// Hooking an instance method with an argument.
-- (void)messageName:(int)argument {
-	%log; // Write a message about this call, including its class, name and arguments, to the system log.
+-(void)viewDidLoad {
+    %orig;
+	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
-	%orig; // Call through to the original function with its original arguments.
-	%orig(nil); // Call through to the original function with a custom argument.
+	self.widgetView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
+	self.widgetView.backgroundColor = [UIColor redColor];
 
-	// If you use %orig(), you MUST supply all arguments (except for self and _cmd, the automatically generated ones.)
+	[stackView addArrangedSubview:self.widgetView];
+
+	[NSLayoutConstraint activateConstraints:@[
+            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.widgetView.heightAnchor constraintEqualToConstant:90]
+    ]];
 }
 
-// Hooking an instance method with no arguments.
-- (id)noArguments {
-	%log;
-	id awesome = %orig;
-	[awesome doSomethingElse];
-
-	return awesome;
+-(void)_updatePresentingContent {
+    %orig;
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.widgetView];
+    [stackView addArrangedSubview:self.widgetView];
 }
 
-// Always make sure you clean up after yourself; Not doing so could have grave consequences!
-%end
-*/
-@interface NCNotificationListCollectionView : UICollectionView {}
-@end
+-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
+    %orig;
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.widgetView];
+    [stackView addArrangedSubview:self.widgetView];
+}
 
+-(BOOL)isPresentingContent {
+    return YES;
+}
 
-%hook NCNotificationListCollectionView
-	
 %end
