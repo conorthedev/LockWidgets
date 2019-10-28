@@ -1,7 +1,7 @@
 #import "Tweak.h"
 
 %hook SBDashBoardNotificationAdjunctListViewController
-%property (nonatomic, retain) UIView *widgetView;
+%property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 
 -(BOOL)hasContent {
     return YES;
@@ -12,57 +12,52 @@
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
     NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.BatteryCenter.BatteryWidget" error:&error];
+    NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.UpNextWidget.extension" error:&error];
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+    WGWidgetHostingViewController *host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+	CGRect frame = (CGRect){{0, 0}, {355, 300}};
     
-	WGWidgetListItemViewController *widget = [[%c(WGWidgetListItemViewController) alloc] initWithWidgetIdentifier:@"com.apple.UpNextWidget.extension"];
-    WGWidgetHostingViewController *widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:widget];
-    [widget setValue:widgetHost forKey:@"_widgetHost"];
-    [widget.view setValue:widgetHost forKey:@"_widgetHost"];
-    [widget setValue:self forKey:@"_delegate"];
+	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
+		if (%c(MTMaterialView)) {
+			@try {
+				[platterView setValue:@1 forKey:@"_recipe"];
+				[platterView setValue:@2 forKey:@"_options"];
+			} @catch (NSException *e) {
+				// do nothing for NSUndefinedKeyException
+			}
+			// go through each subview to find material view (usually the first element)
+			for (UIView *view in [platterView subviews]) {
+				if ([view isKindOfClass:%c(MTMaterialView)]) {
+					MTMaterialView *materialView = (MTMaterialView *)view;
+					if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
+						[materialView setFinalRecipe:1 options:2];
+					} else {
+						[view removeFromSuperview];
 
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 400)];
-    [view addSubview:widget.view];
-    widget.view.frame = view.frame;
-	widget.view.translatesAutoresizingMaskIntoConstraints = NO;
-	[widget didMoveToParentViewController:self];
+						@autoreleasepool {
+							// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
+							materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
+							materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+							[materialView _setCornerRadius:13.0f];
+							[platterView insertSubview:materialView atIndex:0];
+						}
+					}
+					break;
+				}
+			}
+		}
+		[platterView setWidgetHost:host];
+		[platterView setShowMoreButtonVisible:NO];
+		[stackView addArrangedSubview:platterView];
+		self.widgetView = platterView;
 
-    [self addChildViewController:widgetHost];
-	[view addSubview:widgetHost.view];
-	widgetHost.view.frame = view.frame;
-	widgetHost.view.translatesAutoresizingMaskIntoConstraints = NO;
-	[widgetHost didMoveToParentViewController:self];
-	[stackView addArrangedSubview:view];
-
-    for (UIView *leView in widget.view.subviews) {
-        for (PLPlatterHeaderContentView *header in leView.subviews) {
-            if ([header isKindOfClass:[%c(PLPlatterHeaderContentView) class]]) {
-                header.title = [widgetInfo.displayName uppercaseString];
-            }
-        }
-    }
-    
-	[NSLayoutConstraint activateConstraints:@[
-            [widgetHost.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [widgetHost.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [widgetHost.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [widgetHost.view.heightAnchor constraintEqualToConstant:150],
-            [widgetHost.view.topAnchor constraintEqualToAnchor:stackView.topAnchor constant:40]
-    ]];
-        
-	[NSLayoutConstraint activateConstraints:@[
-            [widget.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [widget.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [widget.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [widget.view.heightAnchor constraintEqualToConstant:150]
-    ]];
-        
-	[NSLayoutConstraint activateConstraints:@[
-            [view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [view.heightAnchor constraintEqualToConstant:150]
-    ]];
+        [NSLayoutConstraint activateConstraints:@[
+            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
+        ]];
 }
 
 -(void)_updatePresentingContent {

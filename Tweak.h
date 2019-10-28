@@ -233,3 +233,20 @@
 -(void)setAdjustsFontForContentSizeCategory:(BOOL)arg1 ;
 -(void)setIcons:(NSArray *)arg1 ;
 @end
+
+@interface WGWidgetPlatterView : UIView // iOS 11 - 12
+-(id)initWithFrame:(CGRect)arg1 andCornerRadius:(CGFloat)arg2; // iOS 11 - 12
+-(void)setWidgetHost:(id)arg1; // iOS 11 - 12
+-(WGWidgetHostingViewController *)widgetHost; // iOS 11 - 12
+-(void)setShowMoreButtonVisible:(BOOL)arg1; // iOS 11 - 12
+@end
+
+@interface NCMaterialSettings : NSObject // iOS 10
+-(void)setDefaultValues; // iOS 10
+@end
+
+@interface MTMaterialView : UIView // iOS 11 - 12
++(id)materialViewWithRecipe:(NSInteger)arg1 options:(NSUInteger)arg2; // iOS 11 - 12
+-(void)_setCornerRadius:(CGFloat)arg1; // iOS 11 - 12
+-(void)setFinalRecipe:(NSInteger)arg1 options:(NSUInteger)arg2 ; // iOS 11 - 12
+@end
