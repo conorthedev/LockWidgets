@@ -142,7 +142,7 @@
             [widget.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
             [widget.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
             [widget.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [widget.view.heightAnchor constraintEqualToConstant:90]
+            [widget.view.heightAnchor constraintEqualToConstant:150]
     ]];
 
 }
