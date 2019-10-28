@@ -33,6 +33,14 @@
 	widgetHost.view.translatesAutoresizingMaskIntoConstraints = NO;
 	[widgetHost didMoveToParentViewController:self];
 	[stackView addArrangedSubview:view];
+
+    for (UIView *leView in widget.view.subviews) {
+        for (PLPlatterHeaderContentView *header in leView.subviews) {
+            if ([header isKindOfClass:[%c(PLPlatterHeaderContentView) class]]) {
+                header.title = [widgetInfo.displayName uppercaseString];
+            }
+        }
+    }
     
 	[NSLayoutConstraint activateConstraints:@[
             [widgetHost.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
