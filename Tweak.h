@@ -92,6 +92,10 @@
 
 @end
 
+@protocol WGWidgetListItemViewControllerDelegate <NSObject>
+- (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
+@end
+
 @interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
 {
     UIStackView *_stackView;
