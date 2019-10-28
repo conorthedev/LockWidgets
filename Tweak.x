@@ -38,7 +38,8 @@
             [widgetHost.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
             [widgetHost.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
             [widgetHost.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [widgetHost.view.heightAnchor constraintEqualToConstant:150]
+            [widgetHost.view.heightAnchor constraintEqualToConstant:150],
+            [widgetHost.view.topAnchor constraintEqualToAnchor:stackView.topAnchor constant:40]
     ]];
         
 	[NSLayoutConstraint activateConstraints:@[
@@ -54,7 +55,6 @@
             [view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [view.heightAnchor constraintEqualToConstant:150]
     ]];
-
 }
 
 -(void)_updatePresentingContent {
