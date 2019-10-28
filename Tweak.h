@@ -92,7 +92,7 @@
 
 @end
 
-@interface SBDashBoardNotificationAdjunctListViewController : UIViewController
+@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
 {
     UIStackView *_stackView;
 }
