@@ -23,12 +23,10 @@
 
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 400)];
 	view.backgroundColor = [UIColor redColor];
-	/*[self addChildViewController:widget];
-	[view addSubview:widget.view];
-	widget.view.frame = view.frame;
+    [view addSubview:widget.view];
+    widget.view.frame = view.frame;
 	widget.view.translatesAutoresizingMaskIntoConstraints = NO;
 	[widget didMoveToParentViewController:self];
-	[stackView addArrangedSubview:view];*/
 
     [self addChildViewController:widgetHost];
 	[view addSubview:widgetHost.view];
@@ -42,6 +40,13 @@
             [widgetHost.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
             [widgetHost.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [widgetHost.view.heightAnchor constraintEqualToConstant:150]
+    ]];
+        
+	[NSLayoutConstraint activateConstraints:@[
+            [widget.view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [widget.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [widget.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [widget.view.heightAnchor constraintEqualToConstant:150]
     ]];
 
 }
