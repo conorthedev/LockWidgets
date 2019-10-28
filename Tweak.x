@@ -12,7 +12,7 @@
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
     NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.UpNextWidget.extension" error:&error];
+    NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.BatteryCenter.BatteryWidget" error:&error];
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
     
 	WGWidgetListItemViewController *widget = [[%c(WGWidgetListItemViewController) alloc] initWithWidgetIdentifier:@"com.apple.UpNextWidget.extension"];
@@ -22,7 +22,6 @@
     [widget setValue:self forKey:@"_delegate"];
 
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 400)];
-	view.backgroundColor = [UIColor redColor];
     [view addSubview:widget.view];
     widget.view.frame = view.frame;
 	widget.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -47,6 +46,13 @@
             [widget.view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
             [widget.view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [widget.view.heightAnchor constraintEqualToConstant:150]
+    ]];
+        
+	[NSLayoutConstraint activateConstraints:@[
+            [view.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [view.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [view.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [view.heightAnchor constraintEqualToConstant:150]
     ]];
 
 }
