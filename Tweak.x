@@ -39,7 +39,7 @@
     %orig;
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
-	WGWidgetListItemViewController *widget = [[WGWidgetListItemViewController alloc] initWithWidgetIdentifier:@"com.apple.UpNextWidget.extension"];
+	WGWidgetListItemViewController *widget = [[%c(WGWidgetListItemViewController) alloc] initWithWidgetIdentifier:@"com.apple.UpNextWidget.extension"];
 	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 400)];
 	view.backgroundColor = [UIColor redColor];
 	[self addChildViewController:widget];

@@ -1,4 +1,4 @@
-TARGET = simulator:clang::12.0
+TARGET = simulator:clang::10.0
 ARCHS = x86_64 i386
 
 INSTALL_TARGET_PROCESSES = SpringBoard
