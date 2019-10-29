@@ -1,8 +1,10 @@
 #import "Tweak.h"
-NSString *identifier = @"com.apple.mobilecal.widget";
+
+NSString *identifier = @"com.apple.UpNextWidget.extension";
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
+%property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 
 -(BOOL)hasContent {
     return YES;
@@ -17,15 +19,14 @@ NSString *identifier = @"com.apple.mobilecal.widget";
     NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-    WGWidgetHostingViewController *host = nil;
 
 	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
 		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 		NSDate *now = [NSDate date];
 		[widgetInfoCal setValue:now forKey:@"_date"];
-		host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
 	} else {
-		host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 	}
 
 	CGRect frame = (CGRect){{0, 0}, {355, 300}};
@@ -59,7 +60,7 @@ NSString *identifier = @"com.apple.mobilecal.widget";
 				}
 			}
 		}
-		[platterView setWidgetHost:host];
+		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
 		[stackView addArrangedSubview:platterView];
 		self.widgetView = platterView;
@@ -77,6 +78,20 @@ NSString *identifier = @"com.apple.mobilecal.widget";
     UIStackView *stackView = [self valueForKey:@"_stackView"];
     [stackView removeArrangedSubview:self.widgetView];
     [stackView addArrangedSubview:self.widgetView];
+
+	NSError *error;
+	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+	} else {
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+	}
 }
 
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
@@ -84,6 +99,20 @@ NSString *identifier = @"com.apple.mobilecal.widget";
     UIStackView *stackView = [self valueForKey:@"_stackView"];
     [stackView removeArrangedSubview:self.widgetView];
     [stackView addArrangedSubview:self.widgetView];
+	
+	NSError *error;
+	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+	} else {
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+	}
 }
 
 -(BOOL)isPresentingContent {

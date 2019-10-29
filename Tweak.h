@@ -118,6 +118,7 @@
 }
 
 @property(nonatomic, retain) UIView *widgetView;
+@property(nonatomic, retain) UIViewController *widgetHost;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
