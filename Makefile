@@ -12,5 +12,5 @@ LockWidgets_CFLAGS = -fobjc-arc -Wno-unused-variable
 LockWidgets_FRAMEWORKS += UIKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-SUBPROJECTS += lockwidgets_prefs
+#SUBPROJECTS += lockwidgets_prefs
 include $(THEOS_MAKE_PATH)/aggregate.mk
