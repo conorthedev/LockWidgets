@@ -1,9 +1,9 @@
 Package: me.conorthedev.lockwidgets
 Name: LockWidgets
-Depends: mobilesubstrate
+Depends: mobilesubstrate, ws.hbang.common (>= 1.11)
 Version: 0.0.1
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
-Maintainer: ConorTheDev
-Author: ConorTheDev
+Description: Pin your favourite widgets to your lockscreen!
+Maintainer: ConorTheDev and EvenDev
+Author: ConorTheDev and EvenDev
 Section: Tweaks
