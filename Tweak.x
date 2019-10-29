@@ -79,19 +79,7 @@ NSString *identifier = @"com.apple.UpNextWidget.extension";
     [stackView removeArrangedSubview:self.widgetView];
     [stackView addArrangedSubview:self.widgetView];
 
-	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
-
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-
-	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-	} else {
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-	}
+	[self reloadData];
 }
 
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
@@ -99,7 +87,16 @@ NSString *identifier = @"com.apple.UpNextWidget.extension";
     UIStackView *stackView = [self valueForKey:@"_stackView"];
     [stackView removeArrangedSubview:self.widgetView];
     [stackView addArrangedSubview:self.widgetView];
-	
+
+	[self reloadData];
+}
+
+-(BOOL)isPresentingContent {
+    return YES;
+}
+
+%new
+-(void)reloadData {
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
@@ -113,10 +110,6 @@ NSString *identifier = @"com.apple.UpNextWidget.extension";
 	} else {
 		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 	}
-}
-
--(BOOL)isPresentingContent {
-    return YES;
 }
 
 %end

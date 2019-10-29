@@ -127,6 +127,7 @@
 - (void)_insertItem:(id)arg1 animated:(BOOL)arg2;
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
+- (void)reloadData;
 
 @end
 
