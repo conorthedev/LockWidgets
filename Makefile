@@ -1,5 +1,10 @@
-TARGET = simulator:clang:12.1:10.0
-ARCHS = x86_64 i386
+ifeq ($(SIMJECT),1)
+export TARGET = simulator:clang:12.1:10.0
+export ARCHS = x86_64 i386
+else
+export TARGET = iphone:clang:12.1.2:10.0
+export ARCHS = arm64 arm64e
+endif
 
 INSTALL_TARGET_PROCESSES = SpringBoard
 
