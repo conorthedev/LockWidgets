@@ -1,39 +1,43 @@
 #import "Tweak.h"
 
+bool enabled = YES;
+
 NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
-SBDashBoardNotificationAdjunctListViewController *controller = nil;
+SBDashBoardNotificationAdjunctListViewController *controller;
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 
 -(BOOL)hasContent {
-    return YES;
+    return enabled;
 }
 
 -(void)viewDidLoad {
     %orig;
-	controller = self;
-	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
-    NSError *error;
-    //NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.BatteryCenter.BatteryWidget" error:&error];
-    NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+	if(enabled) {
+		controller = self;
+		UIStackView *stackView = [self valueForKey:@"_stackView"];
 
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+   	 	NSError *error;
+    	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
-	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-	} else {
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-	}
+    	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-	CGRect frame = (CGRect){{0, 0}, {355, 300}};
+		if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+			NSDate *now = [NSDate date];
+			[widgetInfoCal setValue:now forKey:@"_date"];
+			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		} else {
+			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		}
+
+		CGRect frame = (CGRect){{0, 0}, {355, 300}};
     
-	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
+		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
+
 		if (%c(MTMaterialView)) {
 			@try {
 				[platterView setValue:@1 forKey:@"_recipe"];
@@ -73,28 +77,41 @@ SBDashBoardNotificationAdjunctListViewController *controller = nil;
             [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
+	} else {
+		[self.widgetView removeFromSuperview];
+	}
 }
 
 -(void)_updatePresentingContent {
     %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.widgetView];
-    [stackView addArrangedSubview:self.widgetView];
 
-	[self reloadData];
+	if(enabled) {
+    	UIStackView *stackView = [self valueForKey:@"_stackView"];
+    	[stackView removeArrangedSubview:self.widgetView];
+    	[stackView addArrangedSubview:self.widgetView];
+
+		[self reloadData];
+	} else {
+		[self.widgetView removeFromSuperview];		
+	}
 }
 
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.widgetView];
-    [stackView addArrangedSubview:self.widgetView];
 
-	[self reloadData];
+	if(enabled) {
+    	UIStackView *stackView = [self valueForKey:@"_stackView"];
+    	[stackView removeArrangedSubview:self.widgetView];
+    	[stackView addArrangedSubview:self.widgetView];
+
+		[self reloadData];
+	} else {
+		[self.widgetView removeFromSuperview];
+	}
 }
 
 -(BOOL)isPresentingContent {
-    return YES;
+    return enabled;
 }
 
 %new
@@ -122,7 +139,18 @@ SBDashBoardNotificationAdjunctListViewController *controller = nil;
 
 -(void)viewDidAppear:(BOOL)animated {
 	%orig;
-	if (controller) [controller reloadData];
+	if (controller && enabled) [controller reloadData];
 }
 
 %end
+
+static void loadPrefs() {
+	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
+
+	enabled = [settings objectForKey:@"kEnabled"] ? [[settings objectForKey:@"kEnabled"] boolValue] : YES;
+}
+
+%ctor {
+    loadPrefs();
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("me.conorthedev.lockwidgets.prefs/saved"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+}
