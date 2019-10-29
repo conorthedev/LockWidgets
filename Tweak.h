@@ -70,6 +70,22 @@
 -(NSExtension *)extension;
 @end
 
+@class NSDate;
+@interface WGCalendarWidgetInfo : WGWidgetInfo {
+
+	NSDate* _date;
+}
+@property (setter=_setDate:,nonatomic,retain) NSDate * date;              //@synthesize date=_date - In the implementation block
++(BOOL)isCalendarExtension:(id)arg1 ;
+-(void)_setDate:(NSDate*)arg1 ;
+-(id)_queue_iconWithFormat:(int)arg1 forWidgetWithIdentifier:(id)arg2 extension:(id)arg3 ;
+-(id)_queue_iconWithOutlineForWidgetWithIdentifier:(id)arg1 extension:(id)arg2 ;
+-(void)_resetIconsImpl;
+-(id)initWithExtension:(id)arg1 ;
+-(void)_handleSignificantTimeChange:(id)arg1 ;
+-(NSDate *)date;
+@end
+
 @interface WGWidgetHostingViewController : UIViewController {
     	WGWidgetInfo* _widgetInfo;
 }

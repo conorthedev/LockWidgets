@@ -1,4 +1,5 @@
 #import "Tweak.h"
+NSString *identifier = @"com.apple.mobilecal.widget";
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
@@ -12,10 +13,21 @@
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
     NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.UpNextWidget.extension" error:&error];
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+    //NSExtension *extension = [NSExtension extensionWithIdentifier:@"com.apple.BatteryCenter.BatteryWidget" error:&error];
+    NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
-    WGWidgetHostingViewController *host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+    WGWidgetHostingViewController *host = nil;
+
+	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+	} else {
+		host = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+	}
+
 	CGRect frame = (CGRect){{0, 0}, {355, 300}};
     
 	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
