@@ -16,7 +16,6 @@ lockwidgets_prefs_INSTALL_PATH = /Library/PreferenceBundles
 lockwidgets_prefs_FRAMEWORKS = UIKit
 lockwidgets_prefs_PRIVATE_FRAMEWORKS = Preferences
 lockwidgets_prefs_CFLAGS = -fobjc-arc
-lockwidgets_prefs_EXTRA_FRAMEWORKS += Cephei CepheiPrefs
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
