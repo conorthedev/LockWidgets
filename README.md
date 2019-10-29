@@ -17,8 +17,12 @@ All iOS Devices between iOS 10 and iOS 12 are supported
 - Install [theos](https://github.com/theos/theos), make sure you have the patched SDKs. [opa334's SDKs](https://github.com/opa334/sdks) are recommended for simulator users. People who test on physical devices can use [DavidSkrundz's SDKs](https://github.com/DavidSkrundz/sdks).
 
 #### Simulator Users:
+If you use a simulator, you need to do some aditional setup to compile: 
 
-- If you use a simulator, you need to do some aditional setup to compile, compile and install [simject](https://github.com/angelXwind/simject) (instructions in README), [make sure you also install substrate](https://github.com/angelXwind/simject#getting-cydia-substrate-to-function-properly-with-simject). If you want the preference bundle to load, compile [preferenceloader-sim](https://github.com/PoomSmart/preferenceloader-sim), make sure you run `make setup PL_SIMULATOR_VERSION=12.1` instead of `9.3`
+- Compile and install [simject](https://github.com/angelXwind/simject) (instructions in README) [make sure you also install substrate](https://github.com/angelXwind/simject#getting-cydia-substrate-to-function-properly-with-simject).
+- For the install script demonstrated later in the README to work, make sure that the `resim` binary is in `/usr/local/bin/`, you can do this by running: `sudo cp simject/bin/resim /usr/local/bin/resim`
+- If you want the preference bundle to load, compile [preferenceloader-sim](https://github.com/PoomSmart/preferenceloader-sim), make sure you run `make setup PL_SIMULATOR_VERSION=12.1` instead of `9.3`.
+
 
 ### Compilng
 
