@@ -1,5 +1,9 @@
+TARGET = simulator:clang:12.1:10.0
+ARCHS = x86_64 i386
+
 include $(THEOS)/makefiles/common.mk
 
+TWEAK_NAME = LockWidgets
 BUNDLE_NAME = lockwidgets_prefs
 
 lockwidgets_prefs_FILES = LockWidgetsPrefsRootListController.m
