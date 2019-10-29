@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 
+@class WGWidgetPlatterView;
+
 @interface NSExtension : NSObject
 
 + (instancetype)extensionWithIdentifier:(NSString *)identifier error:(NSError **)error;
@@ -117,7 +119,7 @@
     UIStackView *_stackView;
 }
 
-@property(nonatomic, retain) UIView *widgetView;
+@property(nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property(nonatomic, retain) UIViewController *widgetHost;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
@@ -126,6 +128,7 @@
 - (CGSize)sizeToMimic;
 - (void)_insertItem:(id)arg1 animated:(BOOL)arg2;
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
+- (void)viewDidLayoutSubviews;
 - (BOOL)isPresentingContent;
 - (void)reloadData;
 
@@ -267,4 +270,10 @@
 +(id)materialViewWithRecipe:(NSInteger)arg1 options:(NSUInteger)arg2; // iOS 11 - 12
 -(void)_setCornerRadius:(CGFloat)arg1; // iOS 11 - 12
 -(void)setFinalRecipe:(NSInteger)arg1 options:(NSUInteger)arg2 ; // iOS 11 - 12
+@end
+
+@interface SBDashBoardMediaControlsViewController : UIViewController 
+
+-(void)viewDidAppear:(BOOL)animated;
+
 @end

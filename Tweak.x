@@ -1,6 +1,7 @@
 #import "Tweak.h"
 
 NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
+SBDashBoardNotificationAdjunctListViewController *controller = nil;
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
@@ -12,6 +13,7 @@ NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 
 -(void)viewDidLoad {
     %orig;
+	controller = self;
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
     NSError *error;
@@ -107,9 +109,20 @@ NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 		NSDate *now = [NSDate date];
 		[widgetInfoCal setValue:now forKey:@"_date"];
 		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		[self.widgetView setWidgetHost:self.widgetHost];
 	} else {
 		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		[self.widgetView setWidgetHost:self.widgetHost];
 	}
+}
+
+%end
+
+%hook SBDashBoardMediaControlsViewController
+
+-(void)viewDidAppear:(BOOL)animated {
+	%orig;
+	if (controller) [controller reloadData];
 }
 
 %end
