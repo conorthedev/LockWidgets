@@ -1,6 +1,6 @@
 #import "Tweak.h"
 
-NSString *identifier = @"com.apple.UpNextWidget.extension";
+NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
