@@ -1,4 +1,45 @@
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+
+@interface WGWidgetDiscoveryController : NSObject
+-(void)beginDiscovery;
+-(id)visibleWidgetIdentifiersForGroup:(id)arg1 ;
+-(id)enabledWidgetIdentifiersForAllGroups;
+-(id)disabledWidgetIdentifiers;
+@end
+
+@interface CPDistributedMessagingCenter : NSObject {
+	NSString* _centerName;
+	NSLock* _lock;
+	unsigned _sendPort;
+	CFMachPortRef _invalidationPort;
+	NSOperationQueue* _asyncQueue;
+	CFRunLoopSourceRef _serverSource;
+	NSString* _requiredEntitlement;
+	NSMutableDictionary* _callouts;
+}
++(CPDistributedMessagingCenter*)centerNamed:(NSString*)serverName;
+-(id)_initWithServerName:(NSString*)serverName;
+// inherited: -(void)dealloc;
+-(NSString*)name;
+-(unsigned)_sendPort;
+-(void)_serverPortInvalidated;
+-(BOOL)sendMessageName:(NSString*)name userInfo:(NSDictionary*)info;
+-(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info;
+-(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info error:(NSError**)error;
+-(void)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info toTarget:(id)target selector:(SEL)selector context:(void*)context;
+-(BOOL)_sendMessage:(id)message userInfo:(id)info receiveReply:(id*)reply error:(id*)error toTarget:(id)target selector:(SEL)selector context:(void*)context;
+-(BOOL)_sendMessage:(id)message userInfoData:(id)data oolKey:(id)key oolData:(id)data4 receiveReply:(id*)reply error:(id*)error;
+-(void)runServerOnCurrentThread;
+-(void)runServerOnCurrentThreadProtectedByEntitlement:(id)entitlement;
+-(void)stopServer;
+-(void)registerForMessageName:(NSString*)messageName target:(id)target selector:(SEL)selector;
+-(void)unregisterForMessageName:(NSString*)messageName;
+-(void)_dispatchMessageNamed:(id)named userInfo:(id)info reply:(id*)reply auditToken:(audit_token_t*)token;
+-(BOOL)_isTaskEntitled:(audit_token_t*)entitled;
+-(id)_requiredEntitlement;
+@end
+
 
 @class WGWidgetPlatterView;
 
@@ -38,6 +79,7 @@
 @property (assign,setter=_setWantsVisibleFrame:,nonatomic) BOOL wantsVisibleFrame;                                   //@synthesize wantsVisibleFrame=_wantsVisibleFrame - In the implementation block
 @property (nonatomic,readonly) NSExtension * extension;                                                              //@synthesize extension=_extension - In the implementation block
 @property (nonatomic,copy,readonly) NSString * widgetIdentifier; 
+@property (setter=_setIcon:,nonatomic,retain) UIImage * icon;                                                      
 @property (nonatomic,readonly) double initialHeight; 
 @property (nonatomic,readonly) long long initialDisplayMode;                                                         //@synthesize initialDisplayMode=_initialDisplayMode - In the implementation block
 +(id)_productVersion;

@@ -1,9 +1,79 @@
 #import "Tweak.h"
+#include <substrate.h>
+#import <rocketbootstrap/rocketbootstrap.h>
 
 bool enabled = YES;
 
 NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 SBDashBoardNotificationAdjunctListViewController *controller;
+
+@interface MYMessagingCenter : NSObject {
+	CPDistributedMessagingCenter * _messagingCenter;
+}
+
+@end
+
+@implementation MYMessagingCenter
+
++ (void)load {
+	[self sharedInstance];
+}
+
++ (instancetype)sharedInstance {
+	static dispatch_once_t once = 0;
+	__strong static id sharedInstance = nil;
+	dispatch_once(&once, ^{
+		sharedInstance = [self new];
+	});
+	return sharedInstance;
+}
+
+- (instancetype)init {
+	if ((self = [super init])) {
+		_messagingCenter = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+		// apply rocketbootstrap regardless of iOS version (via rpetrich)
+
+		[_messagingCenter runServerOnCurrentThread];
+		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getWidgetInfoFromIdentifier" target:self selector:@selector(handleMessageNamed:withBundleID:)];
+	}
+
+	return self;
+}
+
+- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
+    [wdc beginDiscovery];
+
+	NSArray *array = [wdc disabledWidgetIdentifiers];
+
+	NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+    [array enumerateObjectsUsingBlock:
+     ^(id obj, NSUInteger idx, BOOL *stop){
+         NSNumber *index = [NSNumber numberWithInteger:idx];
+         [mutableDictionary setObject:obj forKey:index];
+     }];
+    NSDictionary *result = [NSDictionary.alloc initWithDictionary:mutableDictionary];
+
+	return result;
+}
+
+- (NSDictionary *)handleMessageNamed:(NSString *)name withBundleID:(NSString *)bundleID {
+	NSError *error;
+    NSExtension *extension = [NSExtension extensionWithIdentifier:bundleID error:&error];
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	return nil;
+}
+
+/*
+NSError *error;
+    		NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
+    		WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+			return dict;
+			*/
+
+@end
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;

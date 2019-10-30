@@ -8,14 +8,13 @@ endif
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = LockWidgets
 BUNDLE_NAME = lockwidgets_prefs
 
-lockwidgets_prefs_FILES = LockWidgetsPrefsRootListController.m
+lockwidgets_prefs_FILES = LockWidgetsPrefsRootListController.m LockWidgetsPrefsSelectListController.m
 lockwidgets_prefs_INSTALL_PATH = /Library/PreferenceBundles
-lockwidgets_prefs_FRAMEWORKS = UIKit
-lockwidgets_prefs_PRIVATE_FRAMEWORKS = Preferences
-lockwidgets_prefs_CFLAGS = -fobjc-arc
+LockWidgets_FRAMEWORKS += UIKit rocketbootstrap
+lockwidgets_prefs_PRIVATE_FRAMEWORKS = Preferences AppSupport
+lockwidgets_prefs_CFLAGS = -fobjc-arc -Wdeprecated-declarations -Wno-deprecated-declarations
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
