@@ -10,7 +10,6 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 @interface MYMessagingCenter : NSObject {
 	CPDistributedMessagingCenter * _messagingCenter;
 }
-
 @end
 
 @implementation MYMessagingCenter
@@ -35,7 +34,6 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 		[_messagingCenter runServerOnCurrentThread];
 		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
-		[_messagingCenter registerForMessageName:@"getWidgetInfoFromIdentifier" target:self selector:@selector(handleMessageNamed:withBundleID:)];
 	}
 
 	return self;
@@ -44,34 +42,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
-
-	NSArray *array = [wdc disabledWidgetIdentifiers];
-
-	NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
-    [array enumerateObjectsUsingBlock:
-     ^(id obj, NSUInteger idx, BOOL *stop){
-         NSNumber *index = [NSNumber numberWithInteger:idx];
-         [mutableDictionary setObject:obj forKey:index];
-     }];
-    NSDictionary *result = [NSDictionary.alloc initWithDictionary:mutableDictionary];
-
-	return result;
+	return [NSDictionary dictionaryWithObjectsAndKeys:@"widgets", [NSString stringWithFormat:@"%@", wdc.disabledWidgetIdentifiers], nil];
 }
-
-- (NSDictionary *)handleMessageNamed:(NSString *)name withBundleID:(NSString *)bundleID {
-	NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:bundleID error:&error];
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-
-	return nil;
-}
-
-/*
-NSError *error;
-    		NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
-    		WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-			return dict;
-			*/
 
 @end
 
