@@ -8,7 +8,7 @@ static NSString *cellIdentifier = @"Cell";
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
 	// Send a message with no dictionary and receive a reply dictionary
 	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
