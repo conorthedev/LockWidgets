@@ -1,3 +1,6 @@
+# Set SIMJECT variable
+export SIMJECT=1
+
 # Compile Tweak
 make
 
