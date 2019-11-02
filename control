@@ -1,6 +1,6 @@
 Package: me.conorthedev.lockwidgets
 Name: LockWidgets
-Depends: mobilesubstrate, ws.hbang.common (>= 1.11), com.rpetrich.rocketbootstrap (>= 1.0.2), firmware (>= 10.0), me.conorthedev.libwidgethelper (>= 1.0.0)
+Depends: mobilesubstrate, ws.hbang.common (>= 1.11), com.rpetrich.rocketbootstrap (>= 1.0.2), firmware (>= 10.0)
 Version: 0.0.1
 Architecture: iphoneos-arm
 Description: Pin your favourite widgets to your lockscreen!
