@@ -9,14 +9,7 @@ static NSString *cellIdentifier = @"Cell";
     self = [super init];
 
     if (self) {
-	    c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-
-	    // Send a message with no dictionary and receive a reply dictionary
-	    NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
-
-	    NSArray *widgets = reply[@"widgets"];
-
-	    self.tableData = widgets;
+        [self refreshList];
 
         _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
@@ -34,21 +27,7 @@ static NSString *cellIdentifier = @"Cell";
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-
-	// Send a message with no dictionary and receive a reply dictionary
-	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
-
-	NSArray *widgets = reply[@"widgets"];
-
-	self.tableData = widgets;
-
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:self.tableData[0]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles: nil];
-    [alert show];
+    [self refreshList];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -74,19 +53,9 @@ static NSString *cellIdentifier = @"Cell";
 	NSArray *widgets = reply[@"widgets"];
 
 	self.tableData = widgets;
-
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                            message:[[[self.tableData objectAtIndex:0] class] description]
-                            delegate:nil
-                            cancelButtonTitle:@"OK"
-                            otherButtonTitles: nil];
-    [alert show];
 }
 
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.tableData count];
 }
 
@@ -109,19 +78,36 @@ static NSString *cellIdentifier = @"Cell";
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
-    NSString *messageString = [NSString stringWithFormat:@"You tapped row %ld", (long) indexPath.row];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Row tapped"
-        message:messageString
-        delegate:nil
-        cancelButtonTitle:@"OK"
-        otherButtonTitles: nil];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {  
+    NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
-    [alert show];
+	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+    NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier}];
+
+    NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
+
+    if((bool) reply[@"status"]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
+            message:[NSString stringWithFormat:@"Successfully set widget to %@", displayReply[@"displayName"]]
+            delegate:nil
+            cancelButtonTitle:@"OK"
+            otherButtonTitles: nil];
+
+        [alert show];
+    } else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
+            message:[NSString stringWithFormat:@"Failed to set widget to %@!", displayReply[@"displayName"]]
+            delegate:nil
+            cancelButtonTitle:@"OK"
+            otherButtonTitles: nil];
+
+        [alert show];
+    }
+
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-
     NSString *sectionName;
     switch (section) {
         case 0:
@@ -138,6 +124,5 @@ static NSString *cellIdentifier = @"Cell";
 {
     return 60;
 }
-
 
 @end

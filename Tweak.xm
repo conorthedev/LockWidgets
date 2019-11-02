@@ -34,16 +34,31 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  		[_messagingCenter runServerOnCurrentThread];
  		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
 	 }
 
  	return self;
  }
 
+- (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+	identifier = userInfo[@"identifier"];
+
+	if(controller != nil) {
+		[controller reloadData];
+	}
+
+	return @{@"status" : @YES};
+}
+
  - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
+	
+	NSArray* widgetsArray = @[];
+	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.disabledWidgetIdentifiers];
+	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.enabledWidgetIdentifiersForAllGroups];
 
-	return @{@"widgets" : wdc.disabledWidgetIdentifiers};
+	return @{@"widgets" : widgetsArray};
  }
 
  - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
@@ -118,6 +133,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 				}
 			}
 		}
+
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
 		[stackView addArrangedSubview:platterView];
