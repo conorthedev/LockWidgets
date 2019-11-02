@@ -14,18 +14,12 @@ static NSString *cellIdentifier = @"Cell";
 	    // Send a message with no dictionary and receive a reply dictionary
 	    NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
-	    NSArray *keys = [reply allKeys];
+	    NSArray *widgets = reply[@"widgets"];
 
-	    NSString* str = keys[0];
-	    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"() "];
-	    NSArray *array = [[[str componentsSeparatedByCharactersInSet:characterSet]
-                        componentsJoinedByString:@""]     
-                        componentsSeparatedByString:@","];
-
-	    self.tableData = array;
+	    self.tableData = widgets;
 
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:array[0]
+                                                    message:self.tableData[0]
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles: nil];
@@ -52,18 +46,12 @@ static NSString *cellIdentifier = @"Cell";
 	// Send a message with no dictionary and receive a reply dictionary
 	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
-	NSArray *keys = [reply allKeys];
+	NSArray *widgets = reply[@"widgets"];
 
-	NSString* str = keys[0];
-	NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"() "];
-	NSArray *array = [[[str componentsSeparatedByCharactersInSet:characterSet]
-                        componentsJoinedByString:@""]     
-                        componentsSeparatedByString:@","];
-
-	self.tableData = array;
+	self.tableData = widgets;
 
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:array[0]
+                                                    message:self.tableData[0]
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles: nil];
@@ -85,24 +73,20 @@ static NSString *cellIdentifier = @"Cell";
 }
 
 - (void)refreshList {
+	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+
 	// Send a message with no dictionary and receive a reply dictionary
 	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
-	NSArray *keys = [reply allKeys];
+	NSArray *widgets = reply[@"widgets"];
 
-	NSString* str = keys[0];
-	NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"() "];
-	NSArray *array = [[[str componentsSeparatedByCharactersInSet:characterSet]
-                        componentsJoinedByString:@""]     
-                        componentsSeparatedByString:@","];
-
-	self.tableData = array;
+	self.tableData = widgets;
 
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:[[[self.tableData objectAtIndex:0] class] description]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles: nil];
+                            message:[[[self.tableData objectAtIndex:0] class] description]
+                            delegate:nil
+                            cancelButtonTitle:@"OK"
+                            otherButtonTitles: nil];
     [alert show];
 }
 
@@ -114,17 +98,23 @@ static NSString *cellIdentifier = @"Cell";
 }
 
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
 
-    cell.textLabel.text = [self.tableData objectAtIndex:indexPath.row];
-    
+    if (c == nil) {
+        c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+    }
+
+    // Send a message with no dictionary and receive a reply dictionary
+	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : [self.tableData objectAtIndex:indexPath.row]}];
+
+    cell.textLabel.text = reply[@"displayName"];
+    cell.detailTextLabel.text = [self.tableData objectAtIndex:indexPath.row];
+
     return cell;
 }
 

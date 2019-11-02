@@ -30,19 +30,32 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  - (instancetype)init {
  	if ((self = [super init])) {
  		_messagingCenter = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
- 		// apply rocketbootstrap regardless of iOS version (via rpetrich)
 
  		[_messagingCenter runServerOnCurrentThread];
- 		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
- 	}
+ 		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
+	 }
 
  	return self;
  }
 
- - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
- 	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
-     [wdc beginDiscovery];
- 	return [NSDictionary dictionaryWithObjectsAndKeys:@"widgets", [NSString stringWithFormat:@"%@", wdc.disabledWidgetIdentifiers], nil];
+ - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+	if([name isEqualToString:@"getWidgets"]) {
+ 		WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
+    	[wdc beginDiscovery];
+
+		return @{@"widgets" : wdc.disabledWidgetIdentifiers};
+	}
+	return nil;
+ }
+
+ - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+	if([name isEqualToString:@"getInfo"]) {
+		WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:userInfo[@"identifier"]];
+
+		return @{@"displayName" : widgetInfo.displayName};
+	}
+	return nil;
  }
 
  @end

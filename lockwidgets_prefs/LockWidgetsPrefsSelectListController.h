@@ -17,6 +17,38 @@
 
 @end
 
+@interface CPDistributedMessagingCenter : NSObject {
+	NSString* _centerName;
+	NSLock* _lock;
+	unsigned _sendPort;
+	CFMachPortRef _invalidationPort;
+	NSOperationQueue* _asyncQueue;
+	CFRunLoopSourceRef _serverSource;
+	NSString* _requiredEntitlement;
+	NSMutableDictionary* _callouts;
+}
++(CPDistributedMessagingCenter*)centerNamed:(NSString*)serverName;
+-(id)_initWithServerName:(NSString*)serverName;
+// inherited: -(void)dealloc;
+-(NSString*)name;
+-(unsigned)_sendPort;
+-(void)_serverPortInvalidated;
+-(BOOL)sendMessageName:(NSString*)name userInfo:(NSDictionary*)info;
+-(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info;
+-(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info error:(NSError**)error;
+-(void)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info toTarget:(id)target selector:(SEL)selector context:(void*)context;
+-(BOOL)_sendMessage:(id)message userInfo:(id)info receiveReply:(id*)reply error:(id*)error toTarget:(id)target selector:(SEL)selector context:(void*)context;
+-(BOOL)_sendMessage:(id)message userInfoData:(id)data oolKey:(id)key oolData:(id)data4 receiveReply:(id*)reply error:(id*)error;
+-(void)runServerOnCurrentThread;
+-(void)runServerOnCurrentThreadProtectedByEntitlement:(id)entitlement;
+-(void)stopServer;
+-(void)registerForMessageName:(NSString*)messageName target:(id)target selector:(SEL)selector;
+-(void)unregisterForMessageName:(NSString*)messageName;
+-(void)_dispatchMessageNamed:(id)named userInfo:(id)info reply:(id*)reply auditToken:(audit_token_t*)token;
+-(BOOL)_isTaskEntitled:(audit_token_t*)entitled;
+-(id)_requiredEntitlement;
+@end
+
 @interface WGWidgetInfo : NSObject {
 
 	NSPointerArray* _registeredWidgetHosts;
@@ -73,38 +105,21 @@
 -(NSExtension *)extension;
 @end
 
-@interface CPDistributedMessagingCenter : NSObject {
-	NSString* _centerName;
-	NSLock* _lock;
-	unsigned _sendPort;
-	CFMachPortRef _invalidationPort;
-	NSOperationQueue* _asyncQueue;
-	CFRunLoopSourceRef _serverSource;
-	NSString* _requiredEntitlement;
-	NSMutableDictionary* _callouts;
-}
-+(CPDistributedMessagingCenter*)centerNamed:(NSString*)serverName;
--(id)_initWithServerName:(NSString*)serverName;
-// inherited: -(void)dealloc;
--(NSString*)name;
--(unsigned)_sendPort;
--(void)_serverPortInvalidated;
--(BOOL)sendMessageName:(NSString*)name userInfo:(NSDictionary*)info;
--(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info;
--(NSDictionary*)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info error:(NSError**)error;
--(void)sendMessageAndReceiveReplyName:(NSString*)name userInfo:(NSDictionary*)info toTarget:(id)target selector:(SEL)selector context:(void*)context;
--(BOOL)_sendMessage:(id)message userInfo:(id)info receiveReply:(id*)reply error:(id*)error toTarget:(id)target selector:(SEL)selector context:(void*)context;
--(BOOL)_sendMessage:(id)message userInfoData:(id)data oolKey:(id)key oolData:(id)data4 receiveReply:(id*)reply error:(id*)error;
--(void)runServerOnCurrentThread;
--(void)runServerOnCurrentThreadProtectedByEntitlement:(id)entitlement;
--(void)stopServer;
--(void)registerForMessageName:(NSString*)messageName target:(id)target selector:(SEL)selector;
--(void)unregisterForMessageName:(NSString*)messageName;
--(void)_dispatchMessageNamed:(id)named userInfo:(id)info reply:(id*)reply auditToken:(audit_token_t*)token;
--(BOOL)_isTaskEntitled:(audit_token_t*)entitled;
--(id)_requiredEntitlement;
-@end
+@class NSDate;
+@interface WGCalendarWidgetInfo : WGWidgetInfo {
 
+	NSDate* _date;
+}
+@property (setter=_setDate:,nonatomic,retain) NSDate * date;              //@synthesize date=_date - In the implementation block
++(BOOL)isCalendarExtension:(id)arg1 ;
+-(void)_setDate:(NSDate*)arg1 ;
+-(id)_queue_iconWithFormat:(int)arg1 forWidgetWithIdentifier:(id)arg2 extension:(id)arg3 ;
+-(id)_queue_iconWithOutlineForWidgetWithIdentifier:(id)arg1 extension:(id)arg2 ;
+-(void)_resetIconsImpl;
+-(id)initWithExtension:(id)arg1 ;
+-(void)_handleSignificantTimeChange:(id)arg1 ;
+-(NSDate *)date;
+@end
 
 @interface LockWidgetsPrefsSelectListController : PSViewController <UITableViewDataSource, UITableViewDelegate> {
     UITableView *_tableView;
