@@ -5,6 +5,45 @@
 static CPDistributedMessagingCenter *c = nil;
 static NSString *cellIdentifier = @"Cell";
 
+- (id)initForContentSize:(CGSize)size {
+    self = [super init];
+
+    if (self) {
+	    c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+
+	    // Send a message with no dictionary and receive a reply dictionary
+	    NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
+
+	    NSArray *keys = [reply allKeys];
+
+	    NSString* str = keys[0];
+	    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"() "];
+	    NSArray *array = [[[str componentsSeparatedByCharactersInSet:characterSet]
+                        componentsJoinedByString:@""]     
+                        componentsSeparatedByString:@","];
+
+	    self.tableData = array;
+
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
+                                                    message:array[0]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles: nil];
+        [alert show];
+
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height) style:UITableViewStyleGrouped];
+        [_tableView setDataSource:self];
+        [_tableView setDelegate:self];
+        [_tableView setEditing:NO];
+        [_tableView setAllowsSelection:YES];
+        [_tableView setAllowsMultipleSelection:NO];
+        
+        if ([self respondsToSelector:@selector(setView:)])
+            [self performSelectorOnMainThread:@selector(setView:) withObject:_tableView waitUntilDone:YES];        
+    }
+
+    return self;
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -60,7 +99,7 @@ static NSString *cellIdentifier = @"Cell";
 	self.tableData = array;
 
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:array[0]
+                                                    message:[[[self.tableData objectAtIndex:0] class] description]
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles: nil];
@@ -83,8 +122,8 @@ static NSString *cellIdentifier = @"Cell";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    cell.textLabel.text = [self.tableData objectAtIndex:indexPath.row]; // 셀 타이틀 텍스트
-    cell.detailTextLabel.text = [self.tableDetailData objectAtIndex:indexPath.row];; // 셀 디테일 텍스트
+
+    cell.textLabel.text = [self.tableData objectAtIndex:indexPath.row];
     
     return cell;
 }
