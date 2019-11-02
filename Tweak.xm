@@ -40,22 +40,19 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  }
 
  - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
-	if([name isEqualToString:@"getWidgets"]) {
- 		WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
-    	[wdc beginDiscovery];
+ 	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
+    [wdc beginDiscovery];
 
-		return @{@"widgets" : wdc.disabledWidgetIdentifiers};
-	}
-	return nil;
+	return @{@"widgets" : wdc.disabledWidgetIdentifiers};
  }
 
  - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
-	if([name isEqualToString:@"getInfo"]) {
-		WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:userInfo[@"identifier"]];
+	NSError *error;
+	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
 
-		return @{@"displayName" : widgetInfo.displayName};
-	}
-	return nil;
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	return @{@"displayName" : [widgetInfo displayName]};
  }
 
  @end

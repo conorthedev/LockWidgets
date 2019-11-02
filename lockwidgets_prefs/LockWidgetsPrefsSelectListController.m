@@ -18,13 +18,6 @@ static NSString *cellIdentifier = @"Cell";
 
 	    self.tableData = widgets;
 
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NSString"
-                                                    message:self.tableData[0]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles: nil];
-        [alert show];
-
         _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
         [_tableView setDelegate:self];
@@ -105,38 +98,45 @@ static NSString *cellIdentifier = @"Cell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
 
-    if (c == nil) {
-        c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-    }
+    NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
-    // Send a message with no dictionary and receive a reply dictionary
-	NSDictionary * reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : [self.tableData objectAtIndex:indexPath.row]}];
+	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+    NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 
     cell.textLabel.text = reply[@"displayName"];
-    cell.detailTextLabel.text = [self.tableData objectAtIndex:indexPath.row];
+    cell.detailTextLabel.text = identifier;
 
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSLog(@"Table row %ld has been tapped", (long) indexPath.row);
-    
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
     NSString *messageString = [NSString stringWithFormat:@"You tapped row %ld", (long) indexPath.row];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Row tapped"
-                                                    message:messageString
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles: nil];
+        message:messageString
+        delegate:nil
+        cancelButtonTitle:@"OK"
+        otherButtonTitles: nil];
+
     [alert show];
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 
-#pragma mark 행 높이
+    NSString *sectionName;
+    switch (section) {
+        case 0:
+            sectionName = @"Available Widgets";
+            break;
+        default:
+            sectionName = @"";
+            break;
+    }    
+    return sectionName;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 60;
 }
 
 
