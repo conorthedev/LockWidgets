@@ -1,6 +1,4 @@
 #import "Tweak.h"
-#include <substrate.h>
-#import <rocketbootstrap/rocketbootstrap.h>
 
 bool enabled = YES;
 
