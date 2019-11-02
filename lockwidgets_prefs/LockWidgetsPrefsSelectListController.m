@@ -74,6 +74,7 @@ static NSString *cellIdentifier = @"Cell";
 
     cell.textLabel.text = reply[@"displayName"];
     cell.detailTextLabel.text = identifier;
+    cell.detailTextLabel.textColor = [UIColor grayColor];
 
     return cell;
 }

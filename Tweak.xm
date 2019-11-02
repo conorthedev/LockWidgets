@@ -41,6 +41,11 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 	identifier = userInfo[@"identifier"];
 
+	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
+	[settings setValue:identifier forKey:@"kIdentifier"];
+
+	[settings writeToFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist" atomically:YES];
+
 	if(controller != nil) {
 		[controller reloadData];
 	}
@@ -65,7 +70,15 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-	return @{@"displayName" : [widgetInfo displayName]};
+	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		return @{@"displayName" : [widgetInfoCal displayName]};
+	} else {
+		return @{@"displayName" : [widgetInfo displayName]};
+	}
  }
 
  @end
@@ -214,6 +227,7 @@ static void loadPrefs() {
 	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
 
 	enabled = [settings objectForKey:@"kEnabled"] ? [[settings objectForKey:@"kEnabled"] boolValue] : YES;
+	identifier = [settings objectForKey:@"kIdentifier"] ? (NSString*)[settings objectForKey:@"kIdentifier"] : @"com.apple.BatteryCenter.BatteryWidget";
 }
 
 %ctor {
