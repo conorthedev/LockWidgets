@@ -4,19 +4,23 @@
 @implementation LockWidgetsPrefsRootListController
 @synthesize respringButton;
 
-+ (UIColor *)hb_tintColor {
-	return [UIColor colorWithRed:75.0/255.0 green:194.0/255.0 blue:237.0/255.0 alpha:1.0];
++ (UIColor *)hb_tintColor
+{
+	return [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
 }
 
--(void)loadView {
-    [super loadView];
+- (void)loadView
+{
+	[super loadView];
 }
 
-+ (NSString *)hb_specifierPlist {
++ (NSString *)hb_specifierPlist
+{
 	return @"Root";
 }
 
-- (void)respring {
+- (void)respring
+{
 	NSTask *t = [[NSTask alloc] init];
 	[t setLaunchPath:@"/usr/bin/killall"];
 	[t setArguments:[NSArray arrayWithObjects:@"backboardd", nil]];

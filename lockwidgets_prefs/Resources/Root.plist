@@ -4,7 +4,7 @@
     <dict>
         <key>items</key>
         <array>
-            <dict>
+            <!--<dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
                 <key>headerCellClass</key>
@@ -16,7 +16,7 @@
                     <string>#4CC3EE</string>
                     <string>#6F86D6</string>
                 </array>
-            </dict>
+            </dict>!-->
             <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>

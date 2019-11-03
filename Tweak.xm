@@ -7,16 +7,19 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 @interface LockWidgetsMessagingCenter : NSObject {
  	CPDistributedMessagingCenter * _messagingCenter;
- }
- @end
+}
 
- @implementation LockWidgetsMessagingCenter
+@end
 
-+ (void)load {
+@implementation LockWidgetsMessagingCenter
+
++ (void)load 
+{
 	[self sharedInstance];
 }
 
-+ (instancetype)sharedInstance {
++ (instancetype)sharedInstance 
+{
  	static dispatch_once_t once = 0;
 	 
  	__strong static id sharedInstance = nil;
@@ -27,7 +30,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  	return sharedInstance;
 }
 
-- (instancetype)init {
+- (instancetype)init 
+{
  	if ((self = [super init])) {
  		_messagingCenter = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
@@ -40,7 +44,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  	return self;
 }
 
-- (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
 	identifier = userInfo[@"identifier"];
 
 	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
@@ -55,7 +60,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	return @{@"status" : @YES};
 }
 
-- (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
 	
@@ -64,9 +70,10 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.enabledWidgetIdentifiersForAllGroups];
 
 	return @{@"widgets" : widgetsArray};
- }
+}
 
-- (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
 
@@ -81,19 +88,22 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	} else {
 		return @{@"displayName" : [widgetInfo displayName]};
 	}
- }
+}
 
 @end
 
 %hook SBDashBoardNotificationAdjunctListViewController
+
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 
--(BOOL)hasContent {
+-(BOOL)hasContent 
+{
     return enabled;
 }
 
--(void)viewDidLoad {
+-(void)viewDidLoad 
+{
     %orig;
 
 	if(enabled) {
@@ -163,7 +173,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	}
 }
 
--(void)_updatePresentingContent {
+-(void)_updatePresentingContent 
+{
     %orig;
 
 	if(enabled) {
@@ -177,7 +188,8 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	}
 }
 
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
+-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 
+{
     %orig;
 
 	if(enabled) {
@@ -191,12 +203,14 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	}
 }
 
--(BOOL)isPresentingContent {
+-(BOOL)isPresentingContent 
+{
     return enabled;
 }
 
 %new
--(void)reloadData {
+-(void)reloadData 
+{
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
@@ -218,21 +232,24 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 %hook SBDashBoardMediaControlsViewController
 
--(void)viewDidAppear:(BOOL)animated {
+-(void)viewDidAppear:(BOOL)animated 
+{
 	%orig;
 	if (controller && enabled) [controller reloadData];
 }
 
 %end
 
-static void loadPrefs() {
+static void loadPrefs() 
+{
 	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
 
 	enabled = [settings objectForKey:@"kEnabled"] ? [[settings objectForKey:@"kEnabled"] boolValue] : YES;
 	identifier = [settings objectForKey:@"kIdentifier"] ? (NSString*)[settings objectForKey:@"kIdentifier"] : @"com.apple.BatteryCenter.BatteryWidget";
 }
 
-%ctor {
+%ctor 
+{
     loadPrefs();
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("me.conorthedev.lockwidgets.prefs/saved"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 }
