@@ -5,27 +5,29 @@ bool enabled = YES;
 NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 SBDashBoardNotificationAdjunctListViewController *controller;
 
-@interface MYMessagingCenter : NSObject {
+@interface LockWidgetsMessagingCenter : NSObject {
  	CPDistributedMessagingCenter * _messagingCenter;
  }
  @end
 
- @implementation MYMessagingCenter
+ @implementation LockWidgetsMessagingCenter
 
- + (void)load {
- 	[self sharedInstance];
- }
++ (void)load {
+	[self sharedInstance];
+}
 
- + (instancetype)sharedInstance {
++ (instancetype)sharedInstance {
  	static dispatch_once_t once = 0;
+	 
  	__strong static id sharedInstance = nil;
  	dispatch_once(&once, ^{
  		sharedInstance = [self new];
  	});
- 	return sharedInstance;
- }
 
- - (instancetype)init {
+ 	return sharedInstance;
+}
+
+- (instancetype)init {
  	if ((self = [super init])) {
  		_messagingCenter = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
@@ -33,10 +35,10 @@ SBDashBoardNotificationAdjunctListViewController *controller;
  		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
-	 }
+	}
 
  	return self;
- }
+}
 
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 	identifier = userInfo[@"identifier"];
@@ -53,7 +55,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	return @{@"status" : @YES};
 }
 
- - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
 	
@@ -64,7 +66,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	return @{@"widgets" : widgetsArray};
  }
 
- - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
 
@@ -81,7 +83,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	}
  }
 
- @end
+@end
 
 %hook SBDashBoardNotificationAdjunctListViewController
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;

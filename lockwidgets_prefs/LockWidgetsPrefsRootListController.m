@@ -4,27 +4,16 @@
 @implementation LockWidgetsPrefsRootListController
 @synthesize respringButton;
 
-- (instancetype)init {
-	self = [super init];
-
-	if (self) {
-		self.respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring"
-		                       style:UIBarButtonItemStylePlain
-		                       target:self
-		                       action:@selector(respring)];
-		self.respringButton.tintColor = [UIColor redColor];
-		self.navigationItem.rightBarButtonItem = self.respringButton;
-	}
-
-	return self;
++ (UIColor *)hb_tintColor {
+	return [UIColor colorWithRed:75.0/255.0 green:194.0/255.0 blue:237.0/255.0 alpha:1.0];
 }
 
-- (NSArray *)specifiers {
-	if (!_specifiers) {
-		_specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
-	}
+-(void)loadView {
+    [super loadView];
+}
 
-	return _specifiers;
++ (NSString *)hb_specifierPlist {
+	return @"Root";
 }
 
 - (void)respring {
