@@ -7,6 +7,19 @@
             <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
+                <key>headerCellClass</key>
+                <string>HBPackageNameHeaderCell</string>
+                <key>packageIdentifier</key>
+                <string>me.conorthedev.lockwidgets</string>
+                <key>backgroundGradientColors</key>
+                <array>
+                    <string>#4CC3EE</string>
+                    <string>#6F86D6</string>
+                </array>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
             </dict>
             <dict>
                 <key>cell</key>
