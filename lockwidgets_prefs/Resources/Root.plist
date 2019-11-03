@@ -32,6 +32,8 @@
                 <string>kEnabled</string>
                 <key>label</key>
                 <string>Enabled</string>
+                <key>PostNotification</key>
+	            <string>me.conorthedev.lockwidgets.prefs/ReloadPrefs</string>
             </dict>
             <dict>
 				<key>cell</key>

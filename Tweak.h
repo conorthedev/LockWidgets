@@ -1,7 +1,7 @@
-#include <substrate.h>
-
+#import <Cephei/HBPreferences.h>
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
+#include <substrate.h>
 #import "Common.h"
 
 @interface WGWidgetDiscoveryController : NSObject

@@ -1,8 +1,10 @@
 #import "Tweak.h"
 
-bool enabled = YES;
+static NSString *const kHBCBPreferencesDomain = @"me.conorthedev.lockwidgets.prefs";
+bool kEnabled = YES;
+NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
+HBPreferences *preferences;
 
-NSString *identifier = @"com.apple.BatteryCenter.BatteryWidget";
 SBDashBoardNotificationAdjunctListViewController *controller;
 
 @interface LockWidgetsMessagingCenter : NSObject {
@@ -46,12 +48,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
-	identifier = userInfo[@"identifier"];
-
-	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
-	[settings setValue:identifier forKey:@"kIdentifier"];
-
-	[settings writeToFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist" atomically:YES];
+	kIdentifier = userInfo[@"identifier"];
 
 	if(controller != nil) {
 		[controller reloadData];
@@ -79,7 +76,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+	if([userInfo[@"identifier"] isEqualToString:@"com.apple.UpNextWidget.extension"] || [userInfo[@"identifier"] isEqualToString:@"com.apple.mobilecal.widget"]) {
 		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 		NSDate *now = [NSDate date];
 		
@@ -99,23 +96,23 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 -(BOOL)hasContent 
 {
-    return enabled;
+    return kEnabled;
 }
 
 -(void)viewDidLoad 
 {
     %orig;
 
-	if(enabled) {
+	if(kEnabled) {
 		controller = self;
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
 
    	 	NSError *error;
-    	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+    	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
     	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-		if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+		if([kIdentifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [kIdentifier isEqualToString:@"com.apple.mobilecal.widget"]) {
 			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 			NSDate *now = [NSDate date];
 			[widgetInfoCal setValue:now forKey:@"_date"];
@@ -177,7 +174,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 {
     %orig;
 
-	if(enabled) {
+	if(kEnabled) {
     	UIStackView *stackView = [self valueForKey:@"_stackView"];
     	[stackView removeArrangedSubview:self.widgetView];
     	[stackView addArrangedSubview:self.widgetView];
@@ -192,7 +189,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 {
     %orig;
 
-	if(enabled) {
+	if(kEnabled) {
     	UIStackView *stackView = [self valueForKey:@"_stackView"];
     	[stackView removeArrangedSubview:self.widgetView];
     	[stackView addArrangedSubview:self.widgetView];
@@ -205,18 +202,18 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 -(BOOL)isPresentingContent 
 {
-    return enabled;
+    return kEnabled;
 }
 
 %new
 -(void)reloadData 
 {
 	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+	if([kIdentifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [kIdentifier isEqualToString:@"com.apple.mobilecal.widget"]) {
 		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 		NSDate *now = [NSDate date];
 		[widgetInfoCal setValue:now forKey:@"_date"];
@@ -235,21 +232,44 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 -(void)viewDidAppear:(BOOL)animated 
 {
 	%orig;
-	if (controller && enabled) [controller reloadData];
+	if (controller && kEnabled) [controller reloadData];
 }
 
 %end
 
-static void loadPrefs() 
-{
-	NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/me.conorthedev.lockwidgets.prefs.plist"];
+/*void HBCBPreferencesChanged() {
+	NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:kHBCBPreferencesDomain] stringByAppendingPathExtension:@"plist"]];
+	preferences = [[HBPreferences alloc] initWithIdentifier:kHBCBPreferencesDomain];
 
-	enabled = [settings objectForKey:@"kEnabled"] ? [[settings objectForKey:@"kEnabled"] boolValue] : YES;
-	identifier = [settings objectForKey:@"kIdentifier"] ? (NSString*)[settings objectForKey:@"kIdentifier"] : @"com.apple.BatteryCenter.BatteryWidget";
+	[preferences registerDefaults:@{
+		@"kEnabled": @YES,
+		@"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
+	}];
+
+	if(plist[@"kEnabled"]) {
+		[preferences setObject:plist[@"kEnabled"] forKey:@"kEnabled"];
+	}
+
+	if(plist[@"kIdentifier"]) {
+		[preferences setObject:plist[@"kIdentifier"] forKey:@"kIdentifier"];
+	}
 }
 
-%ctor 
-{
-    loadPrefs();
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("me.conorthedev.lockwidgets.prefs/saved"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+%ctor {
+	HBCBPreferencesChanged();
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)HBCBPreferencesChanged, CFSTR("me.conorthedev.lockwidgets.prefs/ReloadPrefs"), NULL, kNilOptions);
+}*/
+
+%ctor {
+	preferences = [[HBPreferences alloc] initWithIdentifier:kHBCBPreferencesDomain];
+ 	[preferences registerDefaults:@{
+		@"kEnabled": @YES,
+		@"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
+	}];
+
+	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
+	[preferences registerObject:&kIdentifier default:@"com.apple.BatteryCenter.BatteryWidget" forKey:@"kIdentifier"];
+
+	NSLog(@"[LockWidgets] Current Enabled State: %i", [preferences boolForKey:@"kEnabled"]);
+	NSLog(@"[LockWidgets] Current identifier: %@", [preferences objectForKey:@"kIdentifier"]);
 }
