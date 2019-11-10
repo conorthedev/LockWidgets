@@ -1,11 +1,9 @@
 #import "Tweak.h"
 
-static NSString *const kHBCBPreferencesDomain = @"me.conorthedev.lockwidgets.prefs";
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
-HBPreferences *preferences;
 
-SBDashBoardNotificationAdjunctListViewController *controller;
+NCNotificationStructuredListViewController *controller;
 
 @interface LockWidgetsMessagingCenter : NSObject {
  	CPDistributedMessagingCenter * _messagingCenter;
@@ -89,23 +87,25 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 @end
 
-%hook SBDashBoardNotificationAdjunctListViewController
+%group ios13
+%hook NCNotificationStructuredListViewController
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 
--(BOOL)hasContent 
+/*-(BOOL)hasContent 
 {
     return kEnabled;
-}
+}*/
 
 -(void)viewDidLoad 
 {
     %orig;
 
 	if(kEnabled) {
+		NSLog(@"[LockWidgets] NCNotificationStructuredListViewController#viewDidLoad");
 		controller = self;
-		UIStackView *stackView = [self valueForKey:@"_stackView"];
+		UIView *stackView = [self valueForKey:@"_view"];
 
    	 	NSError *error;
     	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
@@ -123,7 +123,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 		CGRect frame = (CGRect){{0, 0}, {355, 300}};
     
-		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
+		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
 
 		if (%c(MTMaterialView)) {
 			@try {
@@ -156,7 +156,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
-		[stackView addArrangedSubview:platterView];
+		[stackView addSubview:platterView];
 		self.widgetView = platterView;
 
         [NSLayoutConstraint activateConstraints:@[
@@ -170,14 +170,14 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	}
 }
 
--(void)_updatePresentingContent 
+/*-(void)_updatePresentingContent 
 {
     %orig;
 
 	if(kEnabled) {
-    	UIStackView *stackView = [self valueForKey:@"_stackView"];
-    	[stackView removeArrangedSubview:self.widgetView];
-    	[stackView addArrangedSubview:self.widgetView];
+    	UIView *stackView = [self valueForKey:@"_view"];
+		[self.widgetView removeFromSuperview];		
+    	[stackView addSubview:self.widgetView];
 
 		[self reloadData];
 	} else {
@@ -190,9 +190,9 @@ SBDashBoardNotificationAdjunctListViewController *controller;
     %orig;
 
 	if(kEnabled) {
-    	UIStackView *stackView = [self valueForKey:@"_stackView"];
-    	[stackView removeArrangedSubview:self.widgetView];
-    	[stackView addArrangedSubview:self.widgetView];
+		UIView *stackView = [self valueForKey:@"_view"];
+		[self.widgetView removeFromSuperview];		
+    	[stackView addSubview:self.widgetView];
 
 		[self reloadData];
 	} else {
@@ -204,10 +204,11 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 {
     return kEnabled;
 }
-
+*/
 %new
 -(void)reloadData 
 {
+	NSLog(@"[LockWidgets] Reloading Data for: %@", kIdentifier);
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
@@ -227,7 +228,7 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 
 %end
 
-%hook SBDashBoardMediaControlsViewController
+/*%hook SBDashBoardMediaControlsViewController
 
 -(void)viewDidAppear:(BOOL)animated 
 {
@@ -235,41 +236,15 @@ SBDashBoardNotificationAdjunctListViewController *controller;
 	if (controller && kEnabled) [controller reloadData];
 }
 
+%end*/
 %end
 
-/*void HBCBPreferencesChanged() {
-	NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:kHBCBPreferencesDomain] stringByAppendingPathExtension:@"plist"]];
-	preferences = [[HBPreferences alloc] initWithIdentifier:kHBCBPreferencesDomain];
-
-	[preferences registerDefaults:@{
-		@"kEnabled": @YES,
-		@"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
-	}];
-
-	if(plist[@"kEnabled"]) {
-		[preferences setObject:plist[@"kEnabled"] forKey:@"kEnabled"];
-	}
-
-	if(plist[@"kIdentifier"]) {
-		[preferences setObject:plist[@"kIdentifier"] forKey:@"kIdentifier"];
-	}
-}
-
 %ctor {
-	HBCBPreferencesChanged();
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)HBCBPreferencesChanged, CFSTR("me.conorthedev.lockwidgets.prefs/ReloadPrefs"), NULL, kNilOptions);
-}*/
+	NSLog(@"[LockWidgets] Current Enabled State: %i", kEnabled);
+	NSLog(@"[LockWidgets] Current identifier: %@", kIdentifier);
 
-%ctor {
-	preferences = [[HBPreferences alloc] initWithIdentifier:kHBCBPreferencesDomain];
- 	[preferences registerDefaults:@{
-		@"kEnabled": @YES,
-		@"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
-	}];
-
-	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
-	[preferences registerObject:&kIdentifier default:@"com.apple.BatteryCenter.BatteryWidget" forKey:@"kIdentifier"];
-
-	NSLog(@"[LockWidgets] Current Enabled State: %i", [preferences boolForKey:@"kEnabled"]);
-	NSLog(@"[LockWidgets] Current identifier: %@", [preferences objectForKey:@"kIdentifier"]);
+	if(@available(iOS 13.0, *)) {
+		NSLog(@"[LockWidgets] Current version is iOS 13!");
+		%init(ios13)
+	}
 }

@@ -112,7 +112,7 @@
 - (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
 @end
 
-@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
+/*@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
 {
 	UIStackView *_stackView;
 }
@@ -130,6 +130,14 @@
 - (BOOL)isPresentingContent;
 - (void)reloadData;
 
+@end*/
+
+@interface NCNotificationStructuredListViewController : UIViewController
+
+@property (nonatomic, retain) WGWidgetPlatterView *widgetView;
+@property (nonatomic, retain) UIViewController *widgetHost;
+
+- (void)reloadData;
 @end
 
 @interface PLPlatterHeaderContentView : UIView
