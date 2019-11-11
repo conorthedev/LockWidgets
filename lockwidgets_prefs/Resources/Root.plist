@@ -4,7 +4,11 @@
     <dict>
         <key>items</key>
         <array>
-            <!--<dict>
+            <dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+            </dict>
+            <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
                 <key>headerCellClass</key>
@@ -14,12 +18,24 @@
                 <key>backgroundGradientColors</key>
                 <array>
                     <string>#4CC3EE</string>
-                    <string>#6F86D6</string>
+                    <string>#4CC3EE</string>
                 </array>
-            </dict>!-->
+            </dict>
             <dict>
-                <key>cell</key>
-                <string>PSGroupCell</string>
+                <key>cellClass</key>
+                <string>HBTwitterCell</string>
+                <key>label</key>
+                <string>Conor</string>
+                <key>user</key>
+                <string>ConorTheDev</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBTwitterCell</string>
+                <key>label</key>
+                <string>Even</string>
+                <key>user</key>
+                <string>even_dev</string>
             </dict>
             <dict>
                 <key>cell</key>

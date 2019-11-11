@@ -105,7 +105,9 @@ NCNotificationStructuredListViewController *controller;
 	if(kEnabled) {
 		NSLog(@"[LockWidgets] NCNotificationStructuredListViewController#viewDidLoad");
 		controller = self;
-		UIView *stackView = [self valueForKey:@"_view"];
+
+		//UIStackView = [[UIScrollView alloc] init];
+		UIScrollView *masterListView = [self valueForKey:@"_masterListView"];
 
    	 	NSError *error;
     	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
@@ -121,7 +123,7 @@ NCNotificationStructuredListViewController *controller;
 			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 		}
 
-		CGRect frame = (CGRect){{0, 0}, {355, 300}};
+		CGRect frame = (CGRect){{0, 0}, {355, 150}};
     
 		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
 
@@ -144,7 +146,7 @@ NCNotificationStructuredListViewController *controller;
 						@autoreleasepool {
 							// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
 							materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
-							materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+							materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 							[materialView _setCornerRadius:13.0f];
 							[platterView insertSubview:materialView atIndex:0];
 						}
@@ -156,15 +158,8 @@ NCNotificationStructuredListViewController *controller;
 
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
-		[stackView addSubview:platterView];
+		[masterListView addSubview:platterView];
 		self.widgetView = platterView;
-
-        [NSLayoutConstraint activateConstraints:@[
-            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
-        ]];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
@@ -175,9 +170,9 @@ NCNotificationStructuredListViewController *controller;
     %orig;
 
 	if(kEnabled) {
-    	UIView *stackView = [self valueForKey:@"_view"];
+    	UIView *masterListView = [self valueForKey:@"_masterListView"];
 		[self.widgetView removeFromSuperview];		
-    	[stackView addSubview:self.widgetView];
+    	[masterListView addSubview:self.widgetView];
 
 		[self reloadData];
 	} else {
@@ -190,9 +185,9 @@ NCNotificationStructuredListViewController *controller;
     %orig;
 
 	if(kEnabled) {
-		UIView *stackView = [self valueForKey:@"_view"];
+		UIView *masterListView = [self valueForKey:@"_masterListView"];
 		[self.widgetView removeFromSuperview];		
-    	[stackView addSubview:self.widgetView];
+    	[masterListView addSubview:self.widgetView];
 
 		[self reloadData];
 	} else {
