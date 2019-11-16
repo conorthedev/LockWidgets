@@ -3,7 +3,8 @@
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
 
-NCNotificationStructuredListViewController *controller;
+CSCombinedListViewController *combinedListController;
+CSNotificationAdjunctListViewController *adjunctListController;
 
 @interface LockWidgetsMessagingCenter : NSObject {
  	CPDistributedMessagingCenter * _messagingCenter;
@@ -48,8 +49,12 @@ NCNotificationStructuredListViewController *controller;
 {
 	kIdentifier = userInfo[@"identifier"];
 
-	if(controller != nil) {
-		[controller reloadData];
+	if(combinedListController != nil) {
+		[combinedListController reloadData];
+	}
+
+	if(adjunctListController != nil) {
+		[adjunctListController reloadData];
 	}
 
 	return @{@"status" : @YES};
@@ -88,26 +93,21 @@ NCNotificationStructuredListViewController *controller;
 @end
 
 %group ios13
-%hook NCNotificationStructuredListViewController
+
+%hook CSNotificationAdjunctListViewController
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
-
-/*-(BOOL)hasContent 
-{
-    return kEnabled;
-}*/
 
 -(void)viewDidLoad 
 {
     %orig;
 
 	if(kEnabled) {
-		NSLog(@"[LockWidgets] NCNotificationStructuredListViewController#viewDidLoad");
-		controller = self;
+		NSLog(@"[LockWidgets] CSNotificationAdjunctListViewController#viewDidLoad");
+		adjunctListController = self;
 
-		//UIStackView = [[UIScrollView alloc] init];
-		UIScrollView *masterListView = [self valueForKey:@"_masterListView"];
+        UIStackView *stackView = [self valueForKey:@"_stackView"];
 
    	 	NSError *error;
     	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
@@ -158,48 +158,39 @@ NCNotificationStructuredListViewController *controller;
 
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
-		[masterListView addSubview:platterView];
+
 		self.widgetView = platterView;
+
+        [NSLayoutConstraint activateConstraints:@[
+            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
+        ]];
+
+		[stackView addSubview:self.widgetView];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
 }
 
-/*-(void)_updatePresentingContent 
-{
+-(void)_updatePresentingContent {
     %orig;
-
-	if(kEnabled) {
-    	UIView *masterListView = [self valueForKey:@"_masterListView"];
-		[self.widgetView removeFromSuperview];		
-    	[masterListView addSubview:self.widgetView];
-
-		[self reloadData];
-	} else {
-		[self.widgetView removeFromSuperview];		
-	}
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.widgetView];
+    [stackView addArrangedSubview:self.widgetView];
 }
-
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 
-{
+-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
-
-	if(kEnabled) {
-		UIView *masterListView = [self valueForKey:@"_masterListView"];
-		[self.widgetView removeFromSuperview];		
-    	[masterListView addSubview:self.widgetView];
-
-		[self reloadData];
-	} else {
-		[self.widgetView removeFromSuperview];
-	}
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.widgetView];
+    [stackView addArrangedSubview:self.widgetView];
 }
 
--(BOOL)isPresentingContent 
-{
-    return kEnabled;
+-(BOOL)isPresentingContent {
+    return YES;
 }
-*/
+
 %new
 -(void)reloadData 
 {
