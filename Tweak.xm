@@ -158,17 +158,16 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
+		[stackView addArrangedSubview:platterView];
 
 		self.widgetView = platterView;
 
-        [NSLayoutConstraint activateConstraints:@[
+		[NSLayoutConstraint activateConstraints:@[
             [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
             [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
             [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
-
-		[stackView addSubview:self.widgetView];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
