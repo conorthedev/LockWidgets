@@ -1,7 +1,9 @@
 #import "Tweak.h"
+#import <Cephei/HBPreferences.h>
 
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
+HBPreferences *preferences;
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
@@ -55,6 +57,10 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 	if(controller != nil) {
 		[controller reloadData];
+	}
+
+	if(preferences != nil) {
+		[preferences setObject:userInfo[@"identifier"] forKey:@"kIdentifier"];
 	}
 
 	return @{@"status" : @YES};
@@ -389,6 +395,17 @@ CSNotificationAdjunctListViewController *adjunctListController;
 %end
 
 %ctor {
+	NSLog(@"[LockWidgets] (DEBUG) Loading Preferences...");
+
+	preferences = [[HBPreferences alloc] initWithIdentifier:@"me.conorthedev.lockwidgets.prefs"];
+    [preferences registerDefaults:@{
+        @"kEnabled": @YES,
+        @"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
+    }];
+
+	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
+	[preferences registerObject:&kIdentifier default:@"com.apple.BatteryCenter.BatteryWidget" forKey:@"kIdentifier"];
+
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
 	NSLog(@"[LockWidgets] (DEBUG) Current identifier: %@", kIdentifier);
 
