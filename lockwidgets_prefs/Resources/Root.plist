@@ -5,10 +5,6 @@
         <key>items</key>
         <array>
             <dict>
-				<key>cell</key>
-				<string>PSGroupCell</string>
-            </dict>
-            <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
                 <key>headerCellClass</key>
@@ -38,6 +34,10 @@
                 <string>even_dev</string>
             </dict>
             <dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+            </dict>
+            <dict>
                 <key>cell</key>
                 <string>PSSwitchCell</string>
                 <key>default</key>
@@ -61,6 +61,14 @@
                 <key>isController</key>
 			    <true/>
 			</dict>
+            <dict>
+			    <key>cell</key>
+			    <string>PSGroupCell</string>
+			    <key>label</key>
+			    <string>Note: Toggling the enabled switch requires a respring to take effect, whilst changing the widget does not</string>
+			    <key>isStaticText</key>
+			    <true/>
+		    </dict>
         </array>
         <key>title</key>
         <string>LockWidgets</string>

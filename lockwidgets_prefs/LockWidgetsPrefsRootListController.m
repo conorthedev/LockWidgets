@@ -6,6 +6,23 @@
 @implementation LockWidgetsPrefsRootListController
 @synthesize respringButton;
 
+- (instancetype)init
+{
+	self = [super init];
+
+	if (self)
+	{
+		self.respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring"
+															   style:UIBarButtonItemStylePlain
+															  target:self
+															  action:@selector(respring:)];
+		self.respringButton.tintColor = [UIColor redColor];
+		self.navigationItem.rightBarButtonItem = self.respringButton;
+	}
+
+	return self;
+}
+
 + (UIColor *)hb_tintColor
 {
 	return THEME_COLOR;
@@ -21,25 +38,7 @@
 	return @"Root";
 }
 
-- (void)viewDidLoad
-{
-	[super viewDidLoad];
-
-	self.navigationController.navigationController.navigationBar.barTintColor = THEME_COLOR;
-	self.navigationController.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-	self.navigationController.navigationController.navigationBar.translucent = NO;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
-
-	self.navigationController.navigationController.navigationBar.barTintColor = THEME_COLOR;
-	self.navigationController.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-	self.navigationController.navigationController.navigationBar.translucent = NO;
-}
-
-- (void)respring
+- (void)respring:(id)sender
 {
 	NSTask *t = [[NSTask alloc] init];
 	[t setLaunchPath:@"/usr/bin/killall"];

@@ -4,6 +4,7 @@
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
 HBPreferences *preferences;
+bool previousDisabled = NO;
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
@@ -183,19 +184,26 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 -(void)_updatePresentingContent {
     %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.widgetView];
-    [stackView addArrangedSubview:self.widgetView];
+
+	if(kEnabled) {
+		UIStackView *stackView = [self valueForKey:@"_stackView"];
+		[stackView removeArrangedSubview:self.widgetView];
+    	[stackView addArrangedSubview:self.widgetView];
+	}
 }
+
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.widgetView];
-    [stackView addArrangedSubview:self.widgetView];
+
+	if(kEnabled) {
+		UIStackView *stackView = [self valueForKey:@"_stackView"];
+		[stackView removeArrangedSubview:self.widgetView];
+    	[stackView addArrangedSubview:self.widgetView];
+	}
 }
 
 -(BOOL)isPresentingContent {
-    return YES;
+    return kEnabled;
 }
 
 %new
@@ -394,10 +402,11 @@ CSNotificationAdjunctListViewController *adjunctListController;
 %end
 %end
 
-%ctor {
-	NSLog(@"[LockWidgets] (DEBUG) Loading Preferences...");
+void reloadPrefs() {
+	NSLog(@"[LockWidgets] (DEBUG) Reloading Preferences...");
 
 	preferences = [[HBPreferences alloc] initWithIdentifier:@"me.conorthedev.lockwidgets.prefs"];
+
     [preferences registerDefaults:@{
         @"kEnabled": @YES,
         @"kIdentifier": @"com.apple.BatteryCenter.BatteryWidget"
@@ -408,6 +417,10 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
 	NSLog(@"[LockWidgets] (DEBUG) Current identifier: %@", kIdentifier);
+}
+
+%ctor {
+	reloadPrefs();
 
 	if(@available(iOS 13.0, *)) {
 		NSLog(@"[LockWidgets] (INFO) Current version is iOS 13!");
@@ -416,4 +429,6 @@ CSNotificationAdjunctListViewController *adjunctListController;
 		NSLog(@"[LockWidgets] (INFO) Current version is iOS 12 or lower!");
 		%init(old)
 	}
+
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPrefs, CFSTR("me.conorthedev.lockwidgets.prefs/ReloadPrefs"), NULL, kNilOptions);
 }

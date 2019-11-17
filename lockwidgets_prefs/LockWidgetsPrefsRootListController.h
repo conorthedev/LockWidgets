@@ -2,7 +2,7 @@
 #import <Preferences/PSListController.h>
 
 @interface LockWidgetsPrefsRootListController : HBRootListController
-- (void)respring;
+- (void)respring:(id)sender;
 
 @property (nonatomic, retain) UIBarButtonItem *respringButton;
 
