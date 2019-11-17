@@ -112,7 +112,7 @@
 - (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
 @end
 
-/*@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
+@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
 {
 	UIStackView *_stackView;
 }
@@ -130,7 +130,7 @@
 - (BOOL)isPresentingContent;
 - (void)reloadData;
 
-@end*/
+@end
 
 @interface CSCombinedListViewController : UIViewController
 

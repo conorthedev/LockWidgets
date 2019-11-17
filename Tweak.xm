@@ -3,7 +3,7 @@
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
 
-CSCombinedListViewController *combinedListController;
+SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
 
 @interface LockWidgetsMessagingCenter : NSObject {
@@ -49,12 +49,12 @@ CSNotificationAdjunctListViewController *adjunctListController;
 {
 	kIdentifier = userInfo[@"identifier"];
 
-	if(combinedListController != nil) {
-		[combinedListController reloadData];
-	}
-
 	if(adjunctListController != nil) {
 		[adjunctListController reloadData];
+	}
+
+	if(controller != nil) {
+		[controller reloadData];
 	}
 
 	return @{@"status" : @YES};
