@@ -363,14 +363,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
     return kEnabled;
 }
 
-%new
-
-- (void)hold {
-	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[%c(LWSelectWidgetController) alloc] init]];
-	[self presentViewController:nav animated:YES completion:nil];
-}
-
--(void)reloadData 
+%new -(void)reloadData 
 {
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
