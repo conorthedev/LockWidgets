@@ -168,6 +168,8 @@ CSNotificationAdjunctListViewController *adjunctListController;
             [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
+
+		[self reloadData];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
@@ -305,6 +307,8 @@ CSNotificationAdjunctListViewController *adjunctListController;
             [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
+
+		[self reloadData];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
