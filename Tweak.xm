@@ -42,6 +42,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
  		[_messagingCenter runServerOnCurrentThread];
  		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getCurrentIdentifier" target:self selector:@selector(handleGetCurrentIdentifier:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
 	}
 
@@ -77,6 +78,11 @@ CSNotificationAdjunctListViewController *adjunctListController;
 	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.enabledWidgetIdentifiersForAllGroups];
 
 	return @{@"widgets" : widgetsArray};
+}
+
+- (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
+	return @{@"currentIdentifier" : kIdentifier};
 }
 
 - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
