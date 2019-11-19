@@ -169,7 +169,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 		self.widgetView = platterView;
 
-                MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerContentView");
+                MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerBackgroundView");
                 [header removeFromSuperview];
 
 		[NSLayoutConstraint activateConstraints:@[
