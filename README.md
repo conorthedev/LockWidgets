@@ -1,6 +1,6 @@
 # LockWidgets
 
-Show your favourite widget on your lock screen
+Show your favourite widget on your lock screen, available for **FREE** on [Dynastic Repo](https://repo.dynastic.co/package/lockwidgets)
 
 Developed by [ConorTheDev](https://twitter.com/ConorTheDev) and [EvenDev](https://twitter.com/even_dev)!
 
