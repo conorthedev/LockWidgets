@@ -315,10 +315,6 @@ CSNotificationAdjunctListViewController *adjunctListController;
 			}
 		}
 
-		UILongPressGestureRecognizer *lpHandler = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(hold)];
-		lpHandler.minimumPressDuration = 0.5;
-		[platterView addGestureRecognizer:lpHandler];
-
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
 		[stackView addArrangedSubview:platterView];
