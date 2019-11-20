@@ -19,6 +19,7 @@ static NSString *cellIdentifier = @"Cell";
 		[_tableView setEditing:NO];
 		[_tableView setAllowsSelection:YES];
 		[_tableView setAllowsMultipleSelection:NO];
+		self.tableView = _tableView;
 
 		if ([self respondsToSelector:@selector(setView:)])
 			[self performSelectorOnMainThread:@selector(setView:) withObject:_tableView waitUntilDone:YES];
@@ -44,6 +45,12 @@ static NSString *cellIdentifier = @"Cell";
 	[self refreshList];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+	self.navigationItem.title = @"Select a Widget";
+	[self refreshList];
+}
+
 - (NSString *)navigationTitle
 {
 	return @"Select a Widget";
@@ -58,7 +65,32 @@ static NSString *cellIdentifier = @"Cell";
 
 	NSArray *widgets = reply[@"widgets"];
 
+	// Send a message with no dictionary and receive a reply dictionary
+	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifier" userInfo:nil];
+
+	NSString *currentIdentifier = identifierReply[@"currentIdentifier"];
+
 	self.tableData = widgets;
+
+	NSArray *cells = [self.tableView visibleCells];
+
+	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section)
+	{
+		for (int row = 0, rowCount = [self.tableView numberOfRowsInSection:section]; row < rowCount; ++row)
+		{
+			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+			cell.accessoryType = UITableViewCellAccessoryNone;
+			cell.accessoryView = NULL;
+		}
+	}
+
+	for (UITableViewCell *cell in cells)
+	{
+		if ([cell.detailTextLabel.text isEqualToString:currentIdentifier])
+		{
+			[self.tableView cellForRowAtIndexPath:[self.tableView indexPathForCell:cell]].accessoryType = UITableViewCellAccessoryCheckmark;
+		}
+	}
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -117,6 +149,7 @@ static NSString *cellIdentifier = @"Cell";
 		[alert show];
 	}
 
+	[self refreshList];
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

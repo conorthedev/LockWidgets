@@ -8,6 +8,7 @@
 }
 @property (nonatomic, strong) NSArray *tableData;			   // holds the table data (title)
 @property (nonatomic, strong) NSMutableArray *tableDetailData; // holds the table data (detail text)
+@property (strong, nonatomic) UITableView *tableView;
 
 - (void)refreshList;
 @end
