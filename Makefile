@@ -12,7 +12,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = LockWidgets
 
-LockWidgets_FILES = Tweak.xm
+LockWidgets_FILES = Tweak.xm LockWidgetsManager.m
 LockWidgets_CFLAGS = -fobjc-arc -Wno-unused-variable -Wdeprecated-declarations -Wno-deprecated-declarations
 LockWidgets_FRAMEWORKS += UIKit
 LockWidgets_PRIVATE_FRAMEWORKS += AppSupport

@@ -1,5 +1,6 @@
 #import "Tweak.h"
 #import <Cephei/HBPreferences.h>
+#import "LockWidgetsManager.h"
 
 bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
@@ -72,12 +73,8 @@ CSNotificationAdjunctListViewController *adjunctListController;
 {
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
-	
-	NSArray* widgetsArray = @[];
-	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.disabledWidgetIdentifiers];
-	widgetsArray = [widgetsArray arrayByAddingObjectsFromArray:wdc.enabledWidgetIdentifiersForAllGroups];
 
-	return @{@"widgets" : widgetsArray};
+	return @{@"widgets" : [[[LockWidgetsManager alloc] init] allWidgetIdentifiers:wdc]};
 }
 
 - (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 

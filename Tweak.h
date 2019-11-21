@@ -4,13 +4,6 @@
 #include <substrate.h>
 #import "Common.h"
 
-@interface WGWidgetDiscoveryController : NSObject
-- (void)beginDiscovery;
-- (id)visibleWidgetIdentifiersForGroup:(id)arg1;
-- (id)enabledWidgetIdentifiersForAllGroups;
-- (id)disabledWidgetIdentifiers;
-@end
-
 @class WGWidgetPlatterView;
 
 @interface WGWidgetInfo : NSObject

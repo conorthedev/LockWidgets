@@ -4,6 +4,7 @@
 
 static CPDistributedMessagingCenter *c = nil;
 static NSString *cellIdentifier = @"Cell";
+static NSString *widgetIdentifier = nil;
 
 - (id)initForContentSize:(CGSize)size
 {
@@ -45,12 +46,6 @@ static NSString *cellIdentifier = @"Cell";
 	[self refreshList];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-	self.navigationItem.title = @"Select a Widget";
-	[self refreshList];
-}
-
 - (NSString *)navigationTitle
 {
 	return @"Select a Widget";
@@ -58,37 +53,40 @@ static NSString *cellIdentifier = @"Cell";
 
 - (void)refreshList
 {
+	[self.tableView reloadData];
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
-	// Send a message with no dictionary and receive a reply dictionary
+	// Get a list of available widget identifiers
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
 	NSArray *widgets = reply[@"widgets"];
+	self.tableData = widgets;
 
-	// Send a message with no dictionary and receive a reply dictionary
+	// Get the current set identifier
 	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifier" userInfo:nil];
 
 	NSString *currentIdentifier = identifierReply[@"currentIdentifier"];
+	widgetIdentifier = currentIdentifier;
 
-	self.tableData = widgets;
-
-	NSArray *cells = [self.tableView visibleCells];
+	//NSLog(@"[LockWidgets] [PREFERENCES] (DEBUG) Current Identifier: %@", currentIdentifier);
 
 	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section)
 	{
 		for (int row = 0, rowCount = [self.tableView numberOfRowsInSection:section]; row < rowCount; ++row)
 		{
+			[self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-			cell.accessoryType = UITableViewCellAccessoryNone;
-			cell.accessoryView = NULL;
-		}
-	}
 
-	for (UITableViewCell *cell in cells)
-	{
-		if ([cell.detailTextLabel.text isEqualToString:currentIdentifier])
-		{
-			[self.tableView cellForRowAtIndexPath:[self.tableView indexPathForCell:cell]].accessoryType = UITableViewCellAccessoryCheckmark;
+			//NSLog(@"[LockWidgets] [PREFERENCES] (DEBUG) Current CELL Identifier: %@ | Equal?: %d", cell.detailTextLabel.text, [cell.detailTextLabel.text isEqualToString:currentIdentifier]);
+
+			if ([cell.detailTextLabel.text isEqualToString:currentIdentifier])
+			{
+				[self.tableView cellForRowAtIndexPath:[self.tableView indexPathForCell:cell]].accessoryType = UITableViewCellAccessoryCheckmark;
+			}
+			else
+			{
+				cell.accessoryType = UITableViewCellAccessoryNone;
+			}
 		}
 	}
 }
@@ -115,6 +113,15 @@ static NSString *cellIdentifier = @"Cell";
 	cell.textLabel.text = reply[@"displayName"];
 	cell.detailTextLabel.text = identifier;
 	cell.detailTextLabel.textColor = [UIColor grayColor];
+
+	if ([cell.detailTextLabel.text isEqualToString:widgetIdentifier])
+	{
+		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	}
+	else
+	{
+		cell.accessoryType = UITableViewCellAccessoryNone;
+	}
 
 	return cell;
 }
