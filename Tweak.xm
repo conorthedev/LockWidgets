@@ -114,7 +114,6 @@ CSNotificationAdjunctListViewController *adjunctListController;
     %orig;
 
 	if(kEnabled) {
-		NSLog(@"[LockWidgets] CSNotificationAdjunctListViewController#viewDidLoad");
 		adjunctListController = self;
 
         UIStackView *stackView = [self valueForKey:@"_stackView"];
@@ -172,8 +171,8 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 		self.widgetView = platterView;
 
-                MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerBackgroundView");
-                [header removeFromSuperview];
+        MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerBackgroundView");
+        [header removeFromSuperview];
 
 		[NSLayoutConstraint activateConstraints:@[
             [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
@@ -215,7 +214,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
 %new
 -(void)reloadData 
 {
-	NSLog(@"[LockWidgets] Reloading Data for: %@", kIdentifier);
+	NSLog(@"[LockWidgets] (INFO) Reloading Data for: %@", kIdentifier);
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
@@ -234,16 +233,6 @@ CSNotificationAdjunctListViewController *adjunctListController;
 }
 
 %end
-
-/*%hook SBDashBoardMediaControlsViewController
-
--(void)viewDidAppear:(BOOL)animated 
-{
-	%orig;
-	if (controller && kEnabled) [controller reloadData];
-}
-
-%end*/
 %end
 
 %group old
@@ -411,7 +400,7 @@ void reloadPrefs() {
 	[preferences registerObject:&kIdentifier default:@"com.apple.BatteryCenter.BatteryWidget" forKey:@"kIdentifier"];
 
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
-	NSLog(@"[LockWidgets] (DEBUG) Current identifier: %@", kIdentifier);
+	NSLog(@"[LockWidgets] (DEBUG) Current Identifier: %@", kIdentifier);
 }
 
 %ctor {
