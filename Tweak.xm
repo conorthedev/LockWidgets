@@ -10,6 +10,10 @@ bool previousDisabled = NO;
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
 
+/*
+Messaging Center for Preferences to send and recieve information
+*/
+
 @interface LockWidgetsMessagingCenter : NSObject {
  	CPDistributedMessagingCenter * _messagingCenter;
 }
@@ -50,6 +54,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
  	return self;
 }
 
+// Handle the setting of identifiers
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	kIdentifier = userInfo[@"identifier"];
@@ -69,6 +74,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
 	return @{@"status" : @YES};
 }
 
+// Returns a list of usable widgets
 - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
@@ -77,11 +83,13 @@ CSNotificationAdjunctListViewController *adjunctListController;
 	return @{@"widgets" : [[[LockWidgetsManager alloc] init] allWidgetIdentifiers:wdc]};
 }
 
+// Returns the current identifier
 - (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	return @{@"currentIdentifier" : kIdentifier};
 }
 
+// Returns the display name of a widget from its identifier
 - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	NSError *error;
@@ -102,8 +110,10 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 @end
 
+/*
+* iOS 13 code
+*/
 %group ios13
-
 %hook CSNotificationAdjunctListViewController
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
@@ -114,18 +124,24 @@ CSNotificationAdjunctListViewController *adjunctListController;
     %orig;
 
 	if(kEnabled) {
+		// Set the adjunctListController global variable for use later
 		adjunctListController = self;
 
+		// Get the stack view from self
         UIStackView *stackView = [self valueForKey:@"_stackView"];
 
    	 	NSError *error;
+
+		// Parse the widget information from the identifier
     	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
     	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
 		if([kIdentifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [kIdentifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+			// If it's a calander based widget, we need to do more setup for it to work correctly
 			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 			NSDate *now = [NSDate date];
+			
 			[widgetInfoCal setValue:now forKey:@"_date"];
 			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
 		} else {
@@ -134,6 +150,7 @@ CSNotificationAdjunctListViewController *adjunctListController;
 
 		CGRect frame = (CGRect){{0, 0}, {355, 150}};
     
+		// Generate a platter view
 		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
 
 		if (%c(MTMaterialView)) {
@@ -165,15 +182,22 @@ CSNotificationAdjunctListViewController *adjunctListController;
 			}
 		}
 
+		// Set the widgetHost for the platter view
 		[platterView setWidgetHost:self.widgetHost];
-		[platterView setShowMoreButtonVisible:NO];
+
+		// Show the "show more" button
+		[platterView setShowMoreButtonVisible:YES];
+
+		// Add the widget view to the stackView
 		[stackView addArrangedSubview:platterView];
 
 		self.widgetView = platterView;
 
+		// Fix on iOS 13 for the dark header being the old style
         MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerBackgroundView");
         [header removeFromSuperview];
 
+		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
             [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
             [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
@@ -181,12 +205,14 @@ CSNotificationAdjunctListViewController *adjunctListController;
             [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
 
+		// Reload data if needed
 		[self reloadData];
 	} else {
 		[self.widgetView removeFromSuperview];
 	}
 }
 
+// Fired whenever we need to update our content
 -(void)_updatePresentingContent {
     %orig;
 
@@ -194,9 +220,12 @@ CSNotificationAdjunctListViewController *adjunctListController;
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
 		[stackView removeArrangedSubview:self.widgetView];
     	[stackView addArrangedSubview:self.widgetView];
+
+		[self reloadData];
 	}
 }
 
+// Fired whenever an item is being inserted into the view
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
 
@@ -204,17 +233,22 @@ CSNotificationAdjunctListViewController *adjunctListController;
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
 		[stackView removeArrangedSubview:self.widgetView];
     	[stackView addArrangedSubview:self.widgetView];
+
+		[self reloadData];
 	}
 }
 
+// Tells springboard that we are presenting something when the tweak is enabled
 -(BOOL)isPresentingContent {
     return kEnabled;
 }
 
-%new
--(void)reloadData 
+// Reloads data about a widget (when the identifier is changed, etc) 
+%new -(void)reloadData 
 {
 	NSLog(@"[LockWidgets] (INFO) Reloading Data for: %@", kIdentifier);
+
+	// Parse the widget information from the identifier
 	NSError *error;
 	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
 
@@ -235,6 +269,9 @@ CSNotificationAdjunctListViewController *adjunctListController;
 %end
 %end
 
+/*
+* iOS 12 code
+*/
 %group old
 %hook SBDashBoardNotificationAdjunctListViewController
 
