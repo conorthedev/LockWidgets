@@ -1,5 +1,4 @@
 #include "LockWidgetsPrefsRootListController.h"
-#include "NSTask.h"
 
 #define THEME_COLOR [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
 
@@ -40,10 +39,7 @@
 
 - (void)respring:(id)sender
 {
-	NSTask *t = [[NSTask alloc] init];
-	[t setLaunchPath:@"/usr/bin/killall"];
-	[t setArguments:[NSArray arrayWithObjects:@"backboardd", nil]];
-	[t launch];
+	[HBRespringController respringAndReturnTo:[NSURL URLWithString:@"prefs:root=LockWidgets"]];
 }
 
 @end
