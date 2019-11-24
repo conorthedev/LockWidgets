@@ -118,7 +118,7 @@ Messaging Center for Preferences to send and recieve information
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
-
+	
 -(void)viewDidLoad 
 {
     %orig;

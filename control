@@ -4,6 +4,6 @@ Depends: mobilesubstrate, ws.hbang.common (>= 1.11), com.rpetrich.rocketbootstra
 Version: 1.0.1
 Architecture: iphoneos-arm
 Description: Add your favourite widgets to your lockscreen!
-Maintainer: ConorTheDev and EvenDev
-Author: ConorTheDev and EvenDev
+Maintainer: ConorTheDev <con0r.b@protonmail.com>
+Author: ConorTheDev <con0r.b@protonmail.com>, EvenDev
 Section: Tweaks
