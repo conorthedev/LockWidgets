@@ -1,8 +1,8 @@
 ifeq ($(CIBUILD),1)
-export TARGET = iphone:clang:12.1:12.1
+export TARGET = iphone:clang:12.4:12.4
 export ARCHS = arm64 arm64e
-SDKVERSION = 12.1
-SYSROOT = $(THEOS)/sdks/iPhoneOS12.1.sdk
+SDKVERSION = 12.4
+SYSROOT = $(THEOS)/sdks/iPhoneOS12.4.sdk
 else
 export TARGET = iphone:clang:13.0:11.2
 export ARCHS = arm64 arm64e
