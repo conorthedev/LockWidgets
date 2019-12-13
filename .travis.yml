@@ -7,6 +7,7 @@ env:
   global:
   - THEOS=~/theos
 before_install:
+- export CIBUILD=1
 - brew install ldid
 - git clone --recursive git://github.com/theos/theos.git ~/theos
 - curl -LO https://github.com/xybp888/iOS-SDKs/archive/master.zip
