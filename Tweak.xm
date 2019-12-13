@@ -22,7 +22,6 @@ Messaging Center for Preferences to send and recieve information
 @end
 
 @implementation LockWidgetsMessagingCenter
-
 + (void)load 
 {
 	[self sharedInstance];
@@ -61,11 +60,8 @@ Messaging Center for Preferences to send and recieve information
 	NSLog(@"[LockWidgets] (DEBUG) userInfo.identifier: %@ | widgetsArray: %@ | widgetsArray class: %@", userInfo[@"identifier"], widgetsArray, NSStringFromClass([widgetsArray class]));
 	
 	if(widgetsArray != nil) {
-		BOOL removedState = NO;
-
 		if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
     		[widgetsArray removeObject:userInfo[@"identifier"]];
-			removedState = YES;
 		} else {
 			[widgetsArray addObject:userInfo[@"identifier"]];
 		}
@@ -74,9 +70,9 @@ Messaging Center for Preferences to send and recieve information
 			[preferences setObject:widgetsArray forKey:@"kIdentifier"];
 		}
 
-		return @{@"status" : @YES, @"removedstate": @(removedState)};
+		return @{@"status" : @YES};
 	} else {
-		return @{@"status" : @NO, @"removedstate": @NO};
+		return @{@"status" : @NO};
 	}
 }
 
