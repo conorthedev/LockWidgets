@@ -1,8 +1,8 @@
 ifeq ($(SIMJECT),1)
-export TARGET = simulator:clang:12.1:11.0
+export TARGET = simulator:clang:12.1:11.2
 export ARCHS = x86_64
 else
-export TARGET = iphone:clang:13.0:11.0
+export TARGET = iphone:clang:13.0:11.2
 export ARCHS = arm64 arm64e
 endif
 
