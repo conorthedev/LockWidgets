@@ -65,14 +65,6 @@ Messaging Center for Preferences to send and recieve information
 		[widgetsArray addObject:userInfo[@"identifier"]];
 	}
 
-	if(adjunctListController != nil) {
-		[adjunctListController viewDidAppear:YES];
-	}
-
-	if(controller != nil) {
-		[controller viewDidAppear:YES];
-	}
-
 	if(preferences != nil) {
 		[preferences setObject:widgetsArray forKey:@"kIdentifier"];
 	}
@@ -300,17 +292,20 @@ Messaging Center for Preferences to send and recieve information
 -(void)viewDidAppear:(BOOL)animated {
     %orig(animated);
 
+	NSLog(@"[LockWidgets] (INFO) Current Widgets: %@", widgetsArray);
+
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
 	if(kEnabled) {
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
 
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
+		/*for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
 			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
 
 			[self.collectionView reloadItemsAtIndexPaths:@[cellIndexPath]];
-		}
+		}*/
+		[self.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
