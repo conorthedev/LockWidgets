@@ -56,20 +56,22 @@ Messaging Center for Preferences to send and recieve information
 }
 
 // Handle the setting of identifiers
-- (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
-{
+- (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo  {
+	if(widgetsArray != nil) {
+		if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
+    		[widgetsArray removeObject:userInfo[@"identifier"]];
+		} else {
+			[widgetsArray addObject:userInfo[@"identifier"]];
+		}
 
-	if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
-    	[widgetsArray removeObject:userInfo[@"identifier"]];
+		if(preferences != nil) {
+			[preferences setObject:widgetsArray forKey:@"kIdentifier"];
+		}
+
+		return @{@"status" : @YES};
 	} else {
-		[widgetsArray addObject:userInfo[@"identifier"]];
+		return @{@"status" : @NO};
 	}
-
-	if(preferences != nil) {
-		[preferences setObject:widgetsArray forKey:@"kIdentifier"];
-	}
-
-	return @{@"status" : @YES};
 }
 
 // Returns a list of usable widgets
