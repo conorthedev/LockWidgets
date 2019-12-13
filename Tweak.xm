@@ -398,7 +398,7 @@ Messaging Center for Preferences to send and recieve information
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
 	int index = indexPath.row;
-    
+
 	// Parse the widget information from the identifier
 	NSError *error;
     NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
@@ -461,10 +461,6 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	[cell.contentView addSubview:platterView];
-
-	// Fix on iOS 13 for the dark header being the old style
-    MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
-    [header removeFromSuperview];
 
 	// Add constraints
 	[NSLayoutConstraint activateConstraints:@[

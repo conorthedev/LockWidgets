@@ -135,7 +135,7 @@
 @property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property (nonatomic, retain) UIViewController *widgetHost;
 
-- (void)reloadData:(NSString *)identifier;
+- (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
 @end
 
 @interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
