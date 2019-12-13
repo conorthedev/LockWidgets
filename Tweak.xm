@@ -6,7 +6,7 @@ bool kEnabled = YES;
 HBPreferences *preferences;
 bool previousDisabled = NO;
 
-NSMutableArray *widgetsArray = [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] mutableCopy];
+NSMutableArray *widgetsArray = [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.weather.WeatherAppTodayWidget"] mutableCopy];
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
