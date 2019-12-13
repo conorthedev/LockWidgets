@@ -4,7 +4,7 @@
 
 static CPDistributedMessagingCenter *c = nil;
 static NSString *cellIdentifier = @"Cell";
-static NSString *widgetIdentifier = nil;
+static NSMutableArray *widgetIdentifiers = nil;
 
 - (id)initForContentSize:(CGSize)size
 {
@@ -65,10 +65,8 @@ static NSString *widgetIdentifier = nil;
 	// Get the current set identifier
 	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifier" userInfo:nil];
 
-	NSString *currentIdentifier = identifierReply[@"currentIdentifier"];
-	widgetIdentifier = currentIdentifier;
-
-	//NSLog(@"[LockWidgets] [PREFERENCES] (DEBUG) Current Identifier: %@", currentIdentifier);
+	NSMutableArray *currentIdentifiers = identifierReply[@"currentIdentifiers"];
+	widgetIdentifiers = currentIdentifiers;
 
 	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section)
 	{
@@ -77,15 +75,17 @@ static NSString *widgetIdentifier = nil;
 			[self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 
-			//NSLog(@"[LockWidgets] [PREFERENCES] (DEBUG) Current CELL Identifier: %@ | Equal?: %d", cell.detailTextLabel.text, [cell.detailTextLabel.text isEqualToString:currentIdentifier]);
-
-			if ([cell.detailTextLabel.text isEqualToString:currentIdentifier])
+			for (NSString *identifier in widgetIdentifiers)
 			{
-				[self.tableView cellForRowAtIndexPath:[self.tableView indexPathForCell:cell]].accessoryType = UITableViewCellAccessoryCheckmark;
-			}
-			else
-			{
-				cell.accessoryType = UITableViewCellAccessoryNone;
+				if ([cell.detailTextLabel.text isEqualToString:identifier])
+				{
+					cell.accessoryType = UITableViewCellAccessoryCheckmark;
+					return;
+				}
+				else
+				{
+					cell.accessoryType = UITableViewCellAccessoryNone;
+				}
 			}
 		}
 	}
@@ -114,13 +114,17 @@ static NSString *widgetIdentifier = nil;
 	cell.detailTextLabel.text = identifier;
 	cell.detailTextLabel.textColor = [UIColor grayColor];
 
-	if ([cell.detailTextLabel.text isEqualToString:widgetIdentifier])
+	for (NSString *identifier in widgetIdentifiers)
 	{
-		cell.accessoryType = UITableViewCellAccessoryCheckmark;
-	}
-	else
-	{
-		cell.accessoryType = UITableViewCellAccessoryNone;
+		if ([cell.detailTextLabel.text isEqualToString:identifier])
+		{
+			cell.accessoryType = UITableViewCellAccessoryCheckmark;
+			return cell;
+		}
+		else
+		{
+			cell.accessoryType = UITableViewCellAccessoryNone;
+		}
 	}
 
 	return cell;
@@ -138,7 +142,7 @@ static NSString *widgetIdentifier = nil;
 	if ((bool)reply[@"status"])
 	{
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
-														message:[NSString stringWithFormat:@"Successfully set widget to %@", displayReply[@"displayName"]]
+														message:[NSString stringWithFormat:@"Successfully toggled widget \"%@\"", displayReply[@"displayName"]]
 													   delegate:nil
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
@@ -148,7 +152,7 @@ static NSString *widgetIdentifier = nil;
 	else
 	{
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
-														message:[NSString stringWithFormat:@"Failed to set widget to %@!", displayReply[@"displayName"]]
+														message:[NSString stringWithFormat:@"Failed to toggle widget \"%@\"!", displayReply[@"displayName"]]
 													   delegate:nil
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
