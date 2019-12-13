@@ -1,6 +1,8 @@
-ifeq ($(SIMJECT),1)
-export TARGET = simulator:clang:12.1:11.2
-export ARCHS = x86_64
+ifeq ($(CIBUILD),1)
+export TARGET = iphone:clang:12.1:12.1
+export ARCHS = arm64 arm64e
+SDKVERSION = 12.1
+SYSROOT = $(THEOS)/sdks/iPhoneOS12.1.sdk
 else
 export TARGET = iphone:clang:13.0:11.2
 export ARCHS = arm64 arm64e
