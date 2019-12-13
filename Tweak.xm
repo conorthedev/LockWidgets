@@ -3,10 +3,10 @@
 #import "LockWidgetsManager.h"
 
 bool kEnabled = YES;
-NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
 HBPreferences *preferences;
 bool previousDisabled = NO;
-NSArray *widgetsArray = @[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.Fitness.activity-widget"];
+
+NSMutableArray *widgetsArray = @[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"];
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
@@ -58,7 +58,12 @@ Messaging Center for Preferences to send and recieve information
 // Handle the setting of identifiers
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
-	kIdentifier = userInfo[@"identifier"];
+
+	if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
+    	[widgetsArray removeObject:userInfo[@"identifier"]];
+	} else {
+		[widgetsArray addObject:userInfo[@"identifier"]]
+	}
 
 	if(adjunctListController != nil) {
 		[adjunctListController viewDidAppear:YES];
@@ -87,7 +92,7 @@ Messaging Center for Preferences to send and recieve information
 // Returns the current identifier
 - (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
-	return @{@"currentIdentifier" : kIdentifier};
+	return @{@"currentIdentifiers" : widgetsArray};
 }
 
 // Returns the display name of a widget from its identifier
