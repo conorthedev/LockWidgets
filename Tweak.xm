@@ -117,12 +117,6 @@ Messaging Center for Preferences to send and recieve information
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 %property (strong, nonatomic) UICollectionView *collectionView;
 
-- (void)awakeFromNib {
-    %orig;
-
-	NSLog(@"[LockWidgets] (DEBUG) CSNotificationAdjunctListViewController woke from nib!");
-}
-
 %new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [widgetsArray count];
 }
@@ -187,7 +181,11 @@ Messaging Center for Preferences to send and recieve information
 	// Set the widgetHost for the platter view
 	[platterView setWidgetHost:self.widgetHost];
 
-	// Set the cell's contentVIew
+	// Set the cell's contentView
+	for (UIView *view in cell.contentView.subviews) {
+		[view removeFromSuperview];
+	}
+	
 	[cell.contentView addSubview:platterView];
 
 	// Fix on iOS 13 for the dark header being the old style
@@ -264,6 +262,8 @@ Messaging Center for Preferences to send and recieve information
             [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
             [self.collectionView.heightAnchor constraintEqualToConstant:150]
 		]];
+
+		[self.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
@@ -290,12 +290,18 @@ Messaging Center for Preferences to send and recieve information
 
 -(void)viewDidAppear:(BOOL)animated {
     %orig(animated);
-	
+
 	UIStackView *stackView = [self valueForKey:@"_stackView"];
 
 	if(kEnabled) {
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
+
+		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
+			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
+
+			[self.collectionView reloadItemsAtIndexPaths:@[cellIndexPath]];
+		}
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
