@@ -403,7 +403,7 @@ Messaging Center for Preferences to send and recieve information
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
 	int index = indexPath.row;
-
+    
 	// Parse the widget information from the identifier
 	NSError *error;
     NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
@@ -422,7 +422,7 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	// Create the frame for the platterView
-	CGRect frame = (CGRect){{0, 0}, {355, 150}};
+	CGRect frame = (CGRect){{0, 0}, {cell.contentView.bounds.size.width, cell.contentView.bounds.size.height}};
     
 	// Generate a platter view
 	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
@@ -491,13 +491,21 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(360, 150);
+    return CGSizeMake(355, 150);
 }
 
--(BOOL)hasContent {
-    return kEnabled;
+%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
+%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{   
+    [collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
+                            atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
+                                    animated:YES];
+}
+	
 -(void)viewDidLoad {
     %orig;
 
@@ -511,11 +519,11 @@ Messaging Center for Preferences to send and recieve information
         UIStackView *stackView = [self valueForKey:@"_stackView"];
 
 		// Create a flow layout
-		UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
 		
 		// Setup the layout
 		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-		layout.itemSize = CGSizeMake(360, 150);
+		layout.itemSize = CGSizeMake(355, 150);
 
 		// Setup the collection view
     	self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
@@ -527,6 +535,8 @@ Messaging Center for Preferences to send and recieve information
 		
 		// Allow paging
 		self.collectionView.pagingEnabled = YES;
+		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
+		layout.minimumLineSpacing = 5;
 
 		// Register cell class
     	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
@@ -547,6 +557,10 @@ Messaging Center for Preferences to send and recieve information
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
 	}
+}
+
+-(bool)hasContent {
+	return kEnabled;
 }
 
 -(void)_updatePresentingContent {
