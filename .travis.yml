@@ -25,10 +25,13 @@ before_deploy:
 jobs:
   include:
     - stage: Build & Publish
-      script: echo "Deploying to GitHub releases ..."
+      script: echo "Deploying to GitHub releases..."
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
         file: "./packages/me.conorthedev.lockwidgets_$TRAVIS_TAG_iphoneos-arm.deb"
         skip_cleanup: true
         prerelease: true
+        branches:
+          only:
+            - master
