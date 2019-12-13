@@ -1,0 +1,15 @@
+os: osx
+language: objective-c
+osx_image: xcode10.1
+sudo: false
+name: Theos Build
+env:
+  global:
+  - THEOS=~/theos
+before_install:
+- brew install ldid
+- git clone --recursive git://github.com/theos/theos.git ~/theos
+- curl -LO https://github.com/xybp888/sdks/archive/master.zip
+- unzip master.zip -d $THEOS/sdks
+script:
+- make package FINALPACKAGE=1
