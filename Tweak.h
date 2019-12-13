@@ -109,13 +109,14 @@
 - (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
 @end
 
-@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <WGWidgetListItemViewControllerDelegate>
+@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 {
 	UIStackView *_stackView;
 }
 
 @property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property (nonatomic, retain) UIViewController *widgetHost;
+@property (strong, nonatomic) UICollectionView *collectionView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -125,7 +126,7 @@
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (void)viewDidLayoutSubviews;
 - (BOOL)isPresentingContent;
-- (void)reloadData;
+- (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
 
 @end
 
