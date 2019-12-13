@@ -27,6 +27,7 @@ jobs:
         prerelease: true
         api_key:
           secure: Ccua5wS8SnkzCHjNpPyGMhOj22OjgtOn/Y5R9FhRTjP9tMuXN9z2VJVT4/jwbAcQERf8kvL46MHLhClDuqJ3QKfLVZFcwVcgvH6+BBe6RTPIn3UrnRhSp0xLl6bgkW3yOBsBjv9f13Nrd6FWbAnObqgVno4PSaVvQhx1ece7sMWAB7y/OLnpG8gQ7s69qRip9qS8A2LvXaw3wL6Wpzd5X2r9kk9VOK06VG/PntKOUVizID+pF5zXjhc3yQajsj+J9z++z7cyfcRbMCKlkS1HDh1ogmqVtFSw4HumiuJO5axBCQZUTInG1e/ObwRBk6ZEAUkISChYXxQaIux5wz7iUECsd8gNf+FjEfituqGmMBepixxPGe6mqC1489I0Rr4UiqF1a03bQ2KpZa60bR8rmzOggo0iNgO2pCoenecmsSyrmJzN3FfK4n1Kfd/u2TwyTkLeaECFxevpU6R4q0fx/TjBDDMnDdsJALZQeZ/G8KxDpwH41+UO82QVkX4cNO0IBRAQmftCkCk93kFlGb8eQ+FFewRQAJ0aZhl4E/yP6m/vNEJY9SyFX8mC7iq9AJ/g0SAJGj5Qy7LjwvjuYHEAQwu/uQzpXI7p1n2WiZc5cJWCPC32vYbEreVyZe7NkLAI5BR+2YsuFJTcdvxq8FzVRJtCKoMuZ+914gIs5/YHoD0=
-        file: "./packages/me.conorthedev.lockwidgets_$TRAVIS_TAG_iphoneos-arm.deb"
+        file_glob: true
+        file: packages/*
         on:
           repo: ConorTheDev/LockWidgets
