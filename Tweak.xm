@@ -6,7 +6,7 @@ bool kEnabled = YES;
 HBPreferences *preferences;
 bool previousDisabled = NO;
 
-NSMutableArray *widgetsArray = @[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"];
+NSMutableArray *widgetsArray = [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] mutableCopy];
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
@@ -62,7 +62,7 @@ Messaging Center for Preferences to send and recieve information
 	if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
     	[widgetsArray removeObject:userInfo[@"identifier"]];
 	} else {
-		[widgetsArray addObject:userInfo[@"identifier"]]
+		[widgetsArray addObject:userInfo[@"identifier"]];
 	}
 
 	if(adjunctListController != nil) {
@@ -74,7 +74,7 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	if(preferences != nil) {
-		[preferences setObject:userInfo[@"identifier"] forKey:@"kIdentifier"];
+		[preferences setObject:widgetsArray forKey:@"kIdentifier"];
 	}
 
 	return @{@"status" : @YES};
@@ -632,10 +632,10 @@ void reloadPrefs() {
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
-	[preferences registerObject:&kIdentifier default:@"com.apple.BatteryCenter.BatteryWidget" forKey:@"kIdentifier"];
+	[preferences registerObject:&widgetsArray default:@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] forKey:@"kIdentifier"];
 
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
-	NSLog(@"[LockWidgets] (DEBUG) Current Identifier: %@", kIdentifier);
+	NSLog(@"[LockWidgets] (DEBUG) Current Identifiers: %@", widgetsArray);
 }
 
 %ctor {
