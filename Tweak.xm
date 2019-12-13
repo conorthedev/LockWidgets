@@ -6,6 +6,7 @@ bool kEnabled = YES;
 NSString *kIdentifier = @"com.apple.BatteryCenter.BatteryWidget";
 HBPreferences *preferences;
 bool previousDisabled = NO;
+NSArray *widgetsArray = @[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.Fitness.activity-widget"];
 
 SBDashBoardNotificationAdjunctListViewController *controller;
 CSNotificationAdjunctListViewController *adjunctListController;
@@ -58,10 +59,6 @@ Messaging Center for Preferences to send and recieve information
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	kIdentifier = userInfo[@"identifier"];
-
-	if(adjunctListController != nil) {
-		[adjunctListController reloadData];
-	}
 
 	if(controller != nil) {
 		[controller reloadData];
@@ -118,97 +115,158 @@ Messaging Center for Preferences to send and recieve information
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
+%property (strong, nonatomic) UICollectionView *collectionView;
+
+- (void)awakeFromNib {
+    %orig;
+
+	NSLog(@"[LockWidgets] (DEBUG) CSNotificationAdjunctListViewController woke from nib!");
+}
+
+%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [widgetsArray count];
+}
+
+%new -(UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+	int index = indexPath.row;
+    
+	// Parse the widget information from the identifier
+	NSError *error;
+    NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
+
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
+		// If it's a calander based widget, we need to do more setup for it to work correctly
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+			
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+	} else {
+		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+	}
+
+	// Create the frame for the platterView
+	CGRect frame = (CGRect){{0, 0}, {355, 150}};
+    
+	// Generate a platter view
+	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
+
+	if (%c(MTMaterialView)) {
+		@try {
+			[platterView setValue:@1 forKey:@"_recipe"];
+			[platterView setValue:@2 forKey:@"_options"];
+		} @catch (NSException *e) {
+			// do nothing for NSUndefinedKeyException
+		}
+
+		// go through each subview to find material view (usually the first element)
+		for (UIView *view in [platterView subviews]) {
+			if ([view isKindOfClass:%c(MTMaterialView)]) {
+				MTMaterialView *materialView = (MTMaterialView *)view;
+				if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
+					[materialView setFinalRecipe:1 options:2];
+				} else {
+					[view removeFromSuperview];
+
+					@autoreleasepool {
+						// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
+						materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
+						materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+						[materialView _setCornerRadius:13.0f];
+						[platterView insertSubview:materialView atIndex:0];
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	// Set the widgetHost for the platter view
+	[platterView setWidgetHost:self.widgetHost];
+
+	// Set the cell's contentVIew
+	[cell.contentView addSubview:platterView];
+
+	// Fix on iOS 13 for the dark header being the old style
+    MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
+    [header removeFromSuperview];
+
+	// Add constraints
+	[NSLayoutConstraint activateConstraints:@[
+        [platterView.centerXAnchor constraintEqualToAnchor:cell.centerXAnchor],
+        [platterView.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:10],
+        [platterView.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-10],
+        [platterView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
+    ]];
 	
--(void)viewDidLoad 
-{
+	// Reload data at the end of initialization
+	NSLog(@"[LockWidgets] (INFO) Attempting to reload data for: %@", [widgetsArray objectAtIndex:index]);
+
+	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
+	} else {
+		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
+	}
+    
+    return cell;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(360, 150);
+}
+	
+-(void)viewDidLoad {
     %orig;
 
 	if(kEnabled) {
+		CGRect frame = (CGRect){{0, 0}, {355, 150}};
+
 		// Set the adjunctListController global variable for use later
 		adjunctListController = self;
 
 		// Get the stack view from self
         UIStackView *stackView = [self valueForKey:@"_stackView"];
 
-   	 	NSError *error;
+		// Create a flow layout
+		UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+		
+		// Setup the layout
+		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+		layout.itemSize = CGSizeMake(360, 150);
 
-		// Parse the widget information from the identifier
-    	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
+		// Setup the collection view
+    	self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
+    	[self.collectionView setDataSource:self];
+    	[self.collectionView setDelegate:self];
 
-    	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+		// Remove the ugly background colour
+		self.collectionView.backgroundColor = [UIColor clearColor];
+		
+		// Allow paging
+		self.collectionView.pagingEnabled = YES;
 
-		if([kIdentifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [kIdentifier isEqualToString:@"com.apple.mobilecal.widget"]) {
-			// If it's a calander based widget, we need to do more setup for it to work correctly
-			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-			NSDate *now = [NSDate date];
-			
-			[widgetInfoCal setValue:now forKey:@"_date"];
-			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-		} else {
-			self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-		}
+		// Register cell class
+    	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
 
-		CGRect frame = (CGRect){{0, 0}, {355, 150}};
-    
-		// Generate a platter view
-		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
-
-		if (%c(MTMaterialView)) {
-			@try {
-				[platterView setValue:@1 forKey:@"_recipe"];
-				[platterView setValue:@2 forKey:@"_options"];
-			} @catch (NSException *e) {
-				// do nothing for NSUndefinedKeyException
-			}
-			// go through each subview to find material view (usually the first element)
-			for (UIView *view in [platterView subviews]) {
-				if ([view isKindOfClass:%c(MTMaterialView)]) {
-					MTMaterialView *materialView = (MTMaterialView *)view;
-					if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
-						[materialView setFinalRecipe:1 options:2];
-					} else {
-						[view removeFromSuperview];
-
-						@autoreleasepool {
-							// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
-							materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
-							materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-							[materialView _setCornerRadius:13.0f];
-							[platterView insertSubview:materialView atIndex:0];
-						}
-					}
-					break;
-				}
-			}
-		}
-
-		// Set the widgetHost for the platter view
-		[platterView setWidgetHost:self.widgetHost];
-
-		// Show the "show more" button
-		[platterView setShowMoreButtonVisible:YES];
-
-		// Add the widget view to the stackView
-		[stackView addArrangedSubview:platterView];
-
-		self.widgetView = platterView;
-
-		// Fix on iOS 13 for the dark header being the old style
-        MTMaterialView *header = MSHookIvar<MTMaterialView*>(self.widgetView, "_headerBackgroundView");
-        [header removeFromSuperview];
+		// Add the collection view to the stackView
+		[stackView addArrangedSubview:self.collectionView];
 
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
-            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
-        ]];
-
-		// Reload data if needed
-		[self reloadData];
+            [self.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.collectionView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.collectionView.heightAnchor constraintEqualToConstant:150]
+		]];
 	} else {
-		[self.widgetView removeFromSuperview];
+		// Remove the collection view from the hierarchy
+		[self.collectionView removeFromSuperview];
 	}
 }
 
@@ -218,10 +276,30 @@ Messaging Center for Preferences to send and recieve information
 
 	if(kEnabled) {
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.widgetView];
-    	[stackView addArrangedSubview:self.widgetView];
+		[stackView removeArrangedSubview:self.collectionView];
+    	[stackView addArrangedSubview:self.collectionView];
 
-		[self reloadData];
+		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
+			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
+
+			NSLog(@"[LockWidgets] (INFO) Updating content for: %@ at index path: %ld", [cell description], (long) cellIndexPath.row);
+			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
+		}
+	}
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    %orig(animated);
+	
+	UIStackView *stackView = [self valueForKey:@"_stackView"];
+
+	if(kEnabled) {
+		[stackView removeArrangedSubview:self.collectionView];
+    	[stackView addArrangedSubview:self.collectionView];
+	} else {
+		// Remove the collection view from the hierarchy
+		[stackView removeArrangedSubview:self.collectionView];
+		[self.collectionView removeFromSuperview];
 	}
 }
 
@@ -231,10 +309,14 @@ Messaging Center for Preferences to send and recieve information
 
 	if(kEnabled) {
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.widgetView];
-    	[stackView addArrangedSubview:self.widgetView];
+		[stackView removeArrangedSubview:self.collectionView];
+    	[stackView addArrangedSubview:self.collectionView];
 
-		[self reloadData];
+		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
+			NSLog(@"[LockWidgets] (INFO) Inserting item and updating content for: %@", [cell description]);
+			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
+			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
+		}
 	}
 }
 
@@ -244,25 +326,27 @@ Messaging Center for Preferences to send and recieve information
 }
 
 // Reloads data about a widget (when the identifier is changed, etc) 
-%new -(void)reloadData 
-{
-	NSLog(@"[LockWidgets] (INFO) Reloading Data for: %@", kIdentifier);
+%new -(void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2 {
+	NSLog(@"[LockWidgets] (INFO) (reloadData) Reloading Data for: %@", identifier);
+
+	UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:arg2];
+	UIView *contentView = cell.contentView;
+	WGWidgetPlatterView *platterView = (WGWidgetPlatterView *)contentView;
+	NSAssert([platterView isKindOfClass:%c(WGWidgetPlatterView)], @"platterView is not WGWidgetPlatterView");
 
 	// Parse the widget information from the identifier
 	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:kIdentifier error:&error];
+	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 
-	if([kIdentifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [kIdentifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
 		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
 		NSDate *now = [NSDate date];
 		[widgetInfoCal setValue:now forKey:@"_date"];
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-		[self.widgetView setWidgetHost:self.widgetHost];
+		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
 	} else {
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-		[self.widgetView setWidgetHost:self.widgetHost];
+		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
 	}
 }
 
@@ -306,6 +390,7 @@ Messaging Center for Preferences to send and recieve information
 		}
 
 		CGRect frame = (CGRect){{0, 0}, {355, 300}};
+		SBDashBoardAdjunctItemView *adjunctItemView = [[%c(SBDashBoardAdjunctItemView) alloc] initWithFrame:frame andCornerRadius:13.0f];;
     
 		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame andCornerRadius:13.0f];
 
@@ -340,14 +425,15 @@ Messaging Center for Preferences to send and recieve information
 
 		[platterView setWidgetHost:self.widgetHost];
 		[platterView setShowMoreButtonVisible:NO];
-		[stackView addArrangedSubview:platterView];
+		[adjunctItemView addSubview:platterView];
+		[stackView addArrangedSubview:adjunctItemView];
 		self.widgetView = platterView;
 
         [NSLayoutConstraint activateConstraints:@[
-            [self.widgetView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.widgetView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.widgetView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.widgetView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
+            [adjunctItemView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [adjunctItemView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [adjunctItemView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [adjunctItemView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
         ]];
 
 		[self reloadData];

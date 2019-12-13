@@ -1,8 +1,12 @@
 #import <Cephei/HBPreferences.h>
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #include <substrate.h>
 #import "Common.h"
+
+@interface SBDashBoardAdjunctItemView : UIView
+@end
 
 @class WGWidgetPlatterView;
 
@@ -125,21 +129,22 @@
 
 @end
 
-@interface CSCombinedListViewController : UIViewController
+@interface CSCombinedListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property (nonatomic, retain) UIViewController *widgetHost;
 
-- (void)reloadData;
+- (void)reloadData:(NSString *)identifier;
 @end
 
-@interface CSNotificationAdjunctListViewController : UIViewController
+@interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 {
 	UIStackView *_stackView;
 }
 
 @property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property (nonatomic, retain) UIViewController *widgetHost;
+@property (strong, nonatomic) UICollectionView *collectionView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -148,7 +153,7 @@
 - (void)_insertItem:(id)arg1 animated:(BOOL)arg2;
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
-- (void)reloadData;
+- (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
 
 @end
 
