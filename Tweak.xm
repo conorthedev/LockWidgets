@@ -57,6 +57,9 @@ Messaging Center for Preferences to send and recieve information
 
 // Handle the setting of identifiers
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo  {
+	widgetsArray = [widgetsArray mutableCopy];
+	NSLog(@"[LockWidgets] (DEBUG) userInfo.identifier: %@ | widgetsArray: %@ | widgetsArray class: %@", userInfo[@"identifier"], widgetsArray, NSStringFromClass([widgetsArray class]));
+	
 	if(widgetsArray != nil) {
 		if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
     		[widgetsArray removeObject:userInfo[@"identifier"]];
@@ -86,7 +89,7 @@ Messaging Center for Preferences to send and recieve information
 // Returns the current identifier
 - (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
-	return @{@"currentIdentifiers" : widgetsArray};
+	return @{@"currentIdentifiers" : [widgetsArray mutableCopy]};
 }
 
 // Returns the display name of a widget from its identifier
@@ -629,7 +632,7 @@ void reloadPrefs() {
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
-	[preferences registerObject:&widgetsArray default:@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] forKey:@"kIdentifier"];
+	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] mutableCopy] forKey:@"kIdentifier"];
 
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
 	NSLog(@"[LockWidgets] (DEBUG) Current Identifiers: %@", widgetsArray);
