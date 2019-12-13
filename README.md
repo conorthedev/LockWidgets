@@ -1,4 +1,4 @@
-# LockWidgets
+# LockWidgets [![Build Status](https://travis-ci.com/ConorTheDev/LockWidgets.svg?branch=master)](https://travis-ci.com/ConorTheDev/LockWidgets)
 
 Show your favourite widget on your lock screen, available for **FREE** on [Dynastic Repo](https://repo.dynastic.co/package/lockwidgets)
 
