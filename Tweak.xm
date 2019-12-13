@@ -1,6 +1,7 @@
 #import "Tweak.h"
 #import <Cephei/HBPreferences.h>
 #import "LockWidgetsManager.h"
+#import "UICollectionView+LockWidgets.h"
 
 bool kEnabled = YES;
 HBPreferences *preferences;
