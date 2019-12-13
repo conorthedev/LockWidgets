@@ -10,6 +10,6 @@ before_install:
 - brew install ldid
 - git clone --recursive git://github.com/theos/theos.git ~/theos
 - curl -LO https://github.com/xybp888/iOS-SDKs/archive/master.zip
-- unzip master.zip -d $THEOS/sdks
+- unzip -qq master.zip -d $THEOS/sdks
 script:
 - make package FINALPACKAGE=1
