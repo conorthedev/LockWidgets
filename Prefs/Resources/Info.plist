@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>lockwidgets_prefs</string>
+	<string>LockWidgetsPrefs</string>
 	<key>CFBundleIdentifier</key>
 	<string>me.conorthedev.lockwidgets.prefs</string>
 	<key>CFBundleInfoDictionaryVersion</key>

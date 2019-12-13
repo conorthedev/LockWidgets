@@ -1,4 +1,4 @@
-#import "Common.h"
+#import "../Common.h"
 
 @interface LockWidgetsManager : NSObject
 //- (LWView *)getLWViewFromIdentifier:(NSString *)identifier;

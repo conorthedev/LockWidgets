@@ -3,7 +3,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #include <substrate.h>
-#import "Common.h"
+#import "../Common.h"
 
 @interface SBDashBoardAdjunctItemView : UIView
 @end
