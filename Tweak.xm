@@ -361,7 +361,11 @@ Messaging Center for Preferences to send and recieve information
 	UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:arg2];
 	UIView *contentView = cell.contentView;
 	WGWidgetPlatterView *platterView = (WGWidgetPlatterView *)contentView;
-	NSAssert([platterView isKindOfClass:%c(WGWidgetPlatterView)], @"platterView is not WGWidgetPlatterView");
+
+	if(![platterView isKindOfClass:%c(WGWidgetPlatterView)]) {
+		NSLog(@"[LockWidgets] (FATAL) platterView is not WGWidgetPlatterView!! returning before crash...");
+		return;
+	}
 
 	// Parse the widget information from the identifier
 	NSError *error;
@@ -610,7 +614,11 @@ Messaging Center for Preferences to send and recieve information
 	UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:arg2];
 	UIView *contentView = cell.contentView;
 	WGWidgetPlatterView *platterView = (WGWidgetPlatterView *)contentView;
-	NSAssert([platterView isKindOfClass:%c(WGWidgetPlatterView)], @"platterView is not WGWidgetPlatterView");
+	
+	if(![platterView isKindOfClass:%c(WGWidgetPlatterView)]) {
+		NSLog(@"[LockWidgets] (FATAL) platterView is not WGWidgetPlatterView!! returning before crash...");
+		return;
+	}
 
 	// Parse the widget information from the identifier
 	NSError *error;
