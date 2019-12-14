@@ -5,6 +5,7 @@
 
 bool kEnabled = YES;
 bool kShowScrollIndicator = YES;
+NSInteger closestCellIndex;
 
 HBPreferences *preferences;
 
@@ -277,7 +278,7 @@ Messaging Center for Preferences to send and recieve information
 %new - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     float visibleCenterPositionOfScrollView = scrollView.contentOffset.x + (self.collectionView.bounds.size.width / 2);
 
-    NSInteger closestCellIndex = -1;
+    closestCellIndex = -1;
     float closestDistance = FLT_MAX;
     for (int i = 0; i < self.collectionView.visibleCells.count; i++) {
         UICollectionViewCell *cell = self.collectionView.visibleCells[i];
@@ -355,6 +356,7 @@ Messaging Center for Preferences to send and recieve information
 		]];
 
 		[self.collectionView reloadData];
+		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
@@ -369,13 +371,7 @@ Messaging Center for Preferences to send and recieve information
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
-
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-
-			NSLog(@"[LockWidgets] (INFO) Updating content for: %@ at index path: %ld", [cell description], (long) cellIndexPath.row);
-			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
-		}
+		[self.collectionView reloadData];
 	}
 }
 
@@ -389,13 +385,9 @@ Messaging Center for Preferences to send and recieve information
 	if(kEnabled) {
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
-
-		/*for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-
-			[self.collectionView reloadItemsAtIndexPaths:@[cellIndexPath]];
-		}*/
 		[self.collectionView reloadData];
+		
+		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
@@ -411,12 +403,7 @@ Messaging Center for Preferences to send and recieve information
 		UIStackView *stackView = [self valueForKey:@"_stackView"];
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
-
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSLog(@"[LockWidgets] (INFO) Inserting item and updating content for: %@", [cell description]);
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
-		}
+		[self.collectionView reloadData];
 	}
 }
 
@@ -580,7 +567,7 @@ Messaging Center for Preferences to send and recieve information
 %new - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     float visibleCenterPositionOfScrollView = scrollView.contentOffset.x + (self.collectionView.bounds.size.width / 2);
 
-    NSInteger closestCellIndex = -1;
+    closestCellIndex = -1;
     float closestDistance = FLT_MAX;
     for (int i = 0; i < self.collectionView.visibleCells.count; i++) {
         UICollectionViewCell *cell = self.collectionView.visibleCells[i];
@@ -658,6 +645,7 @@ Messaging Center for Preferences to send and recieve information
 		]];
 
 		[self.collectionView reloadData];
+		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
@@ -676,12 +664,7 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
 
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-
-			NSLog(@"[LockWidgets] (INFO) Updating content for: %@ at index path: %ld", [cell description], (long) cellIndexPath.row);
-			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
-		}
+		[self.collectionView reloadData];
 	}
 }
 
@@ -693,12 +676,8 @@ Messaging Center for Preferences to send and recieve information
 	if(kEnabled) {
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
-
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-
-			[self.collectionView reloadItemsAtIndexPaths:@[cellIndexPath]];
-		}
+		[self.collectionView reloadData];
+		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
@@ -714,11 +693,7 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
 
-		for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
-			NSLog(@"[LockWidgets] (INFO) Inserting item and updating content for: %@", [cell description]);
-			NSIndexPath *cellIndexPath = [self.collectionView indexPathForCell:cell];
-			[self reloadData:[widgetsArray objectAtIndex:cellIndexPath.row] indexPath: cellIndexPath];
-		}
+		[self.collectionView reloadData];
 	}
 }
 
