@@ -4,8 +4,9 @@
 #import "UICollectionView+LockWidgets.h"
 
 bool kEnabled = YES;
+bool kShowScrollIndicator = YES;
+
 HBPreferences *preferences;
-bool previousDisabled = NO;
 
 NSMutableArray *widgetsArray;
 
@@ -333,6 +334,12 @@ Messaging Center for Preferences to send and recieve information
 		UIScrollView *scrollView = (UIScrollView *)self.collectionView;
 		scrollView.delegate = self;
 
+		if(kShowScrollIndicator) {
+			[self.collectionView setShowsHorizontalScrollIndicator:YES];
+		} else {
+			[self.collectionView setShowsHorizontalScrollIndicator:NO];
+		}
+
 		// Register cell class
     	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
 
@@ -630,6 +637,12 @@ Messaging Center for Preferences to send and recieve information
 		UIScrollView *scrollView = (UIScrollView *)self.collectionView;
 		scrollView.delegate = self;
 
+		if(kShowScrollIndicator) {
+			[self.collectionView setShowsHorizontalScrollIndicator:YES];
+		} else {
+			[self.collectionView setShowsHorizontalScrollIndicator:NO];
+		}
+
 		// Register cell class
     	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
 
@@ -752,15 +765,18 @@ void reloadPrefs() {
 
     [preferences registerDefaults:@{
         @"kEnabled": @YES,
-        @"kIdentifier": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy]
+        @"kIdentifier": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy],
+		@"kShowScrollIndicator": @YES
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
+	[preferences registerBool:&kShowScrollIndicator default:YES forKey:@"kShowScrollIndicator"];
 	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy] forKey:@"kIdentifier"];
 
 	widgetsArray = [widgetsArray mutableCopy];
 
 	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
+	NSLog(@"[LockWidgets] (DEBUG) Current Scroll Identifier State: %i", kShowScrollIndicator);
 	NSLog(@"[LockWidgets] (DEBUG) Current Identifiers: %@", widgetsArray);
 }
 
