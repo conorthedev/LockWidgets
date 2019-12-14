@@ -38,6 +38,15 @@
 	}
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+
+	if (@available(iOS 11, *)) {
+		self.navigationController.navigationBar.prefersLargeTitles = false;
+		self.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+	}
+}
+
 + (NSString *)hb_specifierPlist {
 	return @"Root";
 }
