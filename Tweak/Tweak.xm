@@ -301,7 +301,7 @@ Messaging Center for Preferences to send and recieve information
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {355, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
 
 		// Set the adjunctListController global variable for use later
 		adjunctListController = self;
@@ -598,7 +598,7 @@ Messaging Center for Preferences to send and recieve information
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {355, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
 
 		// Set the controller global variable for use later
 		controller = self;
@@ -752,11 +752,11 @@ void reloadPrefs() {
 
     [preferences registerDefaults:@{
         @"kEnabled": @YES,
-        @"kIdentifier": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] mutableCopy]
+        @"kIdentifier": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy]
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
-	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.WeatherAppTodayWidget"] mutableCopy] forKey:@"kIdentifier"];
+	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy] forKey:@"kIdentifier"];
 
 	widgetsArray = [widgetsArray mutableCopy];
 
