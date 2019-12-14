@@ -71,7 +71,7 @@ Messaging Center for Preferences to send and recieve information
 		}
 
 		if(preferences != nil) {
-			[preferences setObject:widgetsArray forKey:@"kIdentifier"];
+			[preferences setObject:widgetsArray forKey:@"kWidgetIdentifiers"];
 		}
 
 		return @{@"status" : @YES};
@@ -744,13 +744,13 @@ void reloadPrefs() {
 
     [preferences registerDefaults:@{
         @"kEnabled": @YES,
-        @"kIdentifier": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy],
+        @"kWidgetIdentifiers": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy],
 		@"kShowScrollIndicator": @YES
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
 	[preferences registerBool:&kShowScrollIndicator default:YES forKey:@"kShowScrollIndicator"];
-	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy] forKey:@"kIdentifier"];
+	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy] forKey:@"kWidgetIdentifiers"];
 
 	widgetsArray = [widgetsArray mutableCopy];
 
