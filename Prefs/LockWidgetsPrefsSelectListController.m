@@ -37,12 +37,12 @@ static NSMutableArray *widgetIdentifiers = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	self.navigationItem.title = @"Select a Widget";
+	self.navigationItem.title = @"Select Active Widgets";
 	[self refreshList];
 }
 
 - (NSString *)navigationTitle {
-	return @"Select a Widget";
+	return @"Select Active Widgets";
 }
 
 - (void)refreshList {

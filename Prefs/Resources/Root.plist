@@ -63,7 +63,7 @@
 				<key>cell</key>
 				<string>PSLinkCell</string>
 				<key>label</key>
-				<string>Select a Widget</string>
+				<string>Select Active Widgets</string>
 				<key>detail</key>
 				<string>LockWidgetsPrefsSelectListController</string>
                 <key>isController</key>
