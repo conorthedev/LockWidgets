@@ -50,6 +50,7 @@ Messaging Center for Preferences to send and recieve information
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getCurrentIdentifier" target:self selector:@selector(handleGetCurrentIdentifier:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getIcon" target:self selector:@selector(handleGetIcon:withUserInfo:)];
 	}
 
  	return self;
@@ -84,6 +85,41 @@ Messaging Center for Preferences to send and recieve information
     [wdc beginDiscovery];
 
 	return @{@"widgets" : [[[LockWidgetsManager alloc] init] allWidgetIdentifiers:wdc]};
+}
+
+- (NSDictionary *)handleGetIcon:(NSString *)name withUserInfo:(NSDictionary *)userInfo
+{
+	NSError *error;
+	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
+
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+	WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+
+	if(!host.appBundleID) {
+		return nil;
+	}
+
+	SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
+  	SBIcon *icon = [iconController.model expectedIconForDisplayIdentifier:host.appBundleID];
+
+	struct CGSize imageSize;
+  		imageSize.height = 30;
+  		imageSize.width = 30;
+
+	struct SBIconImageInfo imageInfo;
+  		imageInfo.size  = imageSize;
+  		imageInfo.scale = [UIScreen mainScreen].scale;
+  		imageInfo.continuousCornerRadius = 12;
+
+	UIImage *image = [icon generateIconImageWithInfo:imageInfo];
+
+	NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
+
+	if (image == nil) {
+		return nil;
+	}
+
+	return @{@"data" : UIImagePNGRepresentation(image)};
 }
 
 // Returns the current identifier

@@ -5,6 +5,28 @@
 #include <substrate.h>
 #import "../Common.h"
 
+struct SBIconImageInfo {
+	struct CGSize size;
+	double scale;
+	double continuousCornerRadius;
+};
+
+@interface SBHIconModel : NSObject
+@end
+
+@interface SBIconModel : SBHIconModel
+- (id)expectedIconForDisplayIdentifier:(id)arg1;
+- (id)expectedIconForDisplayIdentifier:(id)arg1 createIfNecessary:(BOOL)arg2;
+@end
+
+@interface SBIconController : UIViewController
+@property (nonatomic, retain) SBIconModel *model;
+@end
+
+@interface SBIcon : NSObject
+- (id)generateIconImageWithInfo:(SBIconImageInfo)arg1;
+@end
+
 @interface SBDashBoardAdjunctItemView : UIView
 @end
 
@@ -84,6 +106,9 @@
 @interface WGWidgetHostingViewController : UIViewController {
 	WGWidgetInfo *_widgetInfo;
 }
+
+@property (nonatomic, copy, readwrite) NSString *appBundleID;
+
 - (id)initWithWidgetInfo:(id)arg1 delegate:(id)arg2 host:(id)arg3;
 - (WGWidgetInfo *)widgetInfo;
 @end
