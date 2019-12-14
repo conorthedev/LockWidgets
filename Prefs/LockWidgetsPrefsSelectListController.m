@@ -141,15 +141,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 
 	NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 
-	if ((bool)reply[@"status"]) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
-														message:[NSString stringWithFormat:@"Successfully toggled widget \"%@\"", displayReply[@"displayName"]]
-													   delegate:nil
-											  cancelButtonTitle:@"OK"
-											  otherButtonTitles:nil];
-
-		[alert show];
-	} else {
+	if (!(bool)reply[@"status"]) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
 														message:[NSString stringWithFormat:@"Failed to toggle widget \"%@\"!", displayReply[@"displayName"]]
 													   delegate:nil
