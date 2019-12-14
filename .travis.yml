@@ -7,6 +7,10 @@ env:
   global:
     - THEOS=~/theos
 
+branches:
+  only:
+    - master
+
 before_install:
   - export CIBUILD=1
   - brew install ldid
