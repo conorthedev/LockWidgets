@@ -1,4 +1,5 @@
 #include "LockWidgetsPrefsRootListController.h"
+#import <CepheiPrefs/HBAppearanceSettings.h>
 
 #define THEME_COLOR [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
 
@@ -30,6 +31,17 @@
 - (void)loadView
 {
 	[super loadView];
+}
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+
+	if (@available(iOS 11, *))
+	{
+		self.navigationController.navigationBar.prefersLargeTitles = false;
+		self.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+	}
 }
 
 + (NSString *)hb_specifierPlist
