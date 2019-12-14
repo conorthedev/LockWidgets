@@ -6,12 +6,10 @@
 @implementation LockWidgetsPrefsRootListController
 @synthesize respringButton;
 
-- (instancetype)init
-{
+- (instancetype)init {
 	self = [super init];
 
-	if (self)
-	{
+	if (self) {
 		self.respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring"
 															   style:UIBarButtonItemStylePlain
 															  target:self
@@ -23,34 +21,28 @@
 	return self;
 }
 
-+ (UIColor *)hb_tintColor
-{
++ (UIColor *)hb_tintColor {
 	return THEME_COLOR;
 }
 
-- (void)loadView
-{
+- (void)loadView {
 	[super loadView];
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
 	[super viewDidLoad];
 
-	if (@available(iOS 11, *))
-	{
+	if (@available(iOS 11, *)) {
 		self.navigationController.navigationBar.prefersLargeTitles = false;
 		self.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
 	}
 }
 
-+ (NSString *)hb_specifierPlist
-{
++ (NSString *)hb_specifierPlist {
 	return @"Root";
 }
 
-- (void)respring:(id)sender
-{
+- (void)respring:(id)sender {
 	[HBRespringController respringAndReturnTo:[NSURL URLWithString:@"prefs:root=LockWidgets"]];
 }
 

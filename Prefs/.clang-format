@@ -1,6 +1,10 @@
 BasedOnStyle: Chromium
 AlignTrailingComments: true
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterEnum: true
+  AfterStruct: false
+  AfterFunction: false
 ColumnLimit: 0
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: false

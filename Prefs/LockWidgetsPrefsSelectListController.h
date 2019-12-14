@@ -2,8 +2,7 @@
 #import <objc/runtime.h>
 #import "../Common.h"
 
-@interface LockWidgetsPrefsSelectListController : PSViewController <UITableViewDataSource, UITableViewDelegate>
-{
+@interface LockWidgetsPrefsSelectListController : PSViewController <UITableViewDataSource, UITableViewDelegate> {
 	UITableView *_tableView;
 }
 @property (nonatomic, strong) NSArray *tableData;			   // holds the table data (title)

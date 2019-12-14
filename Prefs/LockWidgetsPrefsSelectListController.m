@@ -6,12 +6,10 @@ static CPDistributedMessagingCenter *c = nil;
 static NSString *cellIdentifier = @"Cell";
 static NSMutableArray *widgetIdentifiers = nil;
 
-- (id)initForContentSize:(CGSize)size
-{
+- (id)initForContentSize:(CGSize)size {
 	self = [super init];
 
-	if (self)
-	{
+	if (self) {
 		[self refreshList];
 
 		_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height) style:UITableViewStyleGrouped];
@@ -29,30 +27,25 @@ static NSMutableArray *widgetIdentifiers = nil;
 	return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
 	[super viewDidLoad];
 	[self refreshList];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
 	self.navigationItem.title = @"Select a Widget";
 	[self refreshList];
 }
 
-- (NSString *)navigationTitle
-{
+- (NSString *)navigationTitle {
 	return @"Select a Widget";
 }
 
-- (void)refreshList
-{
+- (void)refreshList {
 	[self.tableView reloadData];
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
@@ -68,22 +61,16 @@ static NSMutableArray *widgetIdentifiers = nil;
 	NSMutableArray *currentIdentifiers = identifierReply[@"currentIdentifiers"];
 	widgetIdentifiers = currentIdentifiers;
 
-	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section)
-	{
-		for (int row = 0, rowCount = [self.tableView numberOfRowsInSection:section]; row < rowCount; ++row)
-		{
+	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section) {
+		for (int row = 0, rowCount = [self.tableView numberOfRowsInSection:section]; row < rowCount; ++row) {
 			[self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 
-			for (NSString *identifier in widgetIdentifiers)
-			{
-				if ([cell.detailTextLabel.text isEqualToString:identifier])
-				{
+			for (NSString *identifier in widgetIdentifiers) {
+				if ([cell.detailTextLabel.text isEqualToString:identifier]) {
 					cell.accessoryType = UITableViewCellAccessoryCheckmark;
 					return;
-				}
-				else
-				{
+				} else {
 					cell.accessoryType = UITableViewCellAccessoryNone;
 				}
 			}
@@ -91,17 +78,14 @@ static NSMutableArray *widgetIdentifiers = nil;
 	}
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return [self.tableData count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
-	if (cell == nil)
-	{
+	if (cell == nil) {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
 	}
 
@@ -114,15 +98,11 @@ static NSMutableArray *widgetIdentifiers = nil;
 	cell.detailTextLabel.text = identifier;
 	cell.detailTextLabel.textColor = [UIColor grayColor];
 
-	for (NSString *identifier in widgetIdentifiers)
-	{
-		if ([cell.detailTextLabel.text isEqualToString:identifier])
-		{
+	for (NSString *identifier in widgetIdentifiers) {
+		if ([cell.detailTextLabel.text isEqualToString:identifier]) {
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 			return cell;
-		}
-		else
-		{
+		} else {
 			cell.accessoryType = UITableViewCellAccessoryNone;
 		}
 	}
@@ -130,8 +110,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 	return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
@@ -139,8 +118,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 
 	NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 
-	if ((bool)reply[@"status"])
-	{
+	if ((bool)reply[@"status"]) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
 														message:[NSString stringWithFormat:@"Successfully toggled widget \"%@\"", displayReply[@"displayName"]]
 													   delegate:nil
@@ -148,9 +126,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 											  otherButtonTitles:nil];
 
 		[alert show];
-	}
-	else
-	{
+	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
 														message:[NSString stringWithFormat:@"Failed to toggle widget \"%@\"!", displayReply[@"displayName"]]
 													   delegate:nil
@@ -164,11 +140,9 @@ static NSMutableArray *widgetIdentifiers = nil;
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 	NSString *sectionName;
-	switch (section)
-	{
+	switch (section) {
 		case 0:
 			sectionName = @"Available Widgets";
 			break;
@@ -179,8 +153,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 	return sectionName;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return 60;
 }
 
