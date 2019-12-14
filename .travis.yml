@@ -6,28 +6,29 @@ name: Theos Build
 env:
   global:
     - THEOS=~/theos
-    - TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+
 before_install:
   - export CIBUILD=1
   - brew install ldid
   - git clone --recursive git://github.com/theos/theos.git ~/theos
   - curl -LO https://github.com/xybp888/iOS-SDKs/archive/master.zip
   - unzip -qq master.zip -d $THEOS/sdks
-  - make package FINALPACKAGE=1 PACKAGE_VERSION=$TRAVIS_TAG
+  - make package FINALPACKAGE=1
+
 before_deploy:
+  # Set up git user name and tag this commit
   - git config --local user.name "ConorTheDev"
   - git config --local user.email "con0r.b@protonmail.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
   - git tag $TRAVIS_TAG
+
 jobs:
   include:
     - stage: Build & Publish
-      script: echo "Deploying to GitHub releases..."
+      script: echo "Deploying to GitHub releases ..."
       deploy:
         provider: releases
+        api_key: $GITHUB_OAUTH_TOKEN
+        file: "./packages/me.conorthedev.lockwidgets_1.0.1_iphoneos-arm.deb"
+        skip_cleanup: true
         prerelease: true
-        api_key:
-          secure: Ccua5wS8SnkzCHjNpPyGMhOj22OjgtOn/Y5R9FhRTjP9tMuXN9z2VJVT4/jwbAcQERf8kvL46MHLhClDuqJ3QKfLVZFcwVcgvH6+BBe6RTPIn3UrnRhSp0xLl6bgkW3yOBsBjv9f13Nrd6FWbAnObqgVno4PSaVvQhx1ece7sMWAB7y/OLnpG8gQ7s69qRip9qS8A2LvXaw3wL6Wpzd5X2r9kk9VOK06VG/PntKOUVizID+pF5zXjhc3yQajsj+J9z++z7cyfcRbMCKlkS1HDh1ogmqVtFSw4HumiuJO5axBCQZUTInG1e/ObwRBk6ZEAUkISChYXxQaIux5wz7iUECsd8gNf+FjEfituqGmMBepixxPGe6mqC1489I0Rr4UiqF1a03bQ2KpZa60bR8rmzOggo0iNgO2pCoenecmsSyrmJzN3FfK4n1Kfd/u2TwyTkLeaECFxevpU6R4q0fx/TjBDDMnDdsJALZQeZ/G8KxDpwH41+UO82QVkX4cNO0IBRAQmftCkCk93kFlGb8eQ+FFewRQAJ0aZhl4E/yP6m/vNEJY9SyFX8mC7iq9AJ/g0SAJGj5Qy7LjwvjuYHEAQwu/uQzpXI7p1n2WiZc5cJWCPC32vYbEreVyZe7NkLAI5BR+2YsuFJTcdvxq8FzVRJtCKoMuZ+914gIs5/YHoD0=
-        file_glob: true
-        file: packages/*
-        on:
-          repo: ConorTheDev/LockWidgets
