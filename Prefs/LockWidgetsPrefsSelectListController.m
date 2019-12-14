@@ -94,9 +94,32 @@ static NSMutableArray *widgetIdentifiers = nil;
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 
+	NSDictionary *imageReply = [c sendMessageAndReceiveReplyName:@"getIcon" userInfo:@{@"identifier" : identifier}];
+
+	NSData *imageData = imageReply[@"data"];
+	UIImage *image = [UIImage imageWithData:imageData];
+
 	cell.textLabel.text = reply[@"displayName"];
 	cell.detailTextLabel.text = identifier;
 	cell.detailTextLabel.textColor = [UIColor grayColor];
+
+	if (image) {
+		UIGraphicsBeginImageContext(CGSizeMake(30, 30));
+
+		[image drawInRect:CGRectMake(0, 0, 30, 30)];
+
+		UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
+
+		UIGraphicsEndImageContext();
+		if (newThumbnail == nil) {
+			NSLog(@"could not scale image");
+			cell.imageView.image = image;
+		} else {
+			cell.imageView.image = newThumbnail;
+		}
+	} else {
+		cell.imageView.image = nil;
+	}
 
 	for (NSString *identifier in widgetIdentifiers) {
 		if ([cell.detailTextLabel.text isEqualToString:identifier]) {
