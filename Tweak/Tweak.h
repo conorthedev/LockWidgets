@@ -10,8 +10,7 @@
 
 @class WGWidgetPlatterView;
 
-@interface WGWidgetInfo : NSObject
-{
+@interface WGWidgetInfo : NSObject {
 	NSPointerArray *_registeredWidgetHosts;
 	struct
 	{
@@ -68,8 +67,7 @@
 @end
 
 @class NSDate;
-@interface WGCalendarWidgetInfo : WGWidgetInfo
-{
+@interface WGCalendarWidgetInfo : WGWidgetInfo {
 	NSDate *_date;
 }
 @property (setter=_setDate:, nonatomic, retain) NSDate *date; //@synthesize date=_date - In the implementation block
@@ -83,16 +81,14 @@
 - (NSDate *)date;
 @end
 
-@interface WGWidgetHostingViewController : UIViewController
-{
+@interface WGWidgetHostingViewController : UIViewController {
 	WGWidgetInfo *_widgetInfo;
 }
 - (id)initWithWidgetInfo:(id)arg1 delegate:(id)arg2 host:(id)arg3;
 - (WGWidgetInfo *)widgetInfo;
 @end
 
-@interface WGWidgetListItemViewController : UIViewController
-{
+@interface WGWidgetListItemViewController : UIViewController {
 	NSString *_widgetIdentifier;
 	WGWidgetHostingViewController *_widgetHost;
 }
@@ -109,8 +105,7 @@
 - (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
 @end
 
-@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
-{
+@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
 	UIStackView *_stackView;
 }
 
@@ -138,8 +133,7 @@
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
 @end
 
-@interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
-{
+@interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
 	UIStackView *_stackView;
 }
 
@@ -158,8 +152,7 @@
 
 @end
 
-@interface PLPlatterHeaderContentView : UIView
-{
+@interface PLPlatterHeaderContentView : UIView {
 	UILabel *_dateLabel;
 	NSArray *_iconButtons;
 	UIImageView *_iconButtonShadow;

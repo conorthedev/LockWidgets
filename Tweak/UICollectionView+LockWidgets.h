@@ -3,7 +3,6 @@
 #import <UIKit/UIScrollView.h>
 
 @implementation UICollectionView (LockWidgets)
-- (void)setSizeToMimic:(CGSize)arg1
-{
+- (void)setSizeToMimic:(CGSize)arg1 {
 }
 @end
