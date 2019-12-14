@@ -130,7 +130,7 @@ struct SBIconImageInfo {
 - (WGWidgetHostingViewController *)widgetListItemViewController:(WGWidgetListItemViewController *)arg1 widgetHostWithIdentifier:(NSString *)arg2;
 @end
 
-@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
+@interface SBDashBoardNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate> {
 	UIStackView *_stackView;
 }
 
@@ -150,7 +150,7 @@ struct SBIconImageInfo {
 
 @end
 
-@interface CSCombinedListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface CSCombinedListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
 @property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 @property (nonatomic, retain) UIViewController *widgetHost;
@@ -158,7 +158,7 @@ struct SBIconImageInfo {
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
 @end
 
-@interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
+@interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate> {
 	UIStackView *_stackView;
 }
 
