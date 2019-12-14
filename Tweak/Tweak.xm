@@ -91,37 +91,41 @@ Messaging Center for Preferences to send and recieve information
 
 - (NSDictionary *)handleGetIcon:(NSString *)name withUserInfo:(NSDictionary *)userInfo
 {
-	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
+	if(@available(iOS 13.0, *)) {
+		NSError *error;
+		NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
 
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-	WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+    	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+		WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 
-	if(!host.appBundleID) {
+		if(!host.appBundleID) {
+			return nil;
+		}
+
+		SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
+  		SBIcon *icon = [iconController.model expectedIconForDisplayIdentifier:host.appBundleID];
+
+		struct CGSize imageSize;
+  			imageSize.height = 30;
+  			imageSize.width = 30;
+
+		struct SBIconImageInfo imageInfo;
+  			imageInfo.size  = imageSize;
+  			imageInfo.scale = [UIScreen mainScreen].scale;
+  			imageInfo.continuousCornerRadius = 12;
+
+		UIImage *image = [icon generateIconImageWithInfo:imageInfo];
+
+		NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
+
+		if (image == nil) {
+			return nil;
+		}
+
+		return @{@"data" : UIImagePNGRepresentation(image)};
+	} else {
 		return nil;
 	}
-
-	SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
-  	SBIcon *icon = [iconController.model expectedIconForDisplayIdentifier:host.appBundleID];
-
-	struct CGSize imageSize;
-  		imageSize.height = 30;
-  		imageSize.width = 30;
-
-	struct SBIconImageInfo imageInfo;
-  		imageInfo.size  = imageSize;
-  		imageInfo.scale = [UIScreen mainScreen].scale;
-  		imageInfo.continuousCornerRadius = 12;
-
-	UIImage *image = [icon generateIconImageWithInfo:imageInfo];
-
-	NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
-
-	if (image == nil) {
-		return nil;
-	}
-
-	return @{@"data" : UIImagePNGRepresentation(image)};
 }
 
 // Returns the current identifier
