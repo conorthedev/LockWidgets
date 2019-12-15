@@ -165,10 +165,6 @@ Messaging Center for Preferences to send and recieve information
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 %property (strong, nonatomic) UICollectionView *collectionView;
 
-%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [widgetsArray count];
-}
-
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
 	int index = indexPath.row;
@@ -263,12 +259,16 @@ Messaging Center for Preferences to send and recieve information
     return cell;
 }
 
+%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [widgetsArray count];
+}
+
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
+    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, 5, 0, 5);
+    return UIEdgeInsetsMake(0, 2.5, 0, 2.5);
 }
 
 %new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
@@ -280,14 +280,14 @@ Messaging Center for Preferences to send and recieve information
 %new - (CGFloat)collectionView:(UICollectionView *)collectionView
                    layout:(UICollectionViewLayout *)collectionViewLayout
         minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 10;
+    return 5;
 }
 	
 -(void)viewDidLoad {
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
 
 		// Set the adjunctListController global variable for use later
 		adjunctListController = self;
@@ -341,7 +341,6 @@ Messaging Center for Preferences to send and recieve information
 		]];
 
 		[self.collectionView reloadData];
-		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
@@ -371,8 +370,6 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
 		[self.collectionView reloadData];
-		
-		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
@@ -438,10 +435,6 @@ Messaging Center for Preferences to send and recieve information
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 %property (strong, nonatomic) UICollectionView *collectionView;
-
-%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [widgetsArray count];
-}
 
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
@@ -533,12 +526,16 @@ Messaging Center for Preferences to send and recieve information
     return cell;
 }
 
+%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [widgetsArray count];
+}
+
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
+    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, 5, 0, 5);
+    return UIEdgeInsetsMake(0, 2.5, 0, 2.5);
 }
 
 %new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
@@ -550,14 +547,14 @@ Messaging Center for Preferences to send and recieve information
 %new - (CGFloat)collectionView:(UICollectionView *)collectionView
                    layout:(UICollectionViewLayout *)collectionViewLayout
         minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 10;
+    return 5;
 }
 
 -(void)viewDidLoad {
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
 
 		// Set the controller global variable for use later
 		controller = self;
@@ -613,7 +610,6 @@ Messaging Center for Preferences to send and recieve information
 		]];
 
 		[self.collectionView reloadData];
-		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[self.collectionView removeFromSuperview];
@@ -645,7 +641,6 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:self.collectionView];
     	[stackView addArrangedSubview:self.collectionView];
 		[self.collectionView reloadData];
-		[self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:self.collectionView];
