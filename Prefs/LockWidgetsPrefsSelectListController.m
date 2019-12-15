@@ -2,10 +2,13 @@
 
 @implementation LockWidgetsPrefsSelectListController
 
-static CPDistributedMessagingCenter *c = nil;
-static NSString *cellIdentifier = @"Cell";
-static NSMutableArray *widgetIdentifiers = nil;
-static NSArray *availableWidgetsCache = nil;
+CPDistributedMessagingCenter *c = nil;
+NSString *cellIdentifier = @"Cell";
+NSMutableArray *widgetIdentifiers = nil;
+NSArray *availableWidgetsCache = nil;
+
+NSMutableDictionary *widgetCellInfoCache = nil;
+BOOL refreshDictionary = YES;
 
 - (id)initForContentSize:(CGSize)size {
 	self = [super init];
@@ -53,6 +56,7 @@ static NSArray *availableWidgetsCache = nil;
 	// Get a list of available widget identifiers
 	if(availableWidgetsCache == nil) {
 		if(self.tableData == nil) {
+			NSLog(@"[LockWidgets] (DEBUG) Fetching available identifiers");
 			NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
 			NSArray *widgets = reply[@"widgets"];
@@ -61,6 +65,7 @@ static NSArray *availableWidgetsCache = nil;
 		}
 	} else {
 		if(self.tableData == nil) {
+			NSLog(@"[LockWidgets] (DEBUG) Using cached identifiers");
 			self.tableData = availableWidgetsCache;
 		}
 	}
@@ -101,8 +106,27 @@ static NSArray *availableWidgetsCache = nil;
 
 	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
-	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
+	if(widgetCellInfoCache == nil) {
+		widgetCellInfoCache = [[NSMutableDictionary alloc] init];
+	}
+
+	NSDictionary *reply = [widgetCellInfoCache objectForKey:identifier];
+	NSLog(@"[LockWidgets] (DEBUG) reply = %@", reply);
+
+	if(refreshDictionary || reply == nil) {
+		[widgetCellInfoCache removeAllObjects];
+
+		NSLog(@"[LockWidgets] (DEBUG) Refreshing info for Identifier: %@", identifier);
+
+		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+		reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
+		
+		[widgetCellInfoCache setObject:reply forKey:identifier];
+
+		refreshDictionary = NO;
+	} else {
+		NSLog(@"[LockWidgets] (DEBUG) Using cached info for Identifier: %@", identifier);
+	}
 
 	NSData *imageData = reply[@"imageData"];
 	UIImage *image = [UIImage imageWithData:imageData];
@@ -148,7 +172,7 @@ static NSArray *availableWidgetsCache = nil;
 
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier}];
 
-	NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
+	NSDictionary *displayReply = [widgetCellInfoCache objectForKey:identifier];
 
 	if (!(bool)reply[@"status"]) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Information"
@@ -160,7 +184,9 @@ static NSArray *availableWidgetsCache = nil;
 		[alert show];
 	}
 
-	[self refreshList];
+	refreshDictionary = YES;
+
+	[self refreshList];	
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
