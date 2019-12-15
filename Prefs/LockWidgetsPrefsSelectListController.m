@@ -56,7 +56,6 @@ BOOL refreshDictionary = YES;
 	// Get a list of available widget identifiers
 	if(availableWidgetsCache == nil) {
 		if(self.tableData == nil) {
-			NSLog(@"[LockWidgets] (DEBUG) Fetching available identifiers");
 			NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
 			NSArray *widgets = reply[@"widgets"];
@@ -65,7 +64,6 @@ BOOL refreshDictionary = YES;
 		}
 	} else {
 		if(self.tableData == nil) {
-			NSLog(@"[LockWidgets] (DEBUG) Using cached identifiers");
 			self.tableData = availableWidgetsCache;
 		}
 	}
@@ -111,19 +109,14 @@ BOOL refreshDictionary = YES;
 	}
 
 	NSDictionary *reply = [widgetCellInfoCache objectForKey:identifier];
-	NSLog(@"[LockWidgets] (DEBUG) reply = %@", reply);
 
 	if(refreshDictionary || reply == nil) {
-		NSLog(@"[LockWidgets] (DEBUG) Refreshing info for Identifier: %@", identifier);
-
 		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 		reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 		
 		[widgetCellInfoCache setObject:reply forKey:identifier];
 
 		refreshDictionary = NO;
-	} else {
-		NSLog(@"[LockWidgets] (DEBUG) Using cached info for Identifier: %@", identifier);
 	}
 
 	NSData *imageData = reply[@"imageData"];
