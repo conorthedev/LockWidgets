@@ -157,8 +157,6 @@ Messaging Center for Preferences to send and recieve information
 %group group
 %hook NotificationController
 
-%property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-%property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
 %property (strong, nonatomic) UICollectionView *collectionView;
 
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -171,6 +169,7 @@ Messaging Center for Preferences to send and recieve information
     NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
 
     WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+	WGWidgetHostingViewController *widgetHost;
 
 	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
 		// If it's a calander based widget, we need to do more setup for it to work correctly
@@ -178,9 +177,9 @@ Messaging Center for Preferences to send and recieve information
 		NSDate *now = [NSDate date];
 			
 		[widgetInfoCal setValue:now forKey:@"_date"];
-		me.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
 	} else {
-		me.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 	}
 
 	// Create the frame for the platterView
@@ -220,7 +219,7 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	// Set the widgetHost for the platter view
-	[platterView setWidgetHost:me.widgetHost];
+	[platterView setWidgetHost:widgetHost];
 
 	// Set the cell's contentView
 	for (UIView *view in cell.contentView.subviews) {

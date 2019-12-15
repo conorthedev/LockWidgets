@@ -134,8 +134,6 @@ struct SBIconImageInfo {
 	UIStackView *_stackView;
 }
 
-@property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-@property (nonatomic, retain) UIViewController *widgetHost;
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
@@ -150,20 +148,10 @@ struct SBIconImageInfo {
 
 @end
 
-@interface CSCombinedListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
-
-@property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-@property (nonatomic, retain) UIViewController *widgetHost;
-
-- (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
-@end
-
 @interface CSNotificationAdjunctListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate> {
 	UIStackView *_stackView;
 }
 
-@property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-@property (nonatomic, retain) UIViewController *widgetHost;
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
@@ -181,8 +169,6 @@ struct SBIconImageInfo {
 	UIStackView *_stackView;
 }
 
-@property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-@property (nonatomic, retain) UIViewController *widgetHost;
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
