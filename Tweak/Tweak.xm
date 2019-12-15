@@ -320,6 +320,9 @@ Messaging Center for Preferences to send and recieve information
 		// Set corner radius
 		self.collectionView.layer.cornerRadius = 13.0f;
 
+		// Disable selection
+		self.collectionView.allowsSelection = NO;
+
 		if(kShowScrollIndicator) {
 			[self.collectionView setShowsHorizontalScrollIndicator:YES];
 		} else {
@@ -580,14 +583,15 @@ Messaging Center for Preferences to send and recieve information
 		
 		// Allow paging
 		self.collectionView.pagingEnabled = YES;
+
 		self.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
 		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
 
 		// Set corner radius
 		self.collectionView.layer.cornerRadius = 13.0f;
 
-		UIScrollView *scrollView = (UIScrollView *)self.collectionView;
-		scrollView.delegate = self;
+		// Disable selection
+		self.collectionView.allowsSelection = NO;
 
 		if(kShowScrollIndicator) {
 			[self.collectionView setShowsHorizontalScrollIndicator:YES];
