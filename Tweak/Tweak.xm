@@ -48,7 +48,6 @@ Messaging Center for Preferences to send and recieve information
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getCurrentIdentifiers" target:self selector:@selector(handleGetCurrentIdentifiers:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
-		[_messagingCenter registerForMessageName:@"getIcon" target:self selector:@selector(handleGetIcon:withUserInfo:)];
 	}
 
  	return self;
