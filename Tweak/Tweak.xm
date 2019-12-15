@@ -460,15 +460,6 @@ void reloadPrefs() {
 
 %ctor {
 	reloadPrefs();
-	/*
-	if(@available(iOS 13.0, *)) {
-		NSLog(@"[LockWidgets] (INFO) Current version is iOS 13!");
-		%init(ios13)
-	} else {
-		NSLog(@"[LockWidgets] (INFO) Current version is iOS 12 or lower!");
-		%init(old)
-	}
-	*/
 
 	NSString *notificationControllerClass = @"SBDashBoardNotificationAdjunctListViewController";
 
