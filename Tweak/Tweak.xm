@@ -5,12 +5,9 @@
 
 bool kEnabled = YES;
 bool kShowScrollIndicator = YES;
-NSInteger closestCellIndex;
 
 HBPreferences *preferences;
-
 NSMutableArray *widgetsArray;
-
 NotificationController *notificationController;
 
 /*
