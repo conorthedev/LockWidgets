@@ -60,7 +60,6 @@ Messaging Center for Preferences to send and recieve information
 // Handle the setting of identifiers
 - (NSDictionary *)handleSetIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo  {
 	widgetsArray = [widgetsArray mutableCopy];
-	NSLog(@"[LockWidgets] (DEBUG) userInfo.identifier: %@ | widgetsArray: %@ | widgetsArray class: %@", userInfo[@"identifier"], widgetsArray, NSStringFromClass([widgetsArray class]));
 	
 	if(widgetsArray != nil) {
 		if ([widgetsArray containsObject:userInfo[@"identifier"]]) {
@@ -156,7 +155,7 @@ Messaging Center for Preferences to send and recieve information
 %property (strong, nonatomic) UICollectionView *collectionView;
 
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"widgetCell" forIndexPath:indexPath];
 	NotificationController *me = (NotificationController*) self;
 	int index = indexPath.row;
     
@@ -326,7 +325,7 @@ Messaging Center for Preferences to send and recieve information
 		}
 
 		// Register cell class
-    	[me.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+    	[me.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"widgetCell"];
 
 		// Add the collection view to the stackView
 		[stackView addArrangedSubview:me.collectionView];
@@ -432,7 +431,7 @@ Messaging Center for Preferences to send and recieve information
 %end
 
 void reloadPrefs() {
-	NSLog(@"[LockWidgets] (DEBUG) Reloading Preferences...");
+	NSLog(@"[LockWidgets] (INFO) Reloading Preferences...");
 
 	preferences = [[HBPreferences alloc] initWithIdentifier:@"me.conorthedev.lockwidgets.prefs"];
 
@@ -448,9 +447,9 @@ void reloadPrefs() {
 
 	widgetsArray = [widgetsArray mutableCopy];
 
-	NSLog(@"[LockWidgets] (DEBUG) Current Enabled State: %i", kEnabled);
-	NSLog(@"[LockWidgets] (DEBUG) Current Scroll Identifier State: %i", kShowScrollIndicator);
-	NSLog(@"[LockWidgets] (DEBUG) Current Identifiers: %@", widgetsArray);
+	NSLog(@"[LockWidgets] (INFO) Current Enabled State: %i", kEnabled);
+	NSLog(@"[LockWidgets] (INFO) Current Scroll Identifier State: %i", kShowScrollIndicator);
+	NSLog(@"[LockWidgets] (INFO) Current Identifiers: %@", widgetsArray);
 }
 
 %ctor {
