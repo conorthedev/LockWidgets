@@ -49,7 +49,7 @@ Messaging Center for Preferences to send and recieve information
  		[_messagingCenter runServerOnCurrentThread];
  		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
-		[_messagingCenter registerForMessageName:@"getCurrentIdentifier" target:self selector:@selector(handleGetCurrentIdentifier:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getCurrentIdentifiers" target:self selector:@selector(handleGetCurrentIdentifiers:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getIcon" target:self selector:@selector(handleGetIcon:withUserInfo:)];
 	}
@@ -88,8 +88,33 @@ Messaging Center for Preferences to send and recieve information
 	return @{@"widgets" : [[[LockWidgetsManager alloc] init] allWidgetIdentifiers:wdc]};
 }
 
-- (NSDictionary *)handleGetIcon:(NSString *)name withUserInfo:(NSDictionary *)userInfo
+// Returns the current identifier
+- (NSDictionary *)handleGetCurrentIdentifiers:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
+	return @{@"currentIdentifiers" : [widgetsArray mutableCopy]};
+}
+
+// Returns the display name of a widget from its identifier
+- (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
+	NSString *displayName;
+	NSData *imageData;
+
+	NSError *error;
+	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
+
+    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+
+	if([userInfo[@"identifier"] isEqualToString:@"com.apple.UpNextWidget.extension"] || [userInfo[@"identifier"] isEqualToString:@"com.apple.mobilecal.widget"]) {
+		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+		NSDate *now = [NSDate date];
+		
+		[widgetInfoCal setValue:now forKey:@"_date"];
+		displayName = [widgetInfoCal displayName];
+	} else {
+		displayName = [widgetInfo displayName];
+	}
+
 	if(@available(iOS 13.0, *)) {
 		NSError *error;
 		NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
@@ -118,38 +143,15 @@ Messaging Center for Preferences to send and recieve information
 		NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
 
 		if (image == nil) {
-			return nil;
+			imageData = nil;
 		}
 
-		return @{@"data" : UIImagePNGRepresentation(image)};
+		imageData = UIImagePNGRepresentation(image);
 	} else {
-		return nil;
+		imageData = nil;
 	}
-}
 
-// Returns the current identifier
-- (NSDictionary *)handleGetCurrentIdentifier:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
-{
-	return @{@"currentIdentifiers" : [widgetsArray mutableCopy]};
-}
-
-// Returns the display name of a widget from its identifier
-- (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
-{
-	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
-
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-
-	if([userInfo[@"identifier"] isEqualToString:@"com.apple.UpNextWidget.extension"] || [userInfo[@"identifier"] isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		return @{@"displayName" : [widgetInfoCal displayName]};
-	} else {
-		return @{@"displayName" : [widgetInfo displayName]};
-	}
+	return @{@"displayName" : [widgetInfo displayName], @"imageData" : imageData};
 }
 
 @end
