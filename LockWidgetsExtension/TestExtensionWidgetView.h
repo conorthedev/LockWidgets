@@ -1,0 +1,2 @@
+@interface TestExtensionWidgetView : NSObject
+@end
