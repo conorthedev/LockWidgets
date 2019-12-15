@@ -11,8 +11,7 @@ HBPreferences *preferences;
 
 NSMutableArray *widgetsArray;
 
-SBDashBoardNotificationAdjunctListViewController *controller;
-CSNotificationAdjunctListViewController *adjunctListController;
+NotificationController *notificationController;
 
 /*
 Messaging Center for Preferences to send and recieve information
@@ -80,7 +79,7 @@ Messaging Center for Preferences to send and recieve information
 	}
 }
 
-// Returns a list of usable widgets
+// Returns § list of usable widgets
 - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
@@ -155,11 +154,8 @@ Messaging Center for Preferences to send and recieve information
 
 @end
 
-/*
-* iOS 13 code
-*/
-%group ios13
-%hook CSNotificationAdjunctListViewController
+%group group
+%hook NotificationController
 
 %property (nonatomic, retain) WGWidgetPlatterView *widgetView;
 %property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
@@ -167,6 +163,7 @@ Messaging Center for Preferences to send and recieve information
 
 %new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+	NotificationController *me = (NotificationController*) self;
 	int index = indexPath.row;
     
 	// Parse the widget information from the identifier
@@ -181,9 +178,9 @@ Messaging Center for Preferences to send and recieve information
 		NSDate *now = [NSDate date];
 			
 		[widgetInfoCal setValue:now forKey:@"_date"];
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		me.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
 	} else {
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		me.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 	}
 
 	// Create the frame for the platterView
@@ -223,7 +220,7 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	// Set the widgetHost for the platter view
-	[platterView setWidgetHost:self.widgetHost];
+	[platterView setWidgetHost:me.widgetHost];
 
 	// Set the cell's contentView
 	for (UIView *view in cell.contentView.subviews) {
@@ -232,9 +229,11 @@ Messaging Center for Preferences to send and recieve information
 
 	[cell.contentView addSubview:platterView];
 
-	// Fix on iOS 13 for the dark header being the old style
-    MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
-    [header removeFromSuperview];
+	if(@available(iOS 13.0, *)) {
+		// Fix on iOS 13 for the dark header being the old style
+    	MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
+    	[header removeFromSuperview];
+	}
 
 	// Add constraints
 	[NSLayoutConstraint activateConstraints:@[
@@ -286,14 +285,16 @@ Messaging Center for Preferences to send and recieve information
 -(void)viewDidLoad {
     %orig;
 
+	NotificationController *me = (NotificationController*) self;
+
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
+		CGRect frame = (CGRect){{0, 0}, {me.view.frame.size.width, 150}};
 
-		// Set the adjunctListController global variable for use later
-		adjunctListController = self;
+		// Set the notificationController global variable for use later
+		notificationController = me;
 
-		// Get the stack view from self
-        UIStackView *stackView = [self valueForKey:@"_stackView"];
+		// Get the stack view from me
+        UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 		// Create a flow layout
 		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
@@ -304,49 +305,47 @@ Messaging Center for Preferences to send and recieve information
 		layout.minimumLineSpacing = 5;
 
 		// Setup the collection view
-    	self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
-    	[self.collectionView setDataSource:self];
-    	[self.collectionView setDelegate:self];
+    	me.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
+    	[me.collectionView setDataSource:me];
+    	[me.collectionView setDelegate:me];
 
 		// Remove the ugly background colour
-		self.collectionView.backgroundColor = [UIColor clearColor];
+		me.collectionView.backgroundColor = [UIColor clearColor];
 		
 		// Allow paging
-		self.collectionView.pagingEnabled = YES;
+		me.collectionView.pagingEnabled = YES;
 		
-		self.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
-		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
+		me.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
+		me.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
 		
 		// Set corner radius
-		self.collectionView.layer.cornerRadius = 13.0f;
+		me.collectionView.layer.cornerRadius = 13.0f;
 
 		// Disable selection
-		self.collectionView.allowsSelection = NO;
+		me.collectionView.allowsSelection = NO;
 
 		if(kShowScrollIndicator) {
-			[self.collectionView setShowsHorizontalScrollIndicator:YES];
+			[me.collectionView setShowsHorizontalScrollIndicator:YES];
 		} else {
-			[self.collectionView setShowsHorizontalScrollIndicator:NO];
+			[me.collectionView setShowsHorizontalScrollIndicator:NO];
 		}
 
 		// Register cell class
-    	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+    	[me.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
 
 		// Add the collection view to the stackView
-		[stackView addArrangedSubview:self.collectionView];
+		[stackView addArrangedSubview:me.collectionView];
 
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
-            [self.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.collectionView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.collectionView.heightAnchor constraintEqualToConstant:150]
+            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [me.collectionView.heightAnchor constraintEqualToConstant:150]
 		]];
 
-		[self.collectionView reloadData];
+		[me.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
-		[self.collectionView removeFromSuperview];
+		[me.collectionView removeFromSuperview];
 	}
 }
 
@@ -354,11 +353,13 @@ Messaging Center for Preferences to send and recieve information
 -(void)_updatePresentingContent {
     %orig;
 
+	NotificationController *me = (NotificationController*) self;
+
 	if(kEnabled) {
-		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-		[self.collectionView reloadData];
+		UIStackView *stackView = [me valueForKey:@"_stackView"];
+		[stackView removeArrangedSubview:me.collectionView];
+    	[stackView addArrangedSubview:me.collectionView];
+		[me.collectionView reloadData];
 	}
 }
 
@@ -367,16 +368,18 @@ Messaging Center for Preferences to send and recieve information
 
 	NSLog(@"[LockWidgets] (INFO) Current Widgets: %@", widgetsArray);
 
-	UIStackView *stackView = [self valueForKey:@"_stackView"];
+	NotificationController *me = (NotificationController*) self;
+
+	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-		[self.collectionView reloadData];
+		[stackView removeArrangedSubview:me.collectionView];
+    	[stackView addArrangedSubview:me.collectionView];
+		[me.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
-		[stackView removeArrangedSubview:self.collectionView];
-		[self.collectionView removeFromSuperview];
+		[stackView removeArrangedSubview:me.collectionView];
+		[me.collectionView removeFromSuperview];
 	}
 }
 
@@ -384,11 +387,13 @@ Messaging Center for Preferences to send and recieve information
 -(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
 
+	NotificationController *me = (NotificationController*) self;
+
 	if(kEnabled) {
-		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-		[self.collectionView reloadData];
+		UIStackView *stackView = [me valueForKey:@"_stackView"];
+		[stackView removeArrangedSubview:me.collectionView];
+    	[stackView addArrangedSubview:me.collectionView];
+		[me.collectionView reloadData];
 	}
 }
 
@@ -401,281 +406,12 @@ Messaging Center for Preferences to send and recieve information
 %new -(void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2 {
 	NSLog(@"[LockWidgets] (INFO) (reloadData) Reloading Data for: %@", identifier);
 
-	UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:arg2];
+	NotificationController *me = (NotificationController*) self;
+
+	UICollectionViewCell *cell = [me.collectionView cellForItemAtIndexPath:arg2];
 	UIView *contentView = cell.contentView;
 	WGWidgetPlatterView *platterView = (WGWidgetPlatterView *)contentView;
 
-	if(![platterView isKindOfClass:%c(WGWidgetPlatterView)]) {
-		NSLog(@"[LockWidgets] (FATAL) platterView is not WGWidgetPlatterView!! returning before crash...");
-		return;
-	}
-
-	// Parse the widget information from the identifier
-	NSError *error;
-	NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
-
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-
-	if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
-	} else {
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
-	}
-}
-
-%end
-%end
-
-/*
-* iOS 12 code
-*/
-%group old
-%hook SBDashBoardNotificationAdjunctListViewController
-
-%property (nonatomic, retain) WGWidgetPlatterView *widgetView;
-%property (nonatomic, retain) WGWidgetHostingViewController *widgetHost;
-%property (strong, nonatomic) UICollectionView *collectionView;
-
-%new - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-	int index = indexPath.row;
-    
-	// Parse the widget information from the identifier
-	NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
-
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-
-	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
-		// If it's a calander based widget, we need to do more setup for it to work correctly
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-			
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-	} else {
-		self.widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-	}
-
-	// Create the frame for the platterView
-	CGRect frame = (CGRect){{0, 0}, {cell.contentView.bounds.size.width, cell.contentView.bounds.size.height}};
-    
-	// Generate a platter view
-	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
-
-	if (%c(MTMaterialView)) {
-		@try {
-			[platterView setValue:@1 forKey:@"_recipe"];
-			[platterView setValue:@2 forKey:@"_options"];
-		} @catch (NSException *e) {
-			// do nothing for NSUndefinedKeyException
-		}
-
-		// go through each subview to find material view (usually the first element)
-		for (UIView *view in [platterView subviews]) {
-			if ([view isKindOfClass:%c(MTMaterialView)]) {
-				MTMaterialView *materialView = (MTMaterialView *)view;
-				if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
-					[materialView setFinalRecipe:1 options:2];
-				} else {
-					[view removeFromSuperview];
-
-					@autoreleasepool {
-						// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
-						materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
-						materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-						[materialView _setCornerRadius:13.0f];
-						[platterView insertSubview:materialView atIndex:0];
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	// Set the widgetHost for the platter view
-	[platterView setWidgetHost:self.widgetHost];
-
-	// Set the cell's contentView
-	for (UIView *view in cell.contentView.subviews) {
-		[view removeFromSuperview];
-	}
-
-	[cell.contentView addSubview:platterView];
-
-	// Add constraints
-	[NSLayoutConstraint activateConstraints:@[
-        [platterView.centerXAnchor constraintEqualToAnchor:cell.centerXAnchor],
-        [platterView.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:10],
-        [platterView.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-10],
-        [platterView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
-    ]];
-	
-	// Reload data at the end of initialization
-	NSLog(@"[LockWidgets] (INFO) Attempting to reload data for: %@", [widgetsArray objectAtIndex:index]);
-
-	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
-	} else {
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
-	}
-    
-    return cell;
-}
-
-%new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [widgetsArray count];
-}
-
-%new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
-}
-
-%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, 2.5, 0, 2.5);
-}
-
-%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
-    [collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
-                            atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
-                                    animated:YES];
-}
-
-%new - (CGFloat)collectionView:(UICollectionView *)collectionView
-                   layout:(UICollectionViewLayout *)collectionViewLayout
-        minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 5;
-}
-
--(void)viewDidLoad {
-    %orig;
-
-	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
-
-		// Set the controller global variable for use later
-		controller = self;
-
-		// Get the stack view from self
-        UIStackView *stackView = [self valueForKey:@"_stackView"];
-
-		// Create a flow layout
-		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-		
-		// Setup the layout
-		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-		layout.itemSize = CGSizeMake(355, 150);
-		layout.minimumLineSpacing = 5;
-
-		// Setup the collection view
-    	self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
-    	[self.collectionView setDataSource:self];
-    	[self.collectionView setDelegate:self];
-
-		// Remove the ugly background colour
-		self.collectionView.backgroundColor = [UIColor clearColor];
-		
-		// Allow paging
-		self.collectionView.pagingEnabled = YES;
-
-		self.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
-		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
-
-		// Set corner radius
-		self.collectionView.layer.cornerRadius = 13.0f;
-
-		// Disable selection
-		self.collectionView.allowsSelection = NO;
-
-		if(kShowScrollIndicator) {
-			[self.collectionView setShowsHorizontalScrollIndicator:YES];
-		} else {
-			[self.collectionView setShowsHorizontalScrollIndicator:NO];
-		}
-
-		// Register cell class
-    	[self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-
-		// Add the collection view to the stackView
-		[stackView addArrangedSubview:self.collectionView];
-
-		// Add constraints
-		[NSLayoutConstraint activateConstraints:@[
-            [self.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.collectionView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:2.5],
-            [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-2.5],
-            [self.collectionView.heightAnchor constraintEqualToConstant:150]
-		]];
-
-		[self.collectionView reloadData];
-	} else {
-		// Remove the collection view from the hierarchy
-		[self.collectionView removeFromSuperview];
-	}
-}
-
--(bool)hasContent {
-	return kEnabled;
-}
-
--(void)_updatePresentingContent {
-    %orig;
-
-	if(kEnabled) {
-		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-
-		[self.collectionView reloadData];
-	}
-}
-
--(void)viewDidAppear:(BOOL)animated {
-    %orig(animated);
-
-	UIStackView *stackView = [self valueForKey:@"_stackView"];
-
-	if(kEnabled) {
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-		[self.collectionView reloadData];
-	} else {
-		// Remove the collection view from the hierarchy
-		[stackView removeArrangedSubview:self.collectionView];
-		[self.collectionView removeFromSuperview];
-	}
-}
-
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
-    %orig;
-
-	if(kEnabled) {
-		UIStackView *stackView = [self valueForKey:@"_stackView"];
-		[stackView removeArrangedSubview:self.collectionView];
-    	[stackView addArrangedSubview:self.collectionView];
-
-		[self.collectionView reloadData];
-	}
-}
-
--(BOOL)isPresentingContent 
-{
-    return kEnabled;
-}
-
-%new -(void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2 {
-	NSLog(@"[LockWidgets] (INFO) (reloadData) Reloading Data for: %@", identifier);
-
-	UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:arg2];
-	UIView *contentView = cell.contentView;
-	WGWidgetPlatterView *platterView = (WGWidgetPlatterView *)contentView;
-	
 	if(![platterView isKindOfClass:%c(WGWidgetPlatterView)]) {
 		NSLog(@"[LockWidgets] (FATAL) platterView is not WGWidgetPlatterView!! returning before crash...");
 		return;
@@ -724,7 +460,7 @@ void reloadPrefs() {
 
 %ctor {
 	reloadPrefs();
-
+	/*
 	if(@available(iOS 13.0, *)) {
 		NSLog(@"[LockWidgets] (INFO) Current version is iOS 13!");
 		%init(ios13)
@@ -732,6 +468,15 @@ void reloadPrefs() {
 		NSLog(@"[LockWidgets] (INFO) Current version is iOS 12 or lower!");
 		%init(old)
 	}
+	*/
+
+	NSString *notificationControllerClass = @"SBDashBoardNotificationAdjunctListViewController";
+
+	if(@available(iOS 13.0, *)) {
+		notificationControllerClass = @"CSNotificationAdjunctListViewController";
+	}
+
+	%init(group, NotificationController = NSClassFromString(notificationControllerClass));
 
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPrefs, CFSTR("me.conorthedev.lockwidgets.prefs/ReloadPrefs"), NULL, kNilOptions);
 }
