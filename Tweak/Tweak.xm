@@ -608,8 +608,8 @@ Messaging Center for Preferences to send and recieve information
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
             [self.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.collectionView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.collectionView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:5],
+            [self.collectionView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-5],
             [self.collectionView.heightAnchor constraintEqualToConstant:150]
 		]];
 
