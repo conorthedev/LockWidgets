@@ -264,7 +264,7 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
+    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
@@ -280,14 +280,14 @@ Messaging Center for Preferences to send and recieve information
 %new - (CGFloat)collectionView:(UICollectionView *)collectionView
                    layout:(UICollectionViewLayout *)collectionViewLayout
         minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 10;
+    return 5;
 }
 	
 -(void)viewDidLoad {
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
 
 		// Set the adjunctListController global variable for use later
 		adjunctListController = self;
@@ -300,7 +300,7 @@ Messaging Center for Preferences to send and recieve information
 		
 		// Setup the layout
 		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-		layout.itemSize = CGSizeMake(355, 150);
+		layout.itemSize = CGSizeMake(self.collectionView.frame.size.width - 5, self.collectionView.frame.size.height);
 		layout.minimumLineSpacing = 5;
 
 		// Setup the collection view
@@ -534,7 +534,7 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
+    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
@@ -550,14 +550,14 @@ Messaging Center for Preferences to send and recieve information
 %new - (CGFloat)collectionView:(UICollectionView *)collectionView
                    layout:(UICollectionViewLayout *)collectionViewLayout
         minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 10;
+    return 5;
 }
 
 -(void)viewDidLoad {
     %orig;
 
 	if(kEnabled) {
-		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width - 5, 150}};
+		CGRect frame = (CGRect){{0, 0}, {self.view.frame.size.width, 150}};
 
 		// Set the controller global variable for use later
 		controller = self;
@@ -570,7 +570,7 @@ Messaging Center for Preferences to send and recieve information
 		
 		// Setup the layout
 		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-		layout.itemSize = CGSizeMake(355, 150);
+		layout.itemSize = CGSizeMake(self.collectionView.frame.size.width - 5, self.collectionView.frame.size.height);
 		layout.minimumLineSpacing = 5;
 
 		// Setup the collection view
