@@ -15,4 +15,29 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 
 	return widgetsArray;
 }
+
+- (NSArray *)allExtensionInfos {
+	NSFileManager *manager = [NSFileManager defaultManager];
+	NSString *directory = @"/Library/Application Support/LockWidgets/Extensions/";
+	NSArray *extensionPlists = [manager contentsOfDirectoryAtPath:directory error:nil];
+	NSMutableArray *extensionInfos = [NSMutableArray new];
+
+	for (NSString *filename in extensionPlists) {
+		NSString *path = [directory stringByAppendingPathComponent:filename];
+		NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:path];
+
+		if (plist) {
+			NSString *name = plist[@"name"] ?: [filename stringByReplacingOccurrencesOfString:@".plist" withString:@""];
+			NSString *title = plist[@"title"] ?: name;
+
+			NSString *specifier = plist[@"specifier"];
+			NSString *mainClass = plist[@"mainClass"];
+
+			[extensionInfos addObject:@{@"specifier" : specifier, @"mainClass" : mainClass}];
+		}
+	}
+
+	return [NSArray arrayWithArray:extensionInfos];
+}
+
 @end

@@ -74,13 +74,24 @@ Messaging Center for Preferences to send and recieve information
 	}
 }
 
-// Returns § list of usable widgets
+// Returns a list of usable widgets
 - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
+	LockWidgetsManager *manager = [[LockWidgetsManager alloc] init];
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
 
-	return @{@"widgets" : [[[LockWidgetsManager alloc] init] allWidgetIdentifiers:wdc]};
+	NSArray *extensions = [manager allExtensionInfos];
+
+	for (NSDictionary *extension in extensions) {
+		NSLog(@"[LockWidgets] (DEBUG) Extension ID: %@ | Extension Main Class: %@", extension[@"specifier"], extension[@"mainClass"]);
+
+		id mainClass = [[NSClassFromString(extension[@"mainClass"]) alloc] init];
+
+		NSLog(@"[LockWidgets] (DEBUG) %@'s main class description: %@", extension[@"specifier"], [mainClass description]);
+	}
+
+	return @{@"widgets" : [manager allWidgetIdentifiers:wdc]};
 }
 
 // Returns the current identifier

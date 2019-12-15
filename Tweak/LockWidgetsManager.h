@@ -3,4 +3,5 @@
 @interface LockWidgetsManager : NSObject
 //- (LWView *)getLWViewFromIdentifier:(NSString *)identifier;
 - (NSArray *)allWidgetIdentifiers:(WGWidgetDiscoveryController *)wdc;
+- (NSArray *)allExtensionInfos;
 @end
