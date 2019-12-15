@@ -51,11 +51,14 @@ static NSArray *availableWidgetsCache = nil;
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
 	// Get a list of available widget identifiers
-	if(availableWidgetsCache == nil && self.tableData == nil) {
-		NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
+	if(availableWidgetsCache == nil) {
+		if(self.tableData == nil) {
+			NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
-		NSArray *widgets = reply[@"widgets"];
-		self.tableData = widgets;
+			NSArray *widgets = reply[@"widgets"];
+			availableWidgetsCache = widgets;
+			self.tableData = widgets;
+		}
 	} else {
 		if(self.tableData == nil) {
 			self.tableData = availableWidgetsCache;
@@ -142,7 +145,7 @@ static NSArray *availableWidgetsCache = nil;
 	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-	
+
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier}];
 
 	NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
