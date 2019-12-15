@@ -114,8 +114,6 @@ BOOL refreshDictionary = YES;
 	NSLog(@"[LockWidgets] (DEBUG) reply = %@", reply);
 
 	if(refreshDictionary || reply == nil) {
-		[widgetCellInfoCache removeAllObjects];
-
 		NSLog(@"[LockWidgets] (DEBUG) Refreshing info for Identifier: %@", identifier);
 
 		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
