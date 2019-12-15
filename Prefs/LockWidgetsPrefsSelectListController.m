@@ -5,6 +5,7 @@
 static CPDistributedMessagingCenter *c = nil;
 static NSString *cellIdentifier = @"Cell";
 static NSMutableArray *widgetIdentifiers = nil;
+static NSArray *availableWidgetsCache = nil;
 
 - (id)initForContentSize:(CGSize)size {
 	self = [super init];
@@ -50,13 +51,19 @@ static NSMutableArray *widgetIdentifiers = nil;
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
 	// Get a list of available widget identifiers
-	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
+	if(availableWidgetsCache == nil && self.tableData == nil) {
+		NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
-	NSArray *widgets = reply[@"widgets"];
-	self.tableData = widgets;
+		NSArray *widgets = reply[@"widgets"];
+		self.tableData = widgets;
+	} else {
+		if(self.tableData == nil) {
+			self.tableData = availableWidgetsCache;
+		}
+	}
 
-	// Get the current set identifier
-	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifier" userInfo:nil];
+	// Get the list of currently active identifiers
+	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifiers" userInfo:nil];
 
 	NSMutableArray *currentIdentifiers = identifierReply[@"currentIdentifiers"];
 	widgetIdentifiers = currentIdentifiers;
@@ -94,9 +101,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
 
-	NSDictionary *imageReply = [c sendMessageAndReceiveReplyName:@"getIcon" userInfo:@{@"identifier" : identifier}];
-
-	NSData *imageData = imageReply[@"data"];
+	NSData *imageData = reply[@"imageData"];
 	UIImage *image = [UIImage imageWithData:imageData];
 
 	cell.textLabel.text = reply[@"displayName"];
@@ -137,6 +142,7 @@ static NSMutableArray *widgetIdentifiers = nil;
 	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
 
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+	
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier}];
 
 	NSDictionary *displayReply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
