@@ -264,43 +264,23 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(355, 150);
+    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
 }
 
-%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
+%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(0, 5, 0, 5);
 }
 
-%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{   
+%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
     [collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
                             atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
                                     animated:YES];
 }
 
-%new - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    float visibleCenterPositionOfScrollView = scrollView.contentOffset.x + (self.collectionView.bounds.size.width / 2);
-
-    closestCellIndex = -1;
-    float closestDistance = FLT_MAX;
-    for (int i = 0; i < self.collectionView.visibleCells.count; i++) {
-        UICollectionViewCell *cell = self.collectionView.visibleCells[i];
-        float cellWidth = cell.bounds.size.width;
-
-        float cellCenter = cell.frame.origin.x + cellWidth / 2;
-
-        // Now calculate closest cell
-        float distance = fabsf(visibleCenterPositionOfScrollView - cellCenter);
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestCellIndex = [self.collectionView indexPathForCell:cell].row;
-        }
-    }
-
-    if (closestCellIndex != -1) {
-        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-    }
+%new - (CGFloat)collectionView:(UICollectionView *)collectionView
+                   layout:(UICollectionViewLayout *)collectionViewLayout
+        minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 10;
 }
 	
 -(void)viewDidLoad {
@@ -333,14 +313,12 @@ Messaging Center for Preferences to send and recieve information
 		
 		// Allow paging
 		self.collectionView.pagingEnabled = YES;
+		
 		self.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
 		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
 		
 		// Set corner radius
 		self.collectionView.layer.cornerRadius = 13.0f;
-
-		UIScrollView *scrollView = (UIScrollView *)self.collectionView;
-		scrollView.delegate = self;
 
 		if(kShowScrollIndicator) {
 			[self.collectionView setShowsHorizontalScrollIndicator:YES];
@@ -556,45 +534,25 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(355, 150);
+    return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height);
 }
 
-%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
+%new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(0, 5, 0, 5);
 }
 
-%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{   
+%new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
     [collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
                             atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
                                     animated:YES];
 }
 
-%new - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    float visibleCenterPositionOfScrollView = scrollView.contentOffset.x + (self.collectionView.bounds.size.width / 2);
-
-    closestCellIndex = -1;
-    float closestDistance = FLT_MAX;
-    for (int i = 0; i < self.collectionView.visibleCells.count; i++) {
-        UICollectionViewCell *cell = self.collectionView.visibleCells[i];
-        float cellWidth = cell.bounds.size.width;
-
-        float cellCenter = cell.frame.origin.x + cellWidth / 2;
-
-        // Now calculate closest cell
-        float distance = fabsf(visibleCenterPositionOfScrollView - cellCenter);
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestCellIndex = [self.collectionView indexPathForCell:cell].row;
-        }
-    }
-
-    if (closestCellIndex != -1) {
-        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:closestCellIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-    }
+%new - (CGFloat)collectionView:(UICollectionView *)collectionView
+                   layout:(UICollectionViewLayout *)collectionViewLayout
+        minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 10;
 }
-	
+
 -(void)viewDidLoad {
     %orig;
 
@@ -627,6 +585,9 @@ Messaging Center for Preferences to send and recieve information
 		self.collectionView.pagingEnabled = YES;
 		self.collectionView.contentSize = CGSizeMake(([widgetsArray count] * 355) + 100, 150);
 		self.collectionView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
+
+		// Set corner radius
+		self.collectionView.layer.cornerRadius = 13.0f;
 
 		UIScrollView *scrollView = (UIScrollView *)self.collectionView;
 		scrollView.delegate = self;
