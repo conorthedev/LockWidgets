@@ -97,7 +97,7 @@ Messaging Center for Preferences to send and recieve information
 // Returns the display name of a widget from its identifier
 - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
-	NSString *displayName;
+	NSString *displayName = @"";
 	NSData *imageData;
 
 	NSError *error;
@@ -116,14 +116,10 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	if(@available(iOS 13.0, *)) {
-		NSError *error;
-		NSExtension *extension = [NSExtension extensionWithIdentifier:userInfo[@"identifier"] error:&error];
-
-    	WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
 		WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 
 		if(!host.appBundleID) {
-			return nil;
+			return @{@"displayName" : [widgetInfo displayName]};
 		}
 
 		SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
@@ -140,15 +136,13 @@ Messaging Center for Preferences to send and recieve information
 
 		UIImage *image = [icon generateIconImageWithInfo:imageInfo];
 
-		NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
-
 		if (image == nil) {
-			imageData = nil;
+			return @{@"displayName" : [widgetInfo displayName]};
 		}
 
 		imageData = UIImagePNGRepresentation(image);
 	} else {
-		imageData = nil;
+		return @{@"displayName" : [widgetInfo displayName]};
 	}
 
 	return @{@"displayName" : [widgetInfo displayName], @"imageData" : imageData};
