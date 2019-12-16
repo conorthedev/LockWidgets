@@ -46,6 +46,7 @@ Messaging Center for Preferences to send and recieve information
  		[_messagingCenter runServerOnCurrentThread];
  		[_messagingCenter registerForMessageName:@"getWidgets" target:self selector:@selector(handleGetWidgets:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getInfo" target:self selector:@selector(handleGetInfo:withUserInfo:)];
+		[_messagingCenter registerForMessageName:@"getExtensionInfo" target:self selector:@selector(handleGetExtensionInfo:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"getCurrentIdentifiers" target:self selector:@selector(handleGetCurrentIdentifiers:withUserInfo:)];
 		[_messagingCenter registerForMessageName:@"setIdentifier" target:self selector:@selector(handleSetIdentifier:withUserInfo:)];
 	}
@@ -78,20 +79,13 @@ Messaging Center for Preferences to send and recieve information
 - (NSDictionary *)handleGetWidgets:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	LockWidgetsManager *manager = [[LockWidgetsManager alloc] init];
+
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
 
-	NSArray *extensions = [manager allExtensionInfos];
+	NSLog(@"[LockWidgets] (DEBUG) Available Extensions: %@", [manager allExtensionIdentifiers]);
 
-	for (NSDictionary *extension in extensions) {
-		NSLog(@"[LockWidgets] (DEBUG) Extension ID: %@ | Extension Main Class: %@", extension[@"specifier"], extension[@"mainClass"]);
-
-		id mainClass = [[NSClassFromString(extension[@"mainClass"]) alloc] init];
-
-		NSLog(@"[LockWidgets] (DEBUG) %@'s main class description: %@", extension[@"specifier"], [mainClass description]);
-	}
-
-	return @{@"widgets" : [manager allWidgetIdentifiers:wdc]};
+	return @{@"widgets" : [manager allWidgetIdentifiers:wdc], @"extensions" : [manager allExtensionIdentifiers]};
 }
 
 // Returns the current identifier
@@ -100,7 +94,7 @@ Messaging Center for Preferences to send and recieve information
 	return @{@"currentIdentifiers" : [widgetsArray mutableCopy]};
 }
 
-// Returns the display name of a widget from its identifier
+// Returns the display name and image of a widget from its identifier
 - (NSDictionary *)handleGetInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
 {
 	NSString *displayName = @"";
@@ -152,6 +146,17 @@ Messaging Center for Preferences to send and recieve information
 	}
 
 	return @{@"displayName" : [widgetInfo displayName], @"imageData" : imageData};
+}
+
+// Returns the display name and image of an extension from its identifier
+- (NSDictionary *)handleGetExtensionInfo:(NSString *)name withUserInfo:(NSDictionary *)userInfo 
+{
+	LockWidgetsManager *manager = [[LockWidgetsManager alloc] init];
+	NSDictionary *dictionary = [manager extensionInfoFromIdentifier:userInfo[@"identifier"]];
+
+	NSLog(@"[LockWidgets] (DEBUG) Info for %@: %@", userInfo[@"identifier"], dictionary);
+
+	return dictionary;
 }
 
 @end

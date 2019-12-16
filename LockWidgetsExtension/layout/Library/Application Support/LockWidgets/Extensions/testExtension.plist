@@ -8,5 +8,7 @@
     <string>TestExtensionWidgetView</string>
     <key>iconPath</key>
     <string>testExtension/icon.png</string>
+    <key>displayName</key>
+    <string>Testing Extension</string>
 </dict>
 </plist>

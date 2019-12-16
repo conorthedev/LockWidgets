@@ -1,7 +1,8 @@
 #import "../Common.h"
 
 @interface LockWidgetsManager : NSObject
-//- (LWView *)getLWViewFromIdentifier:(NSString *)identifier;
 - (NSArray *)allWidgetIdentifiers:(WGWidgetDiscoveryController *)wdc;
-- (NSArray *)allExtensionInfos;
+- (NSArray *)allExtensionFilePaths;
+- (NSArray *)allExtensionIdentifiers;
+- (NSDictionary *)extensionInfoFromIdentifier:(NSString *)identifier;
 @end
