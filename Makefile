@@ -10,6 +10,6 @@ endif
 
 include $(THEOS)/makefiles/common.mk
 
-SUBPROJECTS += liblockwidgets Tweak Prefs LockWidgetsExtension
+SUBPROJECTS += Tweak Prefs LockWidgetsExtension
 
 include $(THEOS_MAKE_PATH)/aggregate.mk

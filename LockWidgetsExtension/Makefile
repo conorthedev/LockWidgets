@@ -14,7 +14,6 @@ LIBRARY_NAME = LockWidgetsExtension
 
 LockWidgetsExtension_OBJC_FILES = TestExtensionWidgetView.m
 LockWidgetsExtension_CFLAGS = -fobjc-arc -I./
-LockWidgetsExtension_LIBRARIES += liblockwidgets
 
 ADDITIONAL_CFLAGS = -Ipublic -Ioverlayheaders -I. -fobjc-arc
 
