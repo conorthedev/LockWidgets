@@ -6,5 +6,7 @@
     <string>me.conorthedev.lockwidgets.testExtension</string>
     <key>mainClass</key>
     <string>TestExtensionWidgetView</string>
+    <key>iconPath</key>
+    <string>testExtension/icon.png</string>
 </dict>
 </plist>
