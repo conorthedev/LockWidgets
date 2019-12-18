@@ -59,23 +59,17 @@ BOOL refreshDictionary = YES;
 
 	// Get a list of available widget identifiers
 	if (availableWidgetsCache == nil) {
-		NSLog(@"[LockWidgetsPrefs] (DEBUG) availableWidgetsCache is nil!");
 		if (self.tableData == nil) {
-			NSLog(@"[LockWidgetsPrefs] (DEBUG) self.tableData is nil!");
 			NSArray *widgets = reply[@"widgets"];
 			availableWidgetsCache = widgets;
 			self.tableData = availableWidgetsCache;
-			NSLog(@"[LockWidgetsPrefs] (DEBUG) self.tableData is now: %@!", self.tableData);
 		}
 	} else {
 		if (availableExtensionsCache == nil) {
-			NSLog(@"[LockWidgetsPrefs] (DEBUG) availableExtensionsCache is nil!");
 			if (self.extensionIdentifiers == nil) {
-				NSLog(@"[LockWidgetsPrefs] (DEBUG) self.extensionIdentifiers is nil!");
 				NSArray *extensions = reply[@"extensions"];
 				availableExtensionsCache = extensions;
 				self.extensionIdentifiers = availableExtensionsCache;
-				NSLog(@"[LockWidgetsPrefs] (DEBUG) self.extensionIdentifiers is now: %@!", self.extensionIdentifiers);
 			}
 		} else {
 			if (self.tableData == nil) {
@@ -131,8 +125,6 @@ BOOL refreshDictionary = YES;
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
 	}
 
-	NSLog(@"[LockWidgetsPrefs] (DEBUG): Current Section: %ld | Current Row: %ld", indexPath.section, indexPath.row);
-
 	if (indexPath.section == 0) {
 		if (self.extensionIdentifiers == nil || [self.extensionIdentifiers count] == 0) {
 			cell.textLabel.text = @"No extensions found!";
@@ -147,8 +139,6 @@ BOOL refreshDictionary = YES;
 
 		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 		NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getExtensionInfo" userInfo:@{@"identifier" : identifier}];
-
-		NSLog(@"[LockWidgetsPrefs] (DEBUG): Data from %@: %@", identifier, reply);
 
 		NSData *imageData = reply[@"imageData"];
 		UIImage *image = [UIImage imageWithData:imageData];
@@ -215,7 +205,6 @@ BOOL refreshDictionary = YES;
 
 			UIGraphicsEndImageContext();
 			if (newThumbnail == nil) {
-				NSLog(@"could not scale image");
 				cell.imageView.image = image;
 			} else {
 				cell.imageView.image = newThumbnail;
