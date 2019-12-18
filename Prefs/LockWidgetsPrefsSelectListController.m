@@ -114,7 +114,11 @@ BOOL refreshDictionary = YES;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (section == 0) {
-		return [self.extensionIdentifiers count];
+		if (self.extensionIdentifiers == nil || [self.extensionIdentifiers count] == 0) {
+			return 1;
+		} else {
+			return [self.extensionIdentifiers count];
+		}
 	} else {
 		return [self.tableData count];
 	}
@@ -130,6 +134,15 @@ BOOL refreshDictionary = YES;
 	NSLog(@"[LockWidgetsPrefs] (DEBUG): Current Section: %ld | Current Row: %ld", indexPath.section, indexPath.row);
 
 	if (indexPath.section == 0) {
+		if (self.extensionIdentifiers == nil || [self.extensionIdentifiers count] == 0) {
+			cell.textLabel.text = @"No extensions found!";
+			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+			cell.detailTextLabel.text = @"Maybe you should try out Notepad?";
+			cell.detailTextLabel.textColor = [UIColor grayColor];
+
+			return cell;
+		}
+
 		NSString *identifier = [self.extensionIdentifiers objectAtIndex:indexPath.row];
 
 		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
@@ -222,6 +235,14 @@ BOOL refreshDictionary = YES;
 	}
 
 	return cell;
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	if (cell.selectionStyle == UITableViewCellSelectionStyleNone) {
+		return nil;
+	}
+	return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
