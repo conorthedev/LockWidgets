@@ -54,16 +54,18 @@ BOOL refreshDictionary = YES;
 }
 
 - (void)refreshList {
-	[self.tableView reloadData];
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
 	// Get a list of available widget identifiers
 	if (availableWidgetsCache == nil) {
+		NSLog(@"[LockWidgetsPrefs] (DEBUG) availableWidgetsCache is nil!");
 		if (self.tableData == nil) {
+			NSLog(@"[LockWidgetsPrefs] (DEBUG) self.tableData is nil!");
 			NSArray *widgets = reply[@"widgets"];
 			availableWidgetsCache = widgets;
 			self.tableData = availableWidgetsCache;
+			NSLog(@"[LockWidgetsPrefs] (DEBUG) self.tableData is now: %@!", self.tableData);
 		}
 	} else {
 		if (availableExtensionsCache == nil) {
@@ -107,6 +109,7 @@ BOOL refreshDictionary = YES;
 			}
 		}
 	}
+	[self.tableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -150,7 +153,6 @@ BOOL refreshDictionary = YES;
 
 			UIGraphicsEndImageContext();
 			if (newThumbnail == nil) {
-				NSLog(@"could not scale image");
 				cell.imageView.image = image;
 			} else {
 				cell.imageView.image = newThumbnail;
