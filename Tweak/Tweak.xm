@@ -170,98 +170,124 @@ Messaging Center for Preferences to send and recieve information
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"widgetCell" forIndexPath:indexPath];
 	NotificationController *me = (NotificationController*) self;
 	int index = indexPath.row;
-    
-	// Parse the widget information from the identifier
-	NSError *error;
-    NSExtension *extension = [NSExtension extensionWithIdentifier:[widgetsArray objectAtIndex:index] error:&error];
-
-    WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
-	WGWidgetHostingViewController *widgetHost;
-
-	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
-		// If it's a calander based widget, we need to do more setup for it to work correctly
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-			
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
-	} else {
-		widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-	}
+	NSString *identifier = [widgetsArray objectAtIndex:index];
+	
+	LockWidgetsManager *manager = [[LockWidgetsManager alloc] init];
+	bool isExtension = [manager identifierIsValid:identifier];
 
 	// Create the frame for the platterView
-	CGRect frame = (CGRect){{0, 0}, {cell.contentView.bounds.size.width, cell.contentView.bounds.size.height}};
-    
-	// Generate a platter view
-	WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
+	CGRect frame = (CGRect){{0, 0}, {cell.contentView.bounds.size.width, cell.contentView.bounds.size.height}};	
 
-	if (%c(MTMaterialView)) {
-		@try {
-			[platterView setValue:@1 forKey:@"_recipe"];
-			[platterView setValue:@2 forKey:@"_options"];
-		} @catch (NSException *e) {
-			// do nothing for NSUndefinedKeyException
+	if(isExtension) {
+		NSDictionary *dictionary = [manager extensionInfoFromIdentifier:identifier];
+		NSString *mainClassName = dictionary[@"mainClass"];
+
+		UIViewController *extensionViewController = [[NSClassFromString(mainClassName) alloc] init];
+		[extensionViewController loadView];
+		extensionViewController.view.frame = frame;
+		extensionViewController.view.layer.cornerRadius = 13.0f;
+		[extensionViewController viewDidLoad];
+		[extensionViewController viewWillAppear:NO];
+
+		// Set the cell's contentView
+		for (UIView *view in cell.contentView.subviews) {
+			[view removeFromSuperview];
 		}
 
-		// go through each subview to find material view (usually the first element)
-		for (UIView *view in [platterView subviews]) {
-			if ([view isKindOfClass:%c(MTMaterialView)]) {
-				MTMaterialView *materialView = (MTMaterialView *)view;
-				if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
-					[materialView setFinalRecipe:1 options:2];
-				} else {
-					[view removeFromSuperview];
+		[cell.contentView addSubview:extensionViewController.view];
 
-					@autoreleasepool {
-						// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
-						materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
-						materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-						[materialView _setCornerRadius:13.0f];
-						[platterView insertSubview:materialView atIndex:0];
+		UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+      	UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      	blurEffectView.frame = cell.contentView.bounds;
+      	blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		blurEffectView.layer.cornerRadius = 13.0f;
+		blurEffectView.clipsToBounds = YES;
+
+      	[cell.contentView insertSubview:blurEffectView atIndex: 0];
+
+		return cell;
+	} else {    
+		// Parse the widget information from the identifier
+		NSError *error;
+		NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
+
+		WGWidgetInfo *widgetInfo = [[%c(WGWidgetInfo) alloc] initWithExtension:extension];
+		WGWidgetHostingViewController *widgetHost;
+
+		if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+			// If it's a calander based widget, we need to do more setup for it to work correctly
+			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+			NSDate *now = [NSDate date];
+				
+			[widgetInfoCal setValue:now forKey:@"_date"];
+			widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil];
+		} else {
+			widgetHost = [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		}
+
+		// Generate a platter view
+		WGWidgetPlatterView *platterView = [[%c(WGWidgetPlatterView) alloc] initWithFrame:frame];
+
+		if (%c(MTMaterialView)) {
+			@try {
+				[platterView setValue:@1 forKey:@"_recipe"];
+				[platterView setValue:@2 forKey:@"_options"];
+			} @catch (NSException *e) {
+				// do nothing for NSUndefinedKeyException
+			}
+
+			// go through each subview to find material view (usually the first element)
+			for (UIView *view in [platterView subviews]) {
+				if ([view isKindOfClass:%c(MTMaterialView)]) {
+					MTMaterialView *materialView = (MTMaterialView *)view;
+					if ([materialView respondsToSelector:@selector(setFinalRecipe:options:)]) {
+						[materialView setFinalRecipe:1 options:2];
+					} else {
+						[view removeFromSuperview];
+
+						@autoreleasepool {
+							// little performance heavy but I couldn't figure out a way to overwrite recipe once view is created
+							materialView = [%c(MTMaterialView) materialViewWithRecipe:1 options:2];
+							materialView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+							[materialView _setCornerRadius:13.0f];
+							[platterView insertSubview:materialView atIndex:0];
+						}
 					}
+					break;
 				}
-				break;
 			}
 		}
+
+		// Set the widgetHost for the platter view
+		[platterView setWidgetHost:widgetHost];
+
+		// Set the cell's contentView
+		for (UIView *view in cell.contentView.subviews) {
+			[view removeFromSuperview];
+		}
+
+		[cell.contentView addSubview:platterView];
+
+		if(@available(iOS 13.0, *)) {
+			// Fix on iOS 13 for the dark header being the old style
+			MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
+			[header removeFromSuperview];
+		}
+		
+		// Reload data at the end of initialization
+		NSLog(@"[LockWidgets] (INFO) Attempting to reload data for: %@", identifier);
+
+		if([identifier isEqualToString:@"com.apple.UpNextWidget.extension"] || [identifier isEqualToString:@"com.apple.mobilecal.widget"]) {
+			WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
+			NSDate *now = [NSDate date];
+			[widgetInfoCal setValue:now forKey:@"_date"];
+			[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
+		} else {
+			[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
+		}
+		
+		return cell;
 	}
-
-	// Set the widgetHost for the platter view
-	[platterView setWidgetHost:widgetHost];
-
-	// Set the cell's contentView
-	for (UIView *view in cell.contentView.subviews) {
-		[view removeFromSuperview];
-	}
-
-	[cell.contentView addSubview:platterView];
-
-	if(@available(iOS 13.0, *)) {
-		// Fix on iOS 13 for the dark header being the old style
-    	MTMaterialView *header = MSHookIvar<MTMaterialView*>(platterView, "_headerBackgroundView");
-    	[header removeFromSuperview];
-	}
-
-	// Add constraints
-	[NSLayoutConstraint activateConstraints:@[
-        [platterView.centerXAnchor constraintEqualToAnchor:cell.centerXAnchor],
-        [platterView.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:10],
-        [platterView.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-10],
-        [platterView.heightAnchor constraintEqualToConstant:widgetInfo.initialHeight + 40]
-    ]];
-	
-	// Reload data at the end of initialization
-	NSLog(@"[LockWidgets] (INFO) Attempting to reload data for: %@", [widgetsArray objectAtIndex:index]);
-
-	if([[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.UpNextWidget.extension"] || [[widgetsArray objectAtIndex:index] isEqualToString:@"com.apple.mobilecal.widget"]) {
-		WGCalendarWidgetInfo *widgetInfoCal = [[%c(WGCalendarWidgetInfo) alloc] initWithExtension:extension];
-		NSDate *now = [NSDate date];
-		[widgetInfoCal setValue:now forKey:@"_date"];
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfoCal delegate:nil host:nil]];
-	} else {
-		[platterView setWidgetHost:[[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil]];
-	}
-    
-    return cell;
 }
 
 %new - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -269,7 +295,7 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(collectionView.frame.size.width - 5, collectionView.frame.size.height);
+    return CGSizeMake(collectionView.frame.size.width - 5, 150);
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
@@ -301,6 +327,24 @@ Messaging Center for Preferences to send and recieve information
 
 		// Get the stack view from me
         UIStackView *stackView = [me valueForKey:@"_stackView"];
+
+		for (NSString *identifier in widgetsArray) {
+			// Notepad Support
+			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+				NSLog(@"[LockWidgets] (DEBUG) Identifier is equal to com.neinzedd9.notepad.lockwidgetsextension");
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					[me.notepadContainerView removeFromSuperview];
+				}
+			} else {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					[me initializeNotepadContainerView];
+					[me showNotepad];
+					[stackView addArrangedSubview:me.notepadContainerView];
+				}
+			}
+		}
 
 		// Create a flow layout
 		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
@@ -347,8 +391,6 @@ Messaging Center for Preferences to send and recieve information
             [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
             [me.collectionView.heightAnchor constraintEqualToConstant:150]
 		]];
-
-		[me.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
 		[me.collectionView removeFromSuperview];
@@ -363,8 +405,33 @@ Messaging Center for Preferences to send and recieve information
 
 	if(kEnabled) {
 		UIStackView *stackView = [me valueForKey:@"_stackView"];
+
+		for (NSString *identifier in widgetsArray) {
+			// Notepad Support
+			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					//todo a safeway to remove the view
+				}
+			} else {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					[me initializeNotepadContainerView];
+					[me showNotepad];
+					[stackView addArrangedSubview:me.notepadContainerView];
+				}
+			}
+		}
+
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
+
+		// Add constraints
+		[NSLayoutConstraint activateConstraints:@[
+            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [me.collectionView.heightAnchor constraintEqualToConstant:150]
+		]];
+
 		[me.collectionView reloadData];
 	}
 }
@@ -379,8 +446,33 @@ Messaging Center for Preferences to send and recieve information
 	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
+		for (NSString *identifier in widgetsArray) {
+			// Notepad Support
+			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					//todo a safeway to remove the view
+[me hideNotepad];
+				}
+			} else {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					[me initializeNotepadContainerView];
+					[me showNotepad];
+					[stackView addArrangedSubview:me.notepadContainerView];
+				}
+			}
+		}
+
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
+
+		// Add constraints
+		[NSLayoutConstraint activateConstraints:@[
+            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [me.collectionView.heightAnchor constraintEqualToConstant:150]
+		]];
+
 		[me.collectionView reloadData];
 	} else {
 		// Remove the collection view from the hierarchy
@@ -397,8 +489,34 @@ Messaging Center for Preferences to send and recieve information
 
 	if(kEnabled) {
 		UIStackView *stackView = [me valueForKey:@"_stackView"];
+
+		for (NSString *identifier in widgetsArray) {
+			// Notepad Support
+			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					//todo a safeway to remove the view
+[me hideNotepad];
+				}
+			} else {
+				if ([me respondsToSelector:@selector(notepadContainerView)]) {
+					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
+					[me initializeNotepadContainerView];
+					[me showNotepad];
+					[stackView addArrangedSubview:me.notepadContainerView];
+				}
+			}
+		}
+
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
+
+		// Add constraints
+		[NSLayoutConstraint activateConstraints:@[
+            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [me.collectionView.heightAnchor constraintEqualToConstant:150]
+		]];
+
 		[me.collectionView reloadData];
 	}
 }

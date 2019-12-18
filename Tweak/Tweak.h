@@ -135,6 +135,7 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -145,6 +146,8 @@ struct SBIconImageInfo {
 - (void)viewDidLayoutSubviews;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
 
 @end
 
@@ -153,6 +156,7 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -162,6 +166,8 @@ struct SBIconImageInfo {
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
 
 @end
 
@@ -170,6 +176,8 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
+@property (nonatomic, assign, getter=isShowingNotepad) BOOL showingNotepad;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -179,6 +187,9 @@ struct SBIconImageInfo {
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
+- (void)initializeNotepadContainerView;
 
 @end
 
