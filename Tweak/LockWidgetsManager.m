@@ -27,8 +27,14 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 
 		if (plist) {
 			NSString *specifier = plist[@"specifier"];
+			NSString *mainClass = plist[@"mainClass"];
 
-			[extensionInfos addObject:specifier];
+			if (NSClassFromString(mainClass)) {
+				[extensionInfos addObject:specifier];
+				NSLog(@"[LockWidgetsManager] (DEBUG) %@'s mainClass: %@ does exist!", specifier, mainClass);
+			} else {
+				NSLog(@"[LockWidgetsManager] (FATAL) %@'s mainClass: %@ does not exist??", specifier, mainClass);
+			}
 		}
 	}
 
@@ -41,8 +47,15 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 
 	if (plist) {
 		NSString *specifier = plist[@"specifier"];
+		NSString *mainClass = plist[@"mainClass"];
 
-		return specifier;
+		if (NSClassFromString(mainClass)) {
+			NSLog(@"[LockWidgetsManager] (DEBUG) %@'s mainClass: %@ does exist!", specifier, mainClass);
+			return specifier;
+		} else {
+			NSLog(@"[LockWidgetsManager] (FATAL) %@'s mainClass: %@ does not exist??", specifier, mainClass);
+			return @"Unknown";
+		}
 	} else {
 		return @"Unknown";
 	}
