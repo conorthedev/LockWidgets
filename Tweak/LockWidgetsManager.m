@@ -81,6 +81,26 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 	return @"Unknown";
 }
 
+- (bool)identifierIsValid:(NSString *)identifier {
+	NSArray *files = [self allExtensionFilePaths];
+
+	for (NSString *filePath in files) {
+		NSFileManager *manager = [NSFileManager defaultManager];
+		NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:filePath];
+
+		if (plist) {
+			NSString *specifier = plist[@"specifier"];
+
+			if ([specifier isEqualToString:identifier]) {
+				return YES;
+			} else {
+				continue;
+			}
+		}
+	}
+	return NO;
+}
+
 - (NSArray *)allExtensionFilePaths {
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSString *directory = @"/Library/Application Support/LockWidgets/Extensions/";

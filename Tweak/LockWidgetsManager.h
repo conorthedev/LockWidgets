@@ -5,4 +5,5 @@
 - (NSArray *)allExtensionFilePaths;
 - (NSArray *)allExtensionIdentifiers;
 - (NSDictionary *)extensionInfoFromIdentifier:(NSString *)identifier;
+- (bool)identifierIsValid:(NSString *)identifier;
 @end
