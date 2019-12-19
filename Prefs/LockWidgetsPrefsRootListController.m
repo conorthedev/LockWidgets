@@ -20,7 +20,6 @@
 
 		HBAppearanceSettings *appearanceSettings = [[HBAppearanceSettings alloc] init];
 		appearanceSettings.tintColor = THEME_COLOR;
-		appearanceSettings.largeTitleStyle = HBAppearanceSettingsLargeTitleStyleNever;
 		self.hb_appearanceSettings = appearanceSettings;
 	}
 
