@@ -34,16 +34,10 @@
                 <string>even_dev</string>
             </dict>
             <dict>
-                <key>cellClass</key>
-                <string>HBTwitterCell</string>
-                <key>label</key>
-                <string>ShadowStonk (Original Idea)</string>
-                <key>user</key>
-                <string>CydiaSaurikStar</string>
-            </dict>
-            <dict>
-				<key>cell</key>
-				<string>PSGroupCell</string>
+			    <key>cell</key>
+                <string>PSGroupCell</string>
+			    <key>label</key>
+			    <string>Main Configuration</string>
             </dict>
             <dict>
                 <key>cell</key>
@@ -60,15 +54,33 @@
 	            <string>me.conorthedev.lockwidgets.prefs/ReloadPrefs</string>
             </dict>
             <dict>
-				<key>cell</key>
-				<string>PSLinkCell</string>
-				<key>label</key>
-				<string>Select Active Widgets</string>
-				<key>detail</key>
-				<string>LockWidgetsPrefsSelectListController</string>
-                <key>isController</key>
-			    <true/>
-			</dict>
+			    <key>cell</key>
+                <string>PSGroupCell</string>
+			    <key>label</key>
+			    <string>Scroll Direction</string>
+            </dict>
+            <dict>
+			    <key>cell</key>
+			    <string>PSSegmentCell</string>
+			    <key>defaults</key>
+			    <string>me.conorthedev.lockwidgets.prefs</string>
+			    <key>default</key>
+			    <string>0</string>
+			    <key>key</key>
+			    <string>kScrollDirection</string>
+			    <key>validValues</key>
+			    <array>
+				    <string>0</string>
+				    <string>1</string>
+			    </array>
+			    <key>validTitles</key>
+			    <array>
+				    <string>Horizontal</string>
+				    <string>Vertical</string>
+			    </array>
+			    <key>PostNotification</key>
+			    <string>me.conorthedev.lockwidgets.prefs/ReloadPrefs</string>
+		    </dict>
             <dict>
                 <key>cell</key>
                 <string>PSSwitchCell</string>
@@ -85,12 +97,36 @@
             </dict>
             <dict>
 			    <key>cell</key>
-			    <string>PSGroupCell</string>
-			    <key>label</key>
-			    <string>Note: changing the active widgets does not require a respring</string>
-			    <key>isStaticText</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Widget Selection</string>
+			    <key>footerText</key>
+			    <string>Note: Changing active widgets does NOT require a respring!</string>
+            </dict>
+            <dict>
+				<key>cell</key>
+				<string>PSLinkCell</string>
+				<key>label</key>
+				<string>Select Active Widgets</string>
+				<key>detail</key>
+				<string>LockWidgetsPrefsSelectListController</string>
+                <key>isController</key>
 			    <true/>
-		    </dict>
+			</dict>
+            <dict>
+			    <key>cell</key>
+                <string>PSGroupCell</string>
+			    <key>label</key>
+			    <string>Credits</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBTwitterCell</string>
+                <key>label</key>
+                <string>ShadowStonk (Original Idea)</string>
+                <key>user</key>
+                <string>CydiaSaurikStar</string>
+            </dict>
         </array>
         <key>title</key>
         <string>LockWidgets</string>

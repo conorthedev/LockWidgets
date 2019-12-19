@@ -5,6 +5,7 @@
 
 bool kEnabled = YES;
 bool kShowScrollIndicator = YES;
+int kScrollDirection = 0;
 
 HBPreferences *preferences;
 NSMutableArray *widgetsArray;
@@ -314,9 +315,16 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
-    [collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
+    BOOL scrollVertical = kScrollDirection != 0;
+	if(scrollVertical) {
+		[collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
+                            atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                                    animated:YES];
+	} else {
+		[collectionView scrollToItemAtIndexPath:context.nextFocusedIndexPath
                             atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
                                     animated:YES];
+	}
 }
 
 %new - (CGFloat)collectionView:(UICollectionView *)collectionView
@@ -361,7 +369,13 @@ Messaging Center for Preferences to send and recieve information
 		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
 		
 		// Setup the layout
-		[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+		BOOL scrollVertical = kScrollDirection != 0;
+		if(scrollVertical) {
+			[layout setScrollDirection:UICollectionViewScrollDirectionVertical];
+		} else {
+			[layout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+		}
+
 		layout.itemSize = CGSizeMake(355, 150);
 		layout.minimumLineSpacing = 5;
 
@@ -583,18 +597,21 @@ void reloadPrefs() {
     [preferences registerDefaults:@{
         @"kEnabled": @YES,
         @"kWidgetIdentifiers": [@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy],
-		@"kShowScrollIndicator": @YES
+		@"kShowScrollIndicator": @YES,
+		@"kScrollDirection": @"0"
     }];
 
 	[preferences registerBool:&kEnabled default:YES forKey:@"kEnabled"];
 	[preferences registerBool:&kShowScrollIndicator default:YES forKey:@"kShowScrollIndicator"];
 	[preferences registerObject:&widgetsArray default:[@[@"com.apple.BatteryCenter.BatteryWidget", @"com.apple.UpNextWidget.extension"] mutableCopy] forKey:@"kWidgetIdentifiers"];
+	kScrollDirection = [[preferences objectForKey:@"kScrollDirection"] intValue];
 
 	widgetsArray = [widgetsArray mutableCopy];
 
 	NSLog(@"[LockWidgets] (INFO) Current Enabled State: %i", kEnabled);
 	NSLog(@"[LockWidgets] (INFO) Current Scroll Identifier State: %i", kShowScrollIndicator);
 	NSLog(@"[LockWidgets] (INFO) Current Identifiers: %@", widgetsArray);
+	NSLog(@"[LockWidgets] (INFO) Current Scroll Direction: %ld", (long) kScrollDirection);
 }
 
 %ctor {
