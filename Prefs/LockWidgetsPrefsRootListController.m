@@ -1,4 +1,5 @@
 #include "LockWidgetsPrefsRootListController.h"
+#import <Cephei/HBPreferences.h>
 #import <CepheiPrefs/HBAppearanceSettings.h>
 
 #define THEME_COLOR [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
@@ -54,6 +55,14 @@
 
 - (void)respring:(id)sender {
 	[HBRespringController respringAndReturnTo:[NSURL URLWithString:@"prefs:root=LockWidgets"]];
+}
+
+- (void)resetPrefs:(id)sender {
+	HBPreferences *prefs =
+		[[HBPreferences alloc] initWithIdentifier:@"me.conorthedev.lockwidgets.prefs"];
+	[prefs removeAllObjects];
+
+	[self respring:sender];
 }
 
 @end

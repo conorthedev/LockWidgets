@@ -4,6 +4,7 @@
 
 @interface LockWidgetsPrefsRootListController : HBRootListController
 - (void)respring:(id)sender;
+- (void)resetPrefs:(id)sender;
 
 @property (nonatomic, retain) UIBarButtonItem *respringButton;
 
