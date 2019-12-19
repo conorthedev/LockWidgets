@@ -394,17 +394,14 @@ Messaging Center for Preferences to send and recieve information
 
 	if(kEnabled) {
 		UIStackView *stackView = [me valueForKey:@"_stackView"];
-
-		for (NSString *identifier in widgetsArray) {
-			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[stackView removeArrangedSubview:me.collectionView];
-				}
-			} else {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[stackView addArrangedSubview:me.notepadContainerView];
-				}
+		
+		if([widgetsArray containsObject:@"com.neinzedd9.notepad"]) {
+			if ([me respondsToSelector:@selector(notepadContainerView)]) {
+				[stackView removeArrangedSubview:me.collectionView];
+			}
+		} else {
+			if ([me respondsToSelector:@selector(notepadContainerView)]) {
+				[stackView addArrangedSubview:me.notepadContainerView];
 			}
 		}
 
@@ -433,16 +430,13 @@ Messaging Center for Preferences to send and recieve information
 	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
-		for (NSString *identifier in widgetsArray) {
-			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[stackView removeArrangedSubview:me.collectionView];
-				}
-			} else {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[stackView addArrangedSubview:me.notepadContainerView];
-				}
+		if([widgetsArray containsObject:@"com.neinzedd9.notepad"]) {
+			if ([me respondsToSelector:@selector(notepadContainerView)]) {
+				[stackView removeArrangedSubview:me.collectionView];
+			}
+		} else {
+			if ([me respondsToSelector:@selector(notepadContainerView)]) {
+				[stackView addArrangedSubview:me.notepadContainerView];
 			}
 		}
 
