@@ -16,13 +16,19 @@
 															  action:@selector(respring:)];
 		self.respringButton.tintColor = [UIColor redColor];
 		self.navigationItem.rightBarButtonItem = self.respringButton;
+		self.navigationController.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+
+		HBAppearanceSettings *appearanceSettings = [[HBAppearanceSettings alloc] init];
+		appearanceSettings.tintColor = THEME_COLOR;
+		appearanceSettings.largeTitleStyle = HBAppearanceSettingsLargeTitleStyleNever;
+		self.hb_appearanceSettings = appearanceSettings;
 	}
 
 	return self;
 }
 
-+ (UIColor *)hb_tintColor {
-	return THEME_COLOR;
+- (HBAppearanceSettingsLargeTitleStyle)largeTitleStyle {
+	return HBAppearanceSettingsLargeTitleStyleNever;
 }
 
 - (void)loadView {
