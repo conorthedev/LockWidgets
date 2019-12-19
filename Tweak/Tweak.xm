@@ -1,7 +1,7 @@
 #import "Tweak.h"
 #import <Cephei/HBPreferences.h>
 #import "LockWidgetsManager.h"
-#import "UICollectionView+LockWidgets.h"
+#import "UIKit+LockWidgets.h"
 
 bool kEnabled = YES;
 bool kShowScrollIndicator = YES;
@@ -178,7 +178,7 @@ Messaging Center for Preferences to send and recieve information
 	// Create the frame for the platterView
 	CGRect frame = (CGRect){{0, 0}, {cell.contentView.bounds.size.width, cell.contentView.bounds.size.height}};	
 
-	if(isExtension) {
+	if(isExtension) {		
 		NSDictionary *dictionary = [manager extensionInfoFromIdentifier:identifier];
 		NSString *mainClassName = dictionary[@"mainClass"];
 
@@ -426,6 +426,8 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
 
+		[me.collectionView removeAllConstraints];
+		
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
             [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
@@ -452,7 +454,6 @@ Messaging Center for Preferences to send and recieve information
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					//todo a safeway to remove the view
-[me hideNotepad];
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
@@ -466,6 +467,8 @@ Messaging Center for Preferences to send and recieve information
 
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
+
+		[me.collectionView removeAllConstraints];
 
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
@@ -496,7 +499,6 @@ Messaging Center for Preferences to send and recieve information
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					//todo a safeway to remove the view
-[me hideNotepad];
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
@@ -511,6 +513,8 @@ Messaging Center for Preferences to send and recieve information
 		[stackView removeArrangedSubview:me.collectionView];
     	[stackView addArrangedSubview:me.collectionView];
 
+		[me.collectionView removeAllConstraints];
+		
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
             [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
