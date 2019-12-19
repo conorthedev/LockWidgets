@@ -83,9 +83,7 @@ Messaging Center for Preferences to send and recieve information
 
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
-
-	NSLog(@"[LockWidgets] (DEBUG) Available Extensions: %@", [manager allExtensionIdentifiers]);
-
+	
 	return @{@"widgets" : [manager allWidgetIdentifiers:wdc], @"extensions" : [manager allExtensionIdentifiers]};
 }
 
@@ -165,8 +163,6 @@ Messaging Center for Preferences to send and recieve information
 {
 	LockWidgetsManager *manager = [[LockWidgetsManager alloc] init];
 	NSDictionary *dictionary = [manager extensionInfoFromIdentifier:userInfo[@"identifier"]];
-
-	NSLog(@"[LockWidgets] (DEBUG) Info for %@: %@", userInfo[@"identifier"], dictionary);
 
 	return dictionary;
 }
@@ -350,14 +346,11 @@ Messaging Center for Preferences to send and recieve information
 		for (NSString *identifier in widgetsArray) {
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
-				NSLog(@"[LockWidgets] (DEBUG) Identifier is equal to com.neinzedd9.notepad.lockwidgetsextension");
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					[me.notepadContainerView removeFromSuperview];
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					[me initializeNotepadContainerView];
 					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];
@@ -433,12 +426,10 @@ Messaging Center for Preferences to send and recieve information
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					//todo a safeway to remove the view
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					[me initializeNotepadContainerView];
 					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];
@@ -475,12 +466,10 @@ Messaging Center for Preferences to send and recieve information
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					//todo a safeway to remove the view
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					[me initializeNotepadContainerView];
 					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];
@@ -520,12 +509,10 @@ Messaging Center for Preferences to send and recieve information
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					//todo a safeway to remove the view
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					NSLog(@"[LockWidgets] (DEBUG) me responds to selector 'notepadContainerView'");
 					[me initializeNotepadContainerView];
 					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];

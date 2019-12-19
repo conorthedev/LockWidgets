@@ -31,7 +31,6 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 
 			if (NSClassFromString(mainClass)) {
 				[extensionInfos addObject:specifier];
-				NSLog(@"[LockWidgetsManager] (DEBUG) %@'s mainClass: %@ does exist!", specifier, mainClass);
 			} else {
 				NSLog(@"[LockWidgetsManager] (FATAL) %@'s mainClass: %@ does not exist??", specifier, mainClass);
 			}
@@ -50,7 +49,6 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 		NSString *mainClass = plist[@"mainClass"];
 
 		if (NSClassFromString(mainClass)) {
-			NSLog(@"[LockWidgetsManager] (DEBUG) %@'s mainClass: %@ does exist!", specifier, mainClass);
 			return specifier;
 		} else {
 			NSLog(@"[LockWidgetsManager] (FATAL) %@'s mainClass: %@ does not exist??", specifier, mainClass);
@@ -120,17 +118,11 @@ i.e. generating an array of identifiers, generating a widget view, etc.
 	NSString *path = [self extensionFilePathFromIdentifier:identifier];
 	NSString *directory = @"/Library/Application Support/LockWidgets/Extensions/";
 
-	NSLog(@"[LockWidgets] (DEBUG) Path: %@", path);
-
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:path];
 
-	NSLog(@"[LockWidgets] (DEBUG) Plist: %@", plist);
-
 	if (plist) {
 		UIImage *image = [UIImage imageWithContentsOfFile:[directory stringByAppendingPathComponent:plist[@"iconPath"]]];
-		NSLog(@"[LockWidgets] (DEBUG) Image Path: %@", [directory stringByAppendingPathComponent:plist[@"iconPath"]]);
-		NSLog(@"[LockWidgets] (DEBUG) Image: %@", image);
 
 		return @{
 			@"displayName" : plist[@"displayName"],
