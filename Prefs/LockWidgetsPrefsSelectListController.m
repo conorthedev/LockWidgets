@@ -150,7 +150,7 @@ BOOL refreshDictionary = YES;
 		if (image) {
 			cell.imageView.image = [self rescaleImage:image scaledToSize:CGSizeMake(30, 30)];
 		} else {
-			cell.imageView.image = nil;
+			cell.imageView.image = [self rescaleImage:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/LockWidgetsPrefs.bundle/icon@3x.png"] scaledToSize:CGSizeMake(30, 30)];
 		}
 
 		for (NSString *identifier in currentWidgetIdentifiers) {
@@ -188,7 +188,7 @@ BOOL refreshDictionary = YES;
 		if (image) {
 			cell.imageView.image = [self rescaleImage:image scaledToSize:CGSizeMake(30, 30)];
 		} else {
-			cell.imageView.image = nil;
+			cell.imageView.image = [self rescaleImage:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/LockWidgetsPrefs.bundle/icon@3x.png"] scaledToSize:CGSizeMake(30, 30)];
 		}
 
 		for (NSString *identifier in currentWidgetIdentifiers) {
@@ -242,9 +242,9 @@ BOOL refreshDictionary = YES;
 
 	refreshDictionary = YES;
 
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-
 	[self refreshList];
+
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
