@@ -148,18 +148,7 @@ BOOL refreshDictionary = YES;
 		cell.detailTextLabel.textColor = [UIColor grayColor];
 
 		if (image) {
-			UIGraphicsBeginImageContext(CGSizeMake(30, 30));
-
-			[image drawInRect:CGRectMake(0, 0, 30, 30)];
-
-			UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
-
-			UIGraphicsEndImageContext();
-			if (newThumbnail == nil) {
-				cell.imageView.image = image;
-			} else {
-				cell.imageView.image = newThumbnail;
-			}
+			cell.imageView.image = [self rescaleImage:image scaledToSize:CGSizeMake(30, 30)];
 		} else {
 			cell.imageView.image = nil;
 		}
@@ -197,18 +186,7 @@ BOOL refreshDictionary = YES;
 		cell.detailTextLabel.textColor = [UIColor grayColor];
 
 		if (image) {
-			UIGraphicsBeginImageContext(CGSizeMake(30, 30));
-
-			[image drawInRect:CGRectMake(0, 0, 30, 30)];
-
-			UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
-
-			UIGraphicsEndImageContext();
-			if (newThumbnail == nil) {
-				cell.imageView.image = image;
-			} else {
-				cell.imageView.image = newThumbnail;
-			}
+			cell.imageView.image = [self rescaleImage:image scaledToSize:CGSizeMake(30, 30)];
 		} else {
 			cell.imageView.image = nil;
 		}
@@ -287,6 +265,14 @@ BOOL refreshDictionary = YES;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return 60;
+}
+
+- (UIImage *)rescaleImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+	UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+	[image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+	UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	return newImage;
 }
 
 @end

@@ -11,4 +11,5 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 - (void)refreshList;
+- (UIImage *)rescaleImage:(UIImage *)image scaledToSize:(CGSize)newSize;
 @end
