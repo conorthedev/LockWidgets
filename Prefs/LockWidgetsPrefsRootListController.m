@@ -27,10 +27,6 @@
 	return self;
 }
 
-- (HBAppearanceSettingsLargeTitleStyle)largeTitleStyle {
-	return HBAppearanceSettingsLargeTitleStyleNever;
-}
-
 - (void)loadView {
 	[super loadView];
 }
