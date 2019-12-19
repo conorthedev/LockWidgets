@@ -450,22 +450,28 @@ Messaging Center for Preferences to send and recieve information
 			}
 		}
 
-		[stackView removeArrangedSubview:me.collectionView];
-    	[stackView addArrangedSubview:me.collectionView];
+		if(me.collectionView != nil) {
+			[stackView removeArrangedSubview:me.collectionView];
+			[stackView addArrangedSubview:me.collectionView];
 
-		[me.collectionView removeAllConstraints];
+			[me.collectionView removeAllConstraints];
 
-		// Add constraints
-		[NSLayoutConstraint activateConstraints:@[
-            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [me.collectionView.heightAnchor constraintEqualToConstant:150]
-		]];
+			// Add constraints
+			[NSLayoutConstraint activateConstraints:@[
+				[me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+				[me.collectionView.heightAnchor constraintEqualToConstant:150]
+			]];
 
-		[me.collectionView reloadData];
+			[me.collectionView reloadData];
+		}
 	} else {
 		// Remove the collection view from the hierarchy
 		[stackView removeArrangedSubview:me.collectionView];
 		[me.collectionView removeFromSuperview];
+
+		if([stackView.subviews count] == 0) {
+    		[stackView removeFromSuperview];
+		}
 	}
 }
 
