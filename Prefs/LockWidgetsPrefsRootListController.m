@@ -5,18 +5,11 @@
 #define THEME_COLOR [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
 
 @implementation LockWidgetsPrefsRootListController
-@synthesize respringButton;
 
 - (instancetype)init {
 	self = [super init];
 
 	if (self) {
-		self.respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring"
-															   style:UIBarButtonItemStylePlain
-															  target:self
-															  action:@selector(respring:)];
-		self.respringButton.tintColor = [UIColor redColor];
-		self.navigationItem.rightBarButtonItem = self.respringButton;
 		self.navigationController.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
 
 		HBAppearanceSettings *appearanceSettings = [[HBAppearanceSettings alloc] init];
