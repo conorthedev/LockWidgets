@@ -399,12 +399,10 @@ Messaging Center for Preferences to send and recieve information
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					//todo a safeway to remove the view
+					[stackView removeArrangedSubview:me.collectionView];
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[me initializeNotepadContainerView];
-					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];
 				}
 			}
@@ -439,12 +437,10 @@ Messaging Center for Preferences to send and recieve information
 			// Notepad Support
 			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					//todo a safeway to remove the view
+					[stackView removeArrangedSubview:me.collectionView];
 				}
 			} else {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[me initializeNotepadContainerView];
-					[me showNotepad];
 					[stackView addArrangedSubview:me.notepadContainerView];
 				}
 			}
@@ -454,30 +450,22 @@ Messaging Center for Preferences to send and recieve information
 			[stackView removeArrangedSubview:me.collectionView];
 			[stackView addArrangedSubview:me.collectionView];
 
-			[me.collectionView removeAllConstraints];
-
-			// Add constraints
-			[NSLayoutConstraint activateConstraints:@[
-				[me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-				[me.collectionView.heightAnchor constraintEqualToConstant:150]
-			]];
-
 			[me.collectionView reloadData];
 		}
 	} else {
-		// Remove the collection view from the hierarchy
-		[stackView removeArrangedSubview:me.collectionView];
-		[me.collectionView removeFromSuperview];
-
-		if([stackView.subviews count] == 0) {
-    		[stackView removeFromSuperview];
+		if(me.collectionView != nil) {
+			// Remove the collection view from the hierarchy
+			[stackView removeArrangedSubview:me.collectionView];
+			[me.collectionView removeFromSuperview];
 		}
 	}
 }
 
 // Fired whenever an item is being inserted into the view
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
+/*-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
     %orig;
+
+	NSLog(@"[LockWidgets] (DEBUG) Inserting Item: %@", arg1);
 
 	NotificationController *me = (NotificationController*) self;
 
@@ -512,7 +500,7 @@ Messaging Center for Preferences to send and recieve information
 
 		[me.collectionView reloadData];
 	}
-}
+}*/
 
 // Tells springboard that we are presenting something when the tweak is enabled
 -(BOOL)isPresentingContent {
