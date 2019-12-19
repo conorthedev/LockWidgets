@@ -399,11 +399,9 @@ Messaging Center for Preferences to send and recieve information
 		// Disable selection
 		me.collectionView.allowsSelection = NO;
 
-		if(kShowScrollIndicator) {
-			[me.collectionView setShowsHorizontalScrollIndicator:YES];
-		} else {
-			[me.collectionView setShowsHorizontalScrollIndicator:NO];
-		}
+		// Toggling of the scroll indicator
+		[me.collectionView setShowsHorizontalScrollIndicator:kShowScrollIndicator];
+		[me.collectionView setShowsVerticalScrollIndicator:kShowScrollIndicator];
 
 		// Register cell class
     	[me.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"widgetCell"];
