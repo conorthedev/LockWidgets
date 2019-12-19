@@ -318,7 +318,7 @@ Messaging Center for Preferences to send and recieve information
 
 		for (NSString *identifier in widgetsArray) {
 			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					[me.notepadContainerView removeFromSuperview];
 				}
@@ -397,7 +397,7 @@ Messaging Center for Preferences to send and recieve information
 
 		for (NSString *identifier in widgetsArray) {
 			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					//todo a safeway to remove the view
 				}
@@ -437,7 +437,7 @@ Messaging Center for Preferences to send and recieve information
 	if(kEnabled) {
 		for (NSString *identifier in widgetsArray) {
 			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					//todo a safeway to remove the view
 				}
@@ -480,7 +480,7 @@ Messaging Center for Preferences to send and recieve information
 
 		for (NSString *identifier in widgetsArray) {
 			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad.lockwidgetsextension"]) {
+			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
 				if ([me respondsToSelector:@selector(notepadContainerView)]) {
 					//todo a safeway to remove the view
 				}
