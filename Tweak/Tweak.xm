@@ -83,7 +83,7 @@ Messaging Center for Preferences to send and recieve information
 
  	WGWidgetDiscoveryController *wdc = [[%c(WGWidgetDiscoveryController) alloc] init];
     [wdc beginDiscovery];
-	
+
 	return @{@"widgets" : [manager allWidgetIdentifiers:wdc], @"extensions" : [manager allExtensionIdentifiers]};
 }
 
@@ -120,40 +120,13 @@ Messaging Center for Preferences to send and recieve information
 		return @{@"displayName" : [widgetInfo displayName]};
 	}
 
-	if(@available(iOS 13.0, *)) {
-		SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
-  		SBIcon *icon = [iconController.model expectedIconForDisplayIdentifier:host.appBundleID];
+	UIImage *image = [UIImage _applicationIconImageForBundleIdentifier:host.appBundleID format:0 scale:[UIScreen mainScreen].scale];
 
-		struct CGSize imageSize;
-  			imageSize.height = 30;
-  			imageSize.width = 30;
-
-		struct SBIconImageInfo imageInfo;
-  			imageInfo.size  = imageSize;
-  			imageInfo.scale = [UIScreen mainScreen].scale;
-  			imageInfo.continuousCornerRadius = 12;
-
-		UIImage *image = [icon generateIconImageWithInfo:imageInfo];
-
-		if (image == nil) {
-			return @{@"displayName" : [widgetInfo displayName]};
-		}
-
-		imageData = UIImagePNGRepresentation(image);
-	} else {
-		SBIconController *controller = [%c(SBIconController) sharedInstance];
-		SBIconModel *model = [controller model];
-		SBIcon *icon = [model expectedIconForDisplayIdentifier:host.appBundleID];
-
-		SBIconImageView *iconImageView = MSHookIvar<SBIconImageView *>(icon, "_iconImageView");
-        UIImage *image = [iconImageView contentsImage];
-		
-		if (image == nil) {
-			return @{@"displayName" : [widgetInfo displayName]};
-		}
-
-		imageData = UIImagePNGRepresentation(image);
+	if (image == nil) {
+		return @{@"displayName" : [widgetInfo displayName]};
 	}
+
+	imageData = UIImagePNGRepresentation(image);
 
 	return @{@"displayName" : [widgetInfo displayName], @"imageData" : imageData};
 }
