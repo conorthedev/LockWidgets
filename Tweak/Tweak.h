@@ -5,6 +5,17 @@
 #include <substrate.h>
 #import "../Common.h"
 
+@interface SBApplicationController : NSObject
+- (id)applicationWithBundleIdentifier:(id)arg1;
+@end
+
+@interface SBApplication : NSObject
+@end
+
+@interface SBApplicationIcon : NSObject
+- (id)initWithApplication:(id)arg1;
+@end
+
 struct SBIconImageInfo {
 	struct CGSize size;
 	double scale;
@@ -25,6 +36,16 @@ struct SBIconImageInfo {
 
 @interface SBIcon : NSObject
 - (id)generateIconImageWithInfo:(SBIconImageInfo)arg1;
+@end
+
+@interface SBIconImageView : UIView
+- (id)contentsImage;
+@end
+
+@interface SBIconView : UIView
+@property (nonatomic, retain) SBIcon *icon;
+
+- (id)initWithFrame:(CGRect)arg1;
 @end
 
 @interface SBDashBoardAdjunctItemView : UIView

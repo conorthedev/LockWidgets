@@ -115,13 +115,13 @@ Messaging Center for Preferences to send and recieve information
 		displayName = [widgetInfo displayName];
 	}
 
+	WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+
+	if(!host.appBundleID) {
+		return @{@"displayName" : [widgetInfo displayName]};
+	}
+
 	if(@available(iOS 13.0, *)) {
-		WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
-
-		if(!host.appBundleID) {
-			return @{@"displayName" : [widgetInfo displayName]};
-		}
-
 		SBIconController *iconController = [NSClassFromString(@"SBIconController") sharedInstance];
   		SBIcon *icon = [iconController.model expectedIconForDisplayIdentifier:host.appBundleID];
 
@@ -142,7 +142,18 @@ Messaging Center for Preferences to send and recieve information
 
 		imageData = UIImagePNGRepresentation(image);
 	} else {
-		return @{@"displayName" : [widgetInfo displayName]};
+		SBIconController *controller = [%c(SBIconController) sharedInstance];
+		SBIconModel *model = [controller model];
+		SBIcon *icon = [model expectedIconForDisplayIdentifier:host.appBundleID];
+
+		SBIconImageView *iconImageView = MSHookIvar<SBIconImageView *>(icon, "_iconImageView");
+        UIImage *image = [iconImageView contentsImage];
+		
+		if (image == nil) {
+			return @{@"displayName" : [widgetInfo displayName]};
+		}
+
+		imageData = UIImagePNGRepresentation(image);
 	}
 
 	return @{@"displayName" : [widgetInfo displayName], @"imageData" : imageData};
@@ -427,7 +438,7 @@ Messaging Center for Preferences to send and recieve information
     	[stackView addArrangedSubview:me.collectionView];
 
 		[me.collectionView removeAllConstraints];
-		
+
 		// Add constraints
 		[NSLayoutConstraint activateConstraints:@[
             [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
