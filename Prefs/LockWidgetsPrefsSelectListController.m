@@ -4,8 +4,12 @@
 
 CPDistributedMessagingCenter *c = nil;
 NSString *cellIdentifier = @"Cell";
-NSMutableArray *widgetIdentifiers = nil;
+
+NSMutableArray *currentWidgetIdentifiers = nil;
+NSMutableArray *currentExtensionIdentifiers = nil;
+
 NSArray *availableWidgetsCache = nil;
+NSArray *availableExtensionsCache = nil;
 
 NSMutableDictionary *widgetCellInfoCache = nil;
 BOOL refreshDictionary = YES;
@@ -37,7 +41,7 @@ BOOL refreshDictionary = YES;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+	return 2;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -50,21 +54,31 @@ BOOL refreshDictionary = YES;
 }
 
 - (void)refreshList {
-	[self.tableView reloadData];
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
 
 	// Get a list of available widget identifiers
-	if(availableWidgetsCache == nil) {
-		if(self.tableData == nil) {
-			NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getWidgets" userInfo:nil];
-
+	if (availableWidgetsCache == nil) {
+		if (self.tableData == nil) {
 			NSArray *widgets = reply[@"widgets"];
 			availableWidgetsCache = widgets;
-			self.tableData = widgets;
+			self.tableData = availableWidgetsCache;
 		}
 	} else {
-		if(self.tableData == nil) {
-			self.tableData = availableWidgetsCache;
+		if (availableExtensionsCache == nil) {
+			if (self.extensionIdentifiers == nil) {
+				NSArray *extensions = reply[@"extensions"];
+				availableExtensionsCache = extensions;
+				self.extensionIdentifiers = availableExtensionsCache;
+			}
+		} else {
+			if (self.tableData == nil) {
+				self.tableData = availableWidgetsCache;
+			}
+
+			if (self.extensionIdentifiers == nil) {
+				self.extensionIdentifiers = availableExtensionsCache;
+			}
 		}
 	}
 
@@ -72,14 +86,14 @@ BOOL refreshDictionary = YES;
 	NSDictionary *identifierReply = [c sendMessageAndReceiveReplyName:@"getCurrentIdentifiers" userInfo:nil];
 
 	NSMutableArray *currentIdentifiers = identifierReply[@"currentIdentifiers"];
-	widgetIdentifiers = currentIdentifiers;
+	currentWidgetIdentifiers = currentIdentifiers;
 
 	for (int section = 0, sectionCount = self.tableView.numberOfSections; section < sectionCount; ++section) {
 		for (int row = 0, rowCount = [self.tableView numberOfRowsInSection:section]; row < rowCount; ++row) {
 			[self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
 
-			for (NSString *identifier in widgetIdentifiers) {
+			for (NSString *identifier in currentWidgetIdentifiers) {
 				if ([cell.detailTextLabel.text isEqualToString:identifier]) {
 					cell.accessoryType = UITableViewCellAccessoryCheckmark;
 					return;
@@ -89,10 +103,19 @@ BOOL refreshDictionary = YES;
 			}
 		}
 	}
+	[self.tableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self.tableData count];
+	if (section == 0) {
+		if (self.extensionIdentifiers == nil || [self.extensionIdentifiers count] == 0) {
+			return 1;
+		} else {
+			return [self.extensionIdentifiers count];
+		}
+	} else {
+		return [self.tableData count];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -102,66 +125,130 @@ BOOL refreshDictionary = YES;
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
 	}
 
-	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
+	if (indexPath.section == 0) {
+		if (self.extensionIdentifiers == nil || [self.extensionIdentifiers count] == 0) {
+			cell.textLabel.text = @"No extensions found!";
+			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+			cell.detailTextLabel.text = @"Maybe you should try out Notepad?";
+			cell.detailTextLabel.textColor = [UIColor grayColor];
 
-	if(widgetCellInfoCache == nil) {
-		widgetCellInfoCache = [[NSMutableDictionary alloc] init];
-	}
+			return cell;
+		}
 
-	NSDictionary *reply = [widgetCellInfoCache objectForKey:identifier];
+		NSString *identifier = [self.extensionIdentifiers objectAtIndex:indexPath.row];
 
-	if(refreshDictionary || reply == nil) {
 		c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
-		reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
-		
-		[widgetCellInfoCache setObject:reply forKey:identifier];
+		NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"getExtensionInfo" userInfo:@{@"identifier" : identifier}];
 
-		refreshDictionary = NO;
-	}
+		NSData *imageData = reply[@"imageData"];
+		UIImage *image = [UIImage imageWithData:imageData];
 
-	NSData *imageData = reply[@"imageData"];
-	UIImage *image = [UIImage imageWithData:imageData];
+		cell.textLabel.text = reply[@"displayName"];
+		cell.detailTextLabel.text = identifier;
+		cell.detailTextLabel.textColor = [UIColor grayColor];
 
-	cell.textLabel.text = reply[@"displayName"];
-	cell.detailTextLabel.text = identifier;
-	cell.detailTextLabel.textColor = [UIColor grayColor];
+		if (image) {
+			UIGraphicsBeginImageContext(CGSizeMake(30, 30));
 
-	if (image) {
-		UIGraphicsBeginImageContext(CGSizeMake(30, 30));
+			[image drawInRect:CGRectMake(0, 0, 30, 30)];
 
-		[image drawInRect:CGRectMake(0, 0, 30, 30)];
+			UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
 
-		UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
-
-		UIGraphicsEndImageContext();
-		if (newThumbnail == nil) {
-			NSLog(@"could not scale image");
-			cell.imageView.image = image;
+			UIGraphicsEndImageContext();
+			if (newThumbnail == nil) {
+				cell.imageView.image = image;
+			} else {
+				cell.imageView.image = newThumbnail;
+			}
 		} else {
-			cell.imageView.image = newThumbnail;
+			cell.imageView.image = nil;
+		}
+
+		for (NSString *identifier in currentWidgetIdentifiers) {
+			if ([cell.detailTextLabel.text isEqualToString:identifier]) {
+				cell.accessoryType = UITableViewCellAccessoryCheckmark;
+			} else {
+				cell.accessoryType = UITableViewCellAccessoryNone;
+			}
 		}
 	} else {
-		cell.imageView.image = nil;
-	}
+		if (widgetCellInfoCache == nil) {
+			widgetCellInfoCache = [[NSMutableDictionary alloc] init];
+		}
 
-	for (NSString *identifier in widgetIdentifiers) {
-		if ([cell.detailTextLabel.text isEqualToString:identifier]) {
-			cell.accessoryType = UITableViewCellAccessoryCheckmark;
-			return cell;
+		NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
+
+		NSDictionary *reply = [widgetCellInfoCache objectForKey:identifier];
+
+		if (refreshDictionary || reply == nil) {
+			c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
+			reply = [c sendMessageAndReceiveReplyName:@"getInfo" userInfo:@{@"identifier" : identifier}];
+
+			[widgetCellInfoCache setObject:reply forKey:identifier];
+
+			refreshDictionary = NO;
+		}
+
+		NSData *imageData = reply[@"imageData"];
+		UIImage *image = [UIImage imageWithData:imageData];
+
+		cell.textLabel.text = reply[@"displayName"];
+		cell.detailTextLabel.text = identifier;
+		cell.detailTextLabel.textColor = [UIColor grayColor];
+
+		if (image) {
+			UIGraphicsBeginImageContext(CGSizeMake(30, 30));
+
+			[image drawInRect:CGRectMake(0, 0, 30, 30)];
+
+			UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
+
+			UIGraphicsEndImageContext();
+			if (newThumbnail == nil) {
+				cell.imageView.image = image;
+			} else {
+				cell.imageView.image = newThumbnail;
+			}
 		} else {
-			cell.accessoryType = UITableViewCellAccessoryNone;
+			cell.imageView.image = nil;
+		}
+
+		for (NSString *identifier in currentWidgetIdentifiers) {
+			if ([cell.detailTextLabel.text isEqualToString:identifier]) {
+				cell.accessoryType = UITableViewCellAccessoryCheckmark;
+				return cell;
+			} else {
+				cell.accessoryType = UITableViewCellAccessoryNone;
+			}
 		}
 	}
 
 	return cell;
 }
 
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	if (cell.selectionStyle == UITableViewCellSelectionStyleNone) {
+		return nil;
+	}
+	return indexPath;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSString *identifier = [self.tableData objectAtIndex:indexPath.row];
+	NSString *identifier;
+	bool isExtension;
+
+	if (indexPath.section == 0) {
+		isExtension = YES;
+		identifier = [self.extensionIdentifiers objectAtIndex:indexPath.row];
+	} else {
+		isExtension = NO;
+		identifier = [self.tableData objectAtIndex:indexPath.row];
+	}
 
 	c = [CPDistributedMessagingCenter centerNamed:@"me.conorthedev.lockwidgets.messagecenter"];
 
-	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier}];
+	NSDictionary *reply = [c sendMessageAndReceiveReplyName:@"setIdentifier" userInfo:@{@"identifier" : identifier, @"isExtension" : @(isExtension)}];
 
 	NSDictionary *displayReply = [widgetCellInfoCache objectForKey:identifier];
 
@@ -177,14 +264,18 @@ BOOL refreshDictionary = YES;
 
 	refreshDictionary = YES;
 
-	[self refreshList];	
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+	[self refreshList];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 	NSString *sectionName;
 	switch (section) {
 		case 0:
+			sectionName = @"Available Extensions";
+			break;
+		case 1:
 			sectionName = @"Available Widgets";
 			break;
 		default:

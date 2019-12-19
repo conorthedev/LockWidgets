@@ -5,6 +5,17 @@
 #include <substrate.h>
 #import "../Common.h"
 
+@interface SBApplicationController : NSObject
+- (id)applicationWithBundleIdentifier:(id)arg1;
+@end
+
+@interface SBApplication : NSObject
+@end
+
+@interface SBApplicationIcon : NSObject
+- (id)initWithApplication:(id)arg1;
+@end
+
 struct SBIconImageInfo {
 	struct CGSize size;
 	double scale;
@@ -25,6 +36,16 @@ struct SBIconImageInfo {
 
 @interface SBIcon : NSObject
 - (id)generateIconImageWithInfo:(SBIconImageInfo)arg1;
+@end
+
+@interface SBIconImageView : UIView
+- (id)contentsImage;
+@end
+
+@interface SBIconView : UIView
+@property (nonatomic, retain) SBIcon *icon;
+
+- (id)initWithFrame:(CGRect)arg1;
 @end
 
 @interface SBDashBoardAdjunctItemView : UIView
@@ -135,6 +156,7 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -145,6 +167,8 @@ struct SBIconImageInfo {
 - (void)viewDidLayoutSubviews;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
 
 @end
 
@@ -153,6 +177,7 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -162,6 +187,8 @@ struct SBIconImageInfo {
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
 
 @end
 
@@ -170,6 +197,8 @@ struct SBIconImageInfo {
 }
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (nonatomic, retain) SBDashBoardAdjunctItemView *notepadContainerView;
+@property (nonatomic, assign, getter=isShowingNotepad) BOOL showingNotepad;
 
 - (void)adjunctListModel:(id)arg1 didAddItem:(id)arg2;
 - (void)adjunctListModel:(id)arg1 didRemoveItem:(id)arg2;
@@ -179,6 +208,9 @@ struct SBIconImageInfo {
 - (void)_removeItem:(id)arg1 animated:(BOOL)arg2;
 - (BOOL)isPresentingContent;
 - (void)reloadData:(NSString *)identifier indexPath:(NSIndexPath *)arg2;
+- (void)hideNotepad;
+- (void)showNotepad;
+- (void)initializeNotepadContainerView;
 
 @end
 
