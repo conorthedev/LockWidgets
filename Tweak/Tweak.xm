@@ -316,21 +316,6 @@ Messaging Center for Preferences to send and recieve information
 		// Get the stack view from me
         UIStackView *stackView = [me valueForKey:@"_stackView"];
 
-		for (NSString *identifier in widgetsArray) {
-			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[me.notepadContainerView removeFromSuperview];
-				}
-			} else {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[me initializeNotepadContainerView];
-					[me showNotepad];
-					[stackView addArrangedSubview:me.notepadContainerView];
-				}
-			}
-		}
-
 		// Create a flow layout
 		UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
 		
@@ -391,32 +376,15 @@ Messaging Center for Preferences to send and recieve information
     %orig;
 
 	NotificationController *me = (NotificationController*) self;
+	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
-		UIStackView *stackView = [me valueForKey:@"_stackView"];
-		
-		if([widgetsArray containsObject:@"com.neinzedd9.notepad"]) {
-			if ([me respondsToSelector:@selector(notepadContainerView)]) {
-				[stackView removeArrangedSubview:me.collectionView];
-			}
-		} else {
-			if ([me respondsToSelector:@selector(notepadContainerView)]) {
-				[stackView addArrangedSubview:me.notepadContainerView];
-			}
+		if(me.collectionView != nil) {
+			[stackView removeArrangedSubview:me.collectionView];
+			[stackView addArrangedSubview:me.collectionView];
+
+			[me.collectionView reloadData];
 		}
-
-		[stackView removeArrangedSubview:me.collectionView];
-    	[stackView addArrangedSubview:me.collectionView];
-
-		[me.collectionView removeAllConstraints];
-
-		// Add constraints
-		[NSLayoutConstraint activateConstraints:@[
-            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [me.collectionView.heightAnchor constraintEqualToConstant:150]
-		]];
-
-		[me.collectionView reloadData];
 	}
 }
 
@@ -430,16 +398,6 @@ Messaging Center for Preferences to send and recieve information
 	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
-		if([widgetsArray containsObject:@"com.neinzedd9.notepad"]) {
-			if ([me respondsToSelector:@selector(notepadContainerView)]) {
-				[stackView removeArrangedSubview:me.collectionView];
-			}
-		} else {
-			if ([me respondsToSelector:@selector(notepadContainerView)]) {
-				[stackView addArrangedSubview:me.notepadContainerView];
-			}
-		}
-
 		if(me.collectionView != nil) {
 			[stackView removeArrangedSubview:me.collectionView];
 			[stackView addArrangedSubview:me.collectionView];
@@ -451,6 +409,7 @@ Messaging Center for Preferences to send and recieve information
 			// Remove the collection view from the hierarchy
 			[stackView removeArrangedSubview:me.collectionView];
 			[me.collectionView removeFromSuperview];
+			[me.collectionView removeAllConstraints];
 		}
 	}
 }
