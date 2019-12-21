@@ -26,14 +26,6 @@
                 <string>ConorTheDev</string>
             </dict>
             <dict>
-                <key>cellClass</key>
-                <string>HBTwitterCell</string>
-                <key>label</key>
-                <string>Even</string>
-                <key>user</key>
-                <string>even_dev</string>
-            </dict>
-            <dict>
 			    <key>cell</key>
                 <string>PSGroupCell</string>
 			    <key>label</key>
@@ -153,6 +145,14 @@
                 <string>ShadowStonk (Original Idea)</string>
                 <key>user</key>
                 <string>CydiaSaurikStar</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBTwitterCell</string>
+                <key>label</key>
+                <string>Even (Contributions)</string>
+                <key>user</key>
+                <string>even_dev</string>
             </dict>
         </array>
         <key>title</key>
