@@ -280,7 +280,12 @@ Messaging Center for Preferences to send and recieve information
 }
 
 %new - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, 2.5, 0, 2.5);
+   	BOOL scrollVertical = kScrollDirection != 0;
+	if(scrollVertical) {
+    	return UIEdgeInsetsMake(2.5, 0, 2.5, 0);
+	} else {
+		return UIEdgeInsetsMake(0, 2.5, 0, 2.5);
+	}
 }
 
 %new - (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {   
@@ -375,10 +380,10 @@ Messaging Center for Preferences to send and recieve information
 -(void)_updatePresentingContent {
     %orig;
 
-	NotificationController *me = (NotificationController*) self;
-	UIStackView *stackView = [me valueForKey:@"_stackView"];
-
 	if(kEnabled) {
+		NotificationController *me = (NotificationController*) self;
+		UIStackView *stackView = [me valueForKey:@"_stackView"];
+
 		if(me.collectionView != nil) {
 			[stackView removeArrangedSubview:me.collectionView];
 			[stackView addArrangedSubview:me.collectionView];
@@ -391,13 +396,12 @@ Messaging Center for Preferences to send and recieve information
 -(void)viewDidAppear:(BOOL)animated {
     %orig(animated);
 
-	NSLog(@"[LockWidgets] (INFO) Current Widgets: %@", widgetsArray);
-
 	NotificationController *me = (NotificationController*) self;
-
 	UIStackView *stackView = [me valueForKey:@"_stackView"];
 
 	if(kEnabled) {
+		NSLog(@"[LockWidgets] (INFO) Current Widgets: %@", widgetsArray);
+
 		if(me.collectionView != nil) {
 			[stackView removeArrangedSubview:me.collectionView];
 			[stackView addArrangedSubview:me.collectionView];
@@ -413,47 +417,6 @@ Messaging Center for Preferences to send and recieve information
 		}
 	}
 }
-
-// Fired whenever an item is being inserted into the view
-/*-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
-    %orig;
-
-	NSLog(@"[LockWidgets] (DEBUG) Inserting Item: %@", arg1);
-
-	NotificationController *me = (NotificationController*) self;
-
-	if(kEnabled) {
-		UIStackView *stackView = [me valueForKey:@"_stackView"];
-
-		for (NSString *identifier in widgetsArray) {
-			// Notepad Support
-			if([identifier isEqualToString:@"com.neinzedd9.notepad"]) {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					//todo a safeway to remove the view
-				}
-			} else {
-				if ([me respondsToSelector:@selector(notepadContainerView)]) {
-					[me initializeNotepadContainerView];
-					[me showNotepad];
-					[stackView addArrangedSubview:me.notepadContainerView];
-				}
-			}
-		}
-
-		[stackView removeArrangedSubview:me.collectionView];
-    	[stackView addArrangedSubview:me.collectionView];
-
-		[me.collectionView removeAllConstraints];
-		
-		// Add constraints
-		[NSLayoutConstraint activateConstraints:@[
-            [me.collectionView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [me.collectionView.heightAnchor constraintEqualToConstant:150]
-		]];
-
-		[me.collectionView reloadData];
-	}
-}*/
 
 // Tells springboard that we are presenting something when the tweak is enabled
 -(BOOL)isPresentingContent {
