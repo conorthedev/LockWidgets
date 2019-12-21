@@ -2,7 +2,7 @@
 
 Show your favourite widget on your lock screen, available for **FREE** on [Dynastic Repo](https://repo.dynastic.co/package/lockwidgets)
 
-Developed by [ConorTheDev](https://twitter.com/ConorTheDev) and [EvenDev](https://twitter.com/even_dev)!
+Developed by [ConorTheDev](https://twitter.com/ConorTheDev)!
 
 ## Supported Devices
 
@@ -16,3 +16,7 @@ All iOS Devices between iOS 11 and iOS 13 are supported
 
 - Install [theos](https://github.com/theos/theos), make sure you have the patched SDKs. 
 [opa334's SDKs](https://github.com/opa334/sdks) are recommended for simulator users. People who test on physical devices can use [DavidSkrundz's SDKs](https://github.com/DavidSkrundz/sdks).
+
+## Credits
+[EvenDev](https://twitter.com/even_dev) - Contributions to the project
+[ShadowStonk](https://twitter.com/CydiaSaurikStar) - The idea for the tweak
