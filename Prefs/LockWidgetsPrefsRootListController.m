@@ -1,6 +1,8 @@
 #include "LockWidgetsPrefsRootListController.h"
 #import <Cephei/HBPreferences.h>
 #import <CepheiPrefs/HBAppearanceSettings.h>
+#import "FallingSnow/FallingSnow.h"
+#import "FallingSnow/XMASFallingSnowView.h"
 
 #define THEME_COLOR [UIColor colorWithRed:75.0 / 255.0 green:194.0 / 255.0 blue:237.0 / 255.0 alpha:1.0];
 
@@ -40,6 +42,8 @@
 		self.navigationController.navigationBar.prefersLargeTitles = false;
 		self.navigationController.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
 	}
+
+	[self.view makeItSnow];
 }
 
 + (NSString *)hb_specifierPlist {

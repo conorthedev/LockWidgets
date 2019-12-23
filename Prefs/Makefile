@@ -12,7 +12,7 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = LockWidgetsPrefs
 
-$(BUNDLE_NAME)_FILES = LockWidgetsPrefsRootListController.m LockWidgetsPrefsSelectListController.m
+$(BUNDLE_NAME)_FILES = LockWidgetsPrefsRootListController.m LockWidgetsPrefsSelectListController.m FallingSnow/UIView+XMASFallingSnow.m FallingSnow/XMASFallingSnowView.m
 $(BUNDLE_NAME)_INSTALL_PATH = /Library/PreferenceBundles
 $(BUNDLE_NAME)_PRIVATE_FRAMEWORKS = Preferences AppSupport
 $(BUNDLE_NAME)_EXTRA_FRAMEWORKS += Cephei CepheiPrefs

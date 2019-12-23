@@ -1,4 +1,6 @@
 #include "LockWidgetsPrefsSelectListController.h"
+#import "FallingSnow/FallingSnow.h"
+#import "FallingSnow/XMASFallingSnowView.h"
 
 @implementation LockWidgetsPrefsSelectListController
 
@@ -47,6 +49,11 @@ BOOL refreshDictionary = YES;
 - (void)viewWillAppear:(BOOL)animated {
 	self.navigationItem.title = @"Select Active Widgets";
 	[self refreshList];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[self.view makeItSnow];
 }
 
 - (NSString *)navigationTitle {
