@@ -69,24 +69,36 @@ IPC SERVER
 	return [[LockWidgetsManager sharedInstance] getAllWidgetIdentifiers];
 }
 
--(NSMutableDictionary*)getWidgetNamesForIdentifiers:(NSDictionary*)args {	
+-(NSMutableDictionary*)getWidgetNamesForIdentifiers:(NSDictionary*)args {
 	NSMutableDictionary *allIdentifiers = [NSMutableDictionary new];
 
 	for(NSString *identifier in args[@"identifiers"]) {
 		NSError *error;
 		NSExtension *extension = [NSExtension extensionWithIdentifier:identifier error:&error];
-		WGWidgetInfo *widgetInfo = [[NSClassFromString(@"WGWidgetInfo") alloc] initWithExtension:extension];
-		WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
+		if(extension && !error) {
+			WGWidgetInfo *widgetInfo = [[NSClassFromString(@"WGWidgetInfo") alloc] initWithExtension:extension];
+			if(widgetInfo) {
+				WGWidgetHostingViewController *host	= [[%c(WGWidgetHostingViewController) alloc] initWithWidgetInfo:widgetInfo delegate:nil host:nil];
 
-		if(!host.appBundleID) {
-			[allIdentifiers setValue:@{@"name":[widgetInfo displayName]} forKey:identifier];
-		} else {
-			UIImage *image = [UIImage _applicationIconImageForBundleIdentifier:host.appBundleID format:2 scale:1];
-			if(image) {
-				[allIdentifiers setValue:@{@"name":[widgetInfo displayName], @"image": UIImagePNGRepresentation(image)} forKey:identifier];
-			} else {
-				[allIdentifiers setValue:@{@"name":[widgetInfo displayName]} forKey:identifier];
+				if(host) {
+					if(!host.appBundleID) {
+						[allIdentifiers setValue:@{@"name":[widgetInfo displayName]} forKey:identifier];
+					} else {
+						UIImage *image = [UIImage _applicationIconImageForBundleIdentifier:host.appBundleID format:1];
+						NSData *dataImage;
+						if(image) {
+							dataImage = UIImagePNGRepresentation(image);
+						}
+
+						if(dataImage) {
+							[allIdentifiers setValue:@{@"name":[widgetInfo displayName], @"image": dataImage} forKey:identifier];
+						} else {
+							[allIdentifiers setValue:@{@"name":[widgetInfo displayName]} forKey:identifier];
+						}
+					}
+				}
 			}
+
 		}
 	}
 

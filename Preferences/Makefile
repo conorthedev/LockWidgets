@@ -1,9 +1,7 @@
-include $(THEOS)/makefiles/common.mk
-
 ARCHS = arm64 arm64e
 TARGET = iphone:clang:13.0:12.4
 
-MAKEFLAGS = --no-print-directory
+include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = LockWidgetsPreferences
 
