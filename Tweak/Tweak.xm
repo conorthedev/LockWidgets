@@ -248,7 +248,7 @@ void reloadPreferences() {
 %ctor {	
 	// Call reloadPreferences and register notification 'me.conorthedev.lockwidgets/ReloadPreferences' to tell the tweak when it should reload it's preferences
 	reloadPreferences();
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPreferences, CFSTR("me.conorthedev.lockwidgets/ReloadPreferences"), NULL, kNilOptions);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPreferences, CFSTR("me.conorthedev.lockwidgets/ReloadPreferences"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	// If the tweak is enabled, run all code, otherwise ignore everything else
 	if(tweakConfig.enabled) {
@@ -259,7 +259,7 @@ void reloadPreferences() {
 
 		// Easier than having multiple groups, reduces the file length by half basically
         NSString *sheetControllerClass = @"SBDashBoardViewController";
-        if(@available(iOS 13.0, *)) {
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
             sheetControllerClass = @"CSCoverSheetViewController";
             LogDebug(@"Current version is iOS 13 or higher, using %@", sheetControllerClass);
 			%init(ios13);

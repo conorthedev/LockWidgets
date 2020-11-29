@@ -18,7 +18,7 @@
 			backgroundColourView.backgroundColor =
 				[CTDPreferenceSettings sharedInstance].tintColor;
 		} else {
-			if (@available(iOS 13.0, *)) {
+			if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
 				backgroundColourView.backgroundColor =
 					[UIColor secondarySystemGroupedBackgroundColor];
 			} else {

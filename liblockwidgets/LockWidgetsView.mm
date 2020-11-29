@@ -69,7 +69,7 @@ LockWidgetsView *globalSelf;
 		[cell.contentView addSubview:textLabel];
 
 		UIBlurEffect *blurEffect;
-		if (@available(iOS 13.0, *)) {
+		if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
 		} else {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
@@ -100,7 +100,7 @@ LockWidgetsView *globalSelf;
 		[cell.contentView addSubview:textLabel];
 
 		UIBlurEffect *blurEffect;
-		if (@available(iOS 13.0, *)) {
+		if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
 		} else {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
@@ -131,7 +131,7 @@ LockWidgetsView *globalSelf;
 		[cell.contentView addSubview:textLabel];
 
 		UIBlurEffect *blurEffect;
-		if (@available(iOS 13.0, *)) {
+		if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
 		} else {
 			blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
@@ -172,7 +172,7 @@ LockWidgetsView *globalSelf;
 
 	[cell.contentView addSubview:platterView];
 
-	if (@available(iOS 13.0, *)) {
+	if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
 		// Fix on iOS 13 for the dark header being the old style
 		MTMaterialView *header = MSHookIvar<MTMaterialView *>(platterView, "_headerBackgroundView");
 		[header removeFromSuperview];
