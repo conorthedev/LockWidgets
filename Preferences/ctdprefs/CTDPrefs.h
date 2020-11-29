@@ -3,10 +3,15 @@
 // <CTDPrefs/XXXAwesomeClass.h> Don’t forget to also add them to
 // CTDPrefs_PUBLIC_HEADERS in your Makefile!
 
+#import <UIKit/UIKit.h>
 #import <Preferences/PSHeaderFooterView.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSTableCell.h>
+
+@interface UIColor (APIFix)
++ (UIColor *)secondarySystemGroupedBackgroundColor; // iOS 13+
+@end
 
 @interface CTDHeaderCell : PSTableCell <PSHeaderFooterView>
 @property (nonatomic, retain) UILabel *titleLabel;
@@ -32,3 +37,5 @@
 
 @interface CTDTableCell : PSTableCell
 @end
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)

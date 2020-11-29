@@ -45,8 +45,8 @@ LockWidgetsView *globalSelf;
 			[self.collectionView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
 		]];
 
-		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)unlocked, CFSTR("me.conorthedev.lockwidgets/Authenticated"), NULL, kCFNotificationDeliverImmediately);
-		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)locked, CFSTR("me.conorthedev.lockwidgets/NotAuthenticated"), NULL, kCFNotificationDeliverImmediately);
+		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)unlocked, CFSTR("me.conorthedev.lockwidgets/Authenticated"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)locked, CFSTR("me.conorthedev.lockwidgets/NotAuthenticated"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 	}
 
 	return self;
